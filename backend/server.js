@@ -1,13 +1,19 @@
 /**
  * ElevateCV AI — Server Entry Point
- * Starts the Express server on the configured port.
+ * Connects to MongoDB and starts the Express server.
  */
 
 require('dotenv').config();
 const app = require('./app');
+const connectDB = require('./config/db');
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`⚡ ElevateCV AI server running on http://localhost:${PORT}`);
-});
+const startServer = async () => {
+    await connectDB();
+    app.listen(PORT, () => {
+        console.log(`⚡ ElevateCV AI server running on http://localhost:${PORT}`);
+    });
+};
+
+startServer();

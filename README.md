@@ -18,8 +18,8 @@ To democratize career advancement by providing everyone access to intelligent, A
 |----------------|-------------------------|
 | Frontend       | HTML5, CSS3, Vanilla JS |
 | Backend        | Node.js, Express.js     |
-| Database       | MongoDB Atlas *(planned)* |
-| Authentication | JWT *(planned)*         |
+| Database       | MongoDB Atlas           |
+| Authentication | JWT + bcrypt            |
 | AI Engine      | Google Gemini API *(planned)* |
 | Frontend Host  | Netlify                 |
 | Backend Host   | Render                  |
@@ -38,18 +38,19 @@ elevatecv-ai/
 │   │   └── icons/
 │   ├── js/
 │   │   ├── components/
-│   │   ├── pages/
+│   │   ├── pages/        ← login.js, signup.js
 │   │   └── utils/
+│   ├── pages/            ← login.html, signup.html
 │   ├── index.html
 │   └── package.json
 │
 ├── backend/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
+│   ├── config/           ← db.js
+│   ├── controllers/      ← auth.controller.js
+│   ├── middleware/       ← auth.middleware.js
+│   ├── models/           ← User.js
+│   ├── routes/           ← auth.routes.js
+│   ├── services/         ← auth.service.js
 │   ├── utils/
 │   ├── uploads/
 │   ├── app.js
@@ -72,11 +73,12 @@ elevatecv-ai/
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) v18+ and npm
+- [MongoDB Atlas](https://www.mongodb.com/atlas) account (free tier works)
 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/elevatecv-ai.git
+git clone https://github.com/SagarGupta-30/elevatecv-ai.git
 cd elevatecv-ai
 ```
 
@@ -85,6 +87,17 @@ cd elevatecv-ai
 ```bash
 cd backend
 npm install
+```
+
+### Configure Environment Variables
+
+Update `backend/.env` with your credentials:
+
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/elevatecv-ai
+JWT_SECRET=your_secret_key_here
+JWT_EXPIRES_IN=7d
 ```
 
 ### Install Frontend Dependencies
@@ -134,12 +147,21 @@ Or open `frontend/index.html` directly in your browser.
 
 ---
 
+## 🔐 Authentication API
+
+| Method | Endpoint            | Description            | Auth     |
+|--------|---------------------|------------------------|----------|
+| POST   | `/api/auth/register`| Create new account     | Public   |
+| POST   | `/api/auth/login`   | Login & get JWT        | Public   |
+| GET    | `/api/auth/me`      | Get current user       | Required |
+
+---
+
 ## 🔮 Future Features
 
 - **AI Resume Builder** — Generate and refine resumes using Google Gemini AI
 - **ATS Score Analysis** — Real-time resume scoring against job descriptions
 - **Career Copilot Dashboard** — Personalized career insights and recommendations
-- **User Authentication** — Secure JWT-based login and registration
 - **Template Library** — Professional, ATS-friendly resume templates
 - **Export Options** — Download resumes as PDF, DOCX, and more
 - **Job Matching** — AI-powered job recommendation engine

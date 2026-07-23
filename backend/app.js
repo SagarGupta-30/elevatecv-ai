@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const healthRoute = require('./routes/health.route');
+const authRoutes = require('./routes/auth.routes');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(morgan('dev'));
 
 /* ── Routes ── */
 app.use('/', healthRoute);
+app.use('/api/auth', authRoutes);
 
 /* ── 404 Handler ── */
 app.use((req, res) => {
