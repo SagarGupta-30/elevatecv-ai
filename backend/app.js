@@ -17,15 +17,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
+const resumeRoutes = require('./routes/resume.routes');
+
 /* ── Routes ── */
 app.use('/', healthRoute);
 app.use('/api/auth', authRoutes);
+app.use('/api/resumes', resumeRoutes);
 
 /* ── 404 Handler ── */
 app.use((req, res) => {
     res.status(404).json({
-        status: 'error',
+        success: false,
         message: `Route ${req.originalUrl} not found`,
+        data: null,
+        error: 'Not Found'
     });
 });
 
@@ -33,8 +38,10 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
     console.error('Server Error:', err.message);
     res.status(err.status || 500).json({
-        status: 'error',
+        success: false,
         message: err.message || 'Internal Server Error',
+        data: null,
+        error: err.name || 'ServerError'
     });
 });
 

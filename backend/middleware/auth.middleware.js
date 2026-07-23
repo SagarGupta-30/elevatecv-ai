@@ -10,8 +10,10 @@ function protect(req, res, next) {
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({
-            status: 'error',
+            success: false,
             message: 'Access denied. No token provided.',
+            data: null,
+            error: 'Unauthorized'
         });
     }
 
@@ -23,8 +25,10 @@ function protect(req, res, next) {
         next();
     } catch (error) {
         return res.status(401).json({
-            status: 'error',
+            success: false,
             message: 'Invalid or expired token',
+            data: null,
+            error: 'Unauthorized'
         });
     }
 }

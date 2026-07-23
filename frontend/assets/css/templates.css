@@ -1,0 +1,210 @@
+/*
+ * ElevateCV AI - Multi-Template Engine
+ * Defines CSS for Professional, Modern, Minimal, and Executive templates.
+ * All rely on the same semantic HTML structure.
+ */
+
+/* =========================================
+   Base Shared Resume Elements
+   ========================================= */
+.cv-header { margin-bottom: 24px; }
+.cv-name { margin-bottom: 4px; }
+.cv-contact { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.cv-contact-item { display: flex; align-items: center; gap: 4px; }
+.cv-summary { margin-bottom: 24px; }
+.cv-section { margin-bottom: 24px; }
+.cv-section-title { margin-bottom: 12px; }
+.cv-item { margin-bottom: 16px; }
+.cv-item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.cv-item-title { font-weight: bold; }
+.cv-item-subtitle { font-style: italic; }
+.cv-item-date { font-size: 0.9em; white-space: nowrap; }
+.cv-item-desc { margin-top: 4px; }
+.cv-skills-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.cv-skill-tag { padding: 4px 8px; border-radius: 4px; font-size: 0.9em; }
+
+/* =========================================
+   1. Professional Theme
+   Classic serif fonts, dark blue headers, clean lines
+   ========================================= */
+.theme-professional {
+    font-family: 'Merriweather', serif;
+    color: #333;
+    line-height: 1.6;
+}
+.theme-professional .cv-header {
+    text-align: center;
+    border-bottom: 2px solid #1e3a8a;
+    padding-bottom: 16px;
+}
+.theme-professional .cv-name {
+    font-size: 2.2rem;
+    color: #1e3a8a;
+    text-transform: uppercase;
+}
+.theme-professional .cv-contact {
+    justify-content: center;
+    font-size: 0.9rem;
+    color: #555;
+}
+.theme-professional .cv-section-title {
+    font-size: 1.3rem;
+    color: #1e3a8a;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
+    text-transform: uppercase;
+}
+.theme-professional .cv-item-title {
+    font-size: 1.1rem;
+    color: #000;
+}
+.theme-professional .cv-skill-tag {
+    background: #f0f4f8;
+    border: 1px solid #d1d5db;
+    color: #1e3a8a;
+}
+
+/* =========================================
+   2. Modern Theme
+   Sans-serif (Inter), colored accents, grid layout
+   ========================================= */
+.theme-modern {
+    font-family: 'Inter', sans-serif;
+    color: #1f2937;
+    line-height: 1.5;
+}
+.theme-modern .cv-header {
+    background: #2563eb;
+    color: white;
+    padding: 32px;
+    margin: -15mm -15mm 24px -15mm; /* bleed to edge */
+}
+.theme-modern .cv-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+.theme-modern .cv-contact {
+    color: rgba(255, 255, 255, 0.9);
+}
+.theme-modern .cv-section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2563eb;
+    margin-bottom: 16px;
+}
+.theme-modern .cv-item-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.theme-modern .cv-item-subtitle {
+    color: #4b5563;
+    font-style: normal;
+}
+.theme-modern .cv-item-date {
+    color: #2563eb;
+    font-weight: 500;
+}
+.theme-modern .cv-skill-tag {
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 500;
+}
+
+/* =========================================
+   3. Minimal Theme
+   Whitespace heavy, monochrome, no borders
+   ========================================= */
+.theme-minimal {
+    font-family: 'Inter', sans-serif;
+    color: #000;
+    line-height: 1.5;
+}
+.theme-minimal .cv-header {
+    margin-bottom: 32px;
+}
+.theme-minimal .cv-name {
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+}
+.theme-minimal .cv-contact {
+    font-size: 0.85rem;
+    color: #666;
+}
+.theme-minimal .cv-section {
+    margin-bottom: 32px;
+}
+.theme-minimal .cv-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+}
+.theme-minimal .cv-item-title {
+    font-size: 1rem;
+    font-weight: 500;
+}
+.theme-minimal .cv-item-subtitle {
+    font-style: normal;
+    color: #666;
+}
+.theme-minimal .cv-item-date {
+    color: #999;
+}
+.theme-minimal .cv-skill-tag {
+    padding: 0;
+    background: none;
+    border-right: 1px solid #ccc;
+    border-radius: 0;
+    padding-right: 8px;
+}
+.theme-minimal .cv-skill-tag:last-child {
+    border: none;
+}
+
+/* =========================================
+   4. Executive Theme
+   Roboto font, elegant two-tone, slate accents
+   ========================================= */
+.theme-executive {
+    font-family: 'Roboto', sans-serif;
+    color: #2d3748;
+    line-height: 1.6;
+}
+.theme-executive .cv-header {
+    border-left: 4px solid #2c5282;
+    padding-left: 16px;
+    margin-bottom: 32px;
+}
+.theme-executive .cv-name {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a202c;
+}
+.theme-executive .cv-contact {
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+.theme-executive .cv-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a202c;
+    background: #edf2f7;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+.theme-executive .cv-item-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+.theme-executive .cv-item-subtitle {
+    color: #2c5282;
+    font-style: normal;
+}
+.theme-executive .cv-skill-tag {
+    background: #e2e8f0;
+    color: #2d3748;
+}

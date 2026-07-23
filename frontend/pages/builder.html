@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ElevateCV AI - Resume Builder">
+    <title>Resume Builder - ElevateCV AI</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/builder.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar__header">
+                <a href="dashboard.html" class="sidebar__logo">
+                    <span class="sidebar__logo-icon">⚡</span>
+                    <span class="sidebar__logo-text">ElevateCV<span class="sidebar__logo-accent">AI</span></span>
+                </a>
+                <button class="sidebar__close" id="sidebar-close" aria-label="Close sidebar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <nav class="sidebar__nav">
+                <ul class="sidebar__menu">
+                    <li class="sidebar__item">
+                        <a href="dashboard.html" class="sidebar__link">
+                            <span class="sidebar__icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">📄</span>
+                            My Resumes
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="builder.html" class="sidebar__link sidebar__link--active">
+                            <span class="sidebar__icon">✍️</span>
+                            Resume Builder
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="preview.html" class="sidebar__link">
+                            <span class="sidebar__icon">👁️</span>
+                            Preview Resume
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">🎯</span>
+                            ATS Analysis
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">🤝</span>
+                            Job Match
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="sidebar__divider"></div>
+                
+                <ul class="sidebar__menu">
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">👤</span>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">⚙️</span>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Top Navigation -->
+            <header class="topbar">
+                <div class="topbar__left">
+                    <button class="topbar__toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <h2 class="topbar__title">Resume Builder</h2>
+                </div>
+                <div class="topbar__right">
+                    <div class="topbar__profile" id="profile-dropdown-toggle">
+                        <div class="topbar__avatar" id="user-avatar">U</div>
+                        <span class="topbar__username" id="user-name-display">User</span>
+                        <svg class="topbar__dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <div class="profile-dropdown__header">
+                                <span class="profile-dropdown__name" id="dropdown-user-name">User</span>
+                                <span class="profile-dropdown__email" id="dropdown-user-email">user@example.com</span>
+                            </div>
+                            <div class="profile-dropdown__divider"></div>
+                            <ul class="profile-dropdown__list">
+                                <li><a href="#" class="profile-dropdown__item">Profile</a></li>
+                                <li><a href="#" class="profile-dropdown__item">Settings</a></li>
+                                <div class="profile-dropdown__divider"></div>
+                                <li><button class="profile-dropdown__item profile-dropdown__item--danger" id="btn-logout">Logout</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Builder Content -->
+            <main class="dashboard-content builder-content">
+                <div class="builder-container">
+                    
+                    <!-- Builder Actions & Notifications -->
+                    <div class="builder-actions card-inner" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+                        <div style="display: flex; gap: var(--space-3); align-items: center;">
+                            <select id="resume-selector" class="form-input" style="width: 250px;">
+                                <option value="">-- Create New Resume --</option>
+                            </select>
+                            <button type="button" id="btn-load-resume" class="btn btn--outline btn--sm">Load</button>
+                        </div>
+                        <div style="display: flex; gap: var(--space-3); align-items: center;">
+                            <span id="builder-status" style="font-size: var(--font-size-sm); color: var(--color-neutral-500); display: none;">Saving...</span>
+                            <button type="button" id="btn-save-resume" class="btn btn--primary btn--sm">Save Resume</button>
+                            <button type="button" id="btn-delete-resume" class="btn btn--outline btn--sm" style="color: var(--color-error); border-color: var(--color-error); display: none;">Delete</button>
+                        </div>
+                    </div>
+
+                    <form id="resume-form" class="builder-form">
+                        <!-- 1. Personal Information -->
+                        <div class="builder-section card">
+                            <div class="builder-section__header" data-toggle="personal-info">
+                                <h3 class="builder-section__title">
+                                    <span class="builder-section__icon">👤</span> Personal Information
+                                </h3>
+                                <button type="button" class="builder-section__toggle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="builder-section__body" id="personal-info">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label" for="fullName">Full Name</label>
+                                        <input type="text" class="form-input" id="fullName" name="fullName" placeholder="John Doe">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="email">Email</label>
+                                        <input type="email" class="form-input" id="email" name="email" placeholder="john@example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="phone">Phone</label>
+                                        <input type="tel" class="form-input" id="phone" name="phone" placeholder="+1 (555) 123-4567">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="location">Location</label>
+                                        <input type="text" class="form-input" id="location" name="location" placeholder="New York, NY">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="linkedin">LinkedIn</label>
+                                        <input type="url" class="form-input" id="linkedin" name="linkedin" placeholder="linkedin.com/in/johndoe">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="github">GitHub</label>
+                                        <input type="url" class="form-input" id="github" name="github" placeholder="github.com/johndoe">
+                                    </div>
+                                    <div class="form-group form-group--full">
+                                        <label class="form-label" for="portfolio">Portfolio Website</label>
+                                        <input type="url" class="form-input" id="portfolio" name="portfolio" placeholder="johndoe.com">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Professional Summary -->
+                        <div class="builder-section card">
+                            <div class="builder-section__header" data-toggle="summary-info">
+                                <h3 class="builder-section__title">
+                                    <span class="builder-section__icon">📝</span> Professional Summary
+                                </h3>
+                                <button type="button" class="builder-section__toggle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="builder-section__body" id="summary-info">
+                                <div class="form-group">
+                                    <label class="form-label" for="summary">Summary</label>
+                                    <textarea class="form-textarea" id="summary" name="summary" rows="5" placeholder="Passionate software engineer with 5+ years of experience..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Education -->
+                        <div class="builder-section card">
+                            <div class="builder-section__header" data-toggle="education-info">
+                                <h3 class="builder-section__title">
+                                    <span class="builder-section__icon">🎓</span> Education
+                                </h3>
+                                <button type="button" class="builder-section__toggle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="builder-section__body" id="education-info">
+                                <div id="education-list" class="dynamic-list">
+                                    <!-- Dynamic education items will be inserted here -->
+                                </div>
+                                <button type="button" class="btn btn--outline btn--sm add-item-btn" id="add-education">
+                                    + Add Education
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 4. Skills -->
+                        <div class="builder-section card">
+                            <div class="builder-section__header" data-toggle="skills-info">
+                                <h3 class="builder-section__title">
+                                    <span class="builder-section__icon">⚡</span> Skills
+                                </h3>
+                                <button type="button" class="builder-section__toggle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="builder-section__body" id="skills-info">
+                                <div class="form-group">
+                                    <label class="form-label" for="skill-input">Add a skill</label>
+                                    <div class="skill-input-group">
+                                        <input type="text" class="form-input" id="skill-input" placeholder="e.g. JavaScript">
+                                        <button type="button" class="btn btn--primary" id="add-skill">Add</button>
+                                    </div>
+                                </div>
+                                <div class="skills-container" id="skills-container">
+                                    <!-- Dynamic skills will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Projects -->
+                        <div class="builder-section card">
+                            <div class="builder-section__header" data-toggle="projects-info">
+                                <h3 class="builder-section__title">
+                                    <span class="builder-section__icon">🚀</span> Projects
+                                </h3>
+                                <button type="button" class="builder-section__toggle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="builder-section__body" id="projects-info">
+                                <div id="projects-list" class="dynamic-list">
+                                    <!-- Dynamic project items will be inserted here -->
+                                </div>
+                                <button type="button" class="btn btn--outline btn--sm add-item-btn" id="add-project">
+                                    + Add Project
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 6. Experience -->
+                        <div class="builder-section card">
+                            <div class="builder-section__header" data-toggle="experience-info">
+                                <h3 class="builder-section__title">
+                                    <span class="builder-section__icon">💼</span> Experience
+                                </h3>
+                                <button type="button" class="builder-section__toggle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="builder-section__body" id="experience-info">
+                                <div id="experience-list" class="dynamic-list">
+                                    <!-- Dynamic experience items will be inserted here -->
+                                </div>
+                                <button type="button" class="btn btn--outline btn--sm add-item-btn" id="add-experience">
+                                    + Add Experience
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 7. Certifications -->
+                        <div class="builder-section card">
+                            <div class="builder-section__header" data-toggle="certifications-info">
+                                <h3 class="builder-section__title">
+                                    <span class="builder-section__icon">🏆</span> Certifications
+                                </h3>
+                                <button type="button" class="builder-section__toggle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="builder-section__body" id="certifications-info">
+                                <div id="certifications-list" class="dynamic-list">
+                                    <!-- Dynamic cert items will be inserted here -->
+                                </div>
+                                <button type="button" class="btn btn--outline btn--sm add-item-btn" id="add-certification">
+                                    + Add Certification
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 8. Achievements -->
+                        <div class="builder-section card">
+                            <div class="builder-section__header" data-toggle="achievements-info">
+                                <h3 class="builder-section__title">
+                                    <span class="builder-section__icon">⭐</span> Achievements
+                                </h3>
+                                <button type="button" class="builder-section__toggle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="builder-section__body" id="achievements-info">
+                                <div id="achievements-list" class="dynamic-list">
+                                    <!-- Dynamic achievement items will be inserted here -->
+                                </div>
+                                <button type="button" class="btn btn--outline btn--sm add-item-btn" id="add-achievement">
+                                    + Add Achievement
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <!-- Template for Education -->
+    <template id="tpl-education">
+        <div class="dynamic-item card-inner">
+            <div class="dynamic-item__header">
+                <h4 class="dynamic-item__title">Education Entry</h4>
+                <button type="button" class="btn-icon btn-icon--danger remove-item" aria-label="Remove">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group form-group--full">
+                    <label class="form-label">College / University</label>
+                    <input type="text" class="form-input" name="edu_college" placeholder="Harvard University">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Degree</label>
+                    <input type="text" class="form-input" name="edu_degree" placeholder="B.S. Computer Science">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Branch / Field</label>
+                    <input type="text" class="form-input" name="edu_branch" placeholder="Software Engineering">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Start Year</label>
+                    <input type="text" class="form-input" name="edu_start" placeholder="2018">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">End Year</label>
+                    <input type="text" class="form-input" name="edu_end" placeholder="2022">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CGPA / Grade</label>
+                    <input type="text" class="form-input" name="edu_cgpa" placeholder="3.8/4.0">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template for Projects -->
+    <template id="tpl-project">
+        <div class="dynamic-item card-inner">
+            <div class="dynamic-item__header">
+                <h4 class="dynamic-item__title">Project Entry</h4>
+                <button type="button" class="btn-icon btn-icon--danger remove-item" aria-label="Remove">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group form-group--full">
+                    <label class="form-label">Project Title</label>
+                    <input type="text" class="form-input" name="proj_title" placeholder="E-commerce Platform">
+                </div>
+                <div class="form-group form-group--full">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" name="proj_desc" rows="3" placeholder="Describe the project..."></textarea>
+                </div>
+                <div class="form-group form-group--full">
+                    <label class="form-label">Technologies Used</label>
+                    <input type="text" class="form-input" name="proj_tech" placeholder="React, Node.js, MongoDB">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">GitHub Link</label>
+                    <input type="url" class="form-input" name="proj_github" placeholder="github.com/...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Live Demo Link</label>
+                    <input type="url" class="form-input" name="proj_live" placeholder="demo.com">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template for Experience -->
+    <template id="tpl-experience">
+        <div class="dynamic-item card-inner">
+            <div class="dynamic-item__header">
+                <h4 class="dynamic-item__title">Experience Entry</h4>
+                <button type="button" class="btn-icon btn-icon--danger remove-item" aria-label="Remove">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Company</label>
+                    <input type="text" class="form-input" name="exp_company" placeholder="Google">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <input type="text" class="form-input" name="exp_role" placeholder="Software Engineer">
+                </div>
+                <div class="form-group form-group--full">
+                    <label class="form-label">Duration</label>
+                    <input type="text" class="form-input" name="exp_duration" placeholder="Jan 2020 - Present">
+                </div>
+                <div class="form-group form-group--full">
+                    <label class="form-label">Responsibilities</label>
+                    <textarea class="form-textarea" name="exp_resp" rows="4" placeholder="Built features..."></textarea>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Template for Certifications -->
+    <template id="tpl-certification">
+        <div class="dynamic-item card-inner">
+            <div class="dynamic-item__header">
+                <h4 class="dynamic-item__title">Certification</h4>
+                <button type="button" class="btn-icon btn-icon--danger remove-item" aria-label="Remove">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group form-group--full">
+                    <label class="form-label">Certification Name</label>
+                    <input type="text" class="form-input" name="cert_name" placeholder="AWS Certified Solutions Architect">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template for Achievements -->
+    <template id="tpl-achievement">
+        <div class="dynamic-item card-inner">
+            <div class="dynamic-item__header">
+                <h4 class="dynamic-item__title">Achievement</h4>
+                <button type="button" class="btn-icon btn-icon--danger remove-item" aria-label="Remove">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group form-group--full">
+                    <label class="form-label">Achievement Details</label>
+                    <input type="text" class="form-input" name="achieve_desc" placeholder="Won 1st place in Hackathon 2022">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="../js/utils/helpers.js"></script>
+    <script src="../js/pages/dashboard.js"></script>
+    <script src="../js/pages/builder.js"></script>
+</body>
+</html>

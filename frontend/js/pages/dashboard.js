@@ -42,6 +42,42 @@ const Dashboard = (() => {
     }
 
     /**
+     * Setup Global Fetch Interceptor for 401
+     */
+    function setupFetchInterceptor() {
+        const originalFetch = window.fetch;
+        window.fetch = async function(...args) {
+            const response = await originalFetch.apply(this, args);
+            if (response.status === 401) {
+                // Clear session
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                
+                // Show toast
+                const toast = document.createElement('div');
+                toast.textContent = 'Your session has expired. Please login again.';
+                toast.style.position = 'fixed';
+                toast.style.bottom = '20px';
+                toast.style.right = '20px';
+                toast.style.backgroundColor = 'var(--color-error)';
+                toast.style.color = '#ffffff';
+                toast.style.padding = '1rem 1.5rem';
+                toast.style.borderRadius = 'var(--radius-md)';
+                toast.style.boxShadow = 'var(--shadow-lg)';
+                toast.style.zIndex = '9999';
+                toast.style.fontFamily = 'var(--font-family)';
+                document.body.appendChild(toast);
+                
+                // Redirect after small delay
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            }
+            return response;
+        };
+    }
+
+    /**
      * Display user information in the UI
      */
     function displayUserInfo(user) {
@@ -108,6 +144,9 @@ const Dashboard = (() => {
         // Route protection
         const user = checkAuth();
         if (!user) return; // Will redirect
+
+        // Set up global fetch interceptor
+        setupFetchInterceptor();
 
         // Populate UI
         displayUserInfo(user);

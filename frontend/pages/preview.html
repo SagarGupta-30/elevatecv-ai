@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ElevateCV AI - Dashboard">
-    <title>Dashboard - ElevateCV AI</title>
+    <meta name="description" content="ElevateCV AI - Resume Preview">
+    <title>Preview Resume - ElevateCV AI</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/preview.css">
+    <link rel="stylesheet" href="../assets/css/templates.css">
 </head>
 <body>
-    <div class="dashboard-layout">
+    <div class="dashboard-layout hide-on-print">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar__header">
@@ -36,7 +40,7 @@
             <nav class="sidebar__nav">
                 <ul class="sidebar__menu">
                     <li class="sidebar__item">
-                        <a href="dashboard.html" class="sidebar__link sidebar__link--active">
+                        <a href="dashboard.html" class="sidebar__link">
                             <span class="sidebar__icon">📊</span>
                             Dashboard
                         </a>
@@ -54,7 +58,7 @@
                         </a>
                     </li>
                     <li class="sidebar__item">
-                        <a href="preview.html" class="sidebar__link">
+                        <a href="preview.html" class="sidebar__link sidebar__link--active">
                             <span class="sidebar__icon">👁️</span>
                             Preview Resume
                         </a>
@@ -95,7 +99,7 @@
         <!-- Main Content Area -->
         <div class="main-wrapper">
             <!-- Top Navigation -->
-            <header class="topbar">
+            <header class="topbar hide-on-print">
                 <div class="topbar__left">
                     <button class="topbar__toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -129,48 +133,50 @@
                 </div>
             </header>
 
-            <!-- Dashboard Content -->
-            <main class="dashboard-content">
-                <!-- Welcome Card -->
-                <section class="welcome-card">
-                    <div class="welcome-card__content">
-                        <h1 class="welcome-card__title">Welcome back, <span id="welcome-first-name">User</span>! 👋</h1>
-                        <p class="welcome-card__subtitle">Ready to elevate your career today? Here's a quick overview of your progress.</p>
+            <!-- Preview Content -->
+            <main class="dashboard-content preview-dashboard">
+                <div class="preview-controls card">
+                    <div class="preview-controls__header">
+                        <div>
+                            <h2 class="section-title" style="margin-bottom: var(--space-2)">Resume Preview</h2>
+                            <p class="section-subtitle">Select a saved resume and choose a template to preview.</p>
+                        </div>
+                        <div class="preview-controls__actions">
+                            <select id="resume-selector" class="form-input">
+                                <option value="">-- Load Resume --</option>
+                            </select>
+                            <button id="btn-print" class="btn btn--primary">
+                                🖨️ Print / Save PDF
+                            </button>
+                        </div>
                     </div>
-                </section>
+                    
+                    <div class="template-switcher">
+                        <button class="template-btn is-active" data-theme="theme-professional">Professional</button>
+                        <button class="template-btn" data-theme="theme-modern">Modern</button>
+                        <button class="template-btn" data-theme="theme-minimal">Minimal</button>
+                        <button class="template-btn" data-theme="theme-executive">Executive</button>
+                    </div>
+                </div>
 
-                <!-- Quick Action Cards -->
-                <section class="quick-actions">
-                    <h2 class="section-title">Quick Actions</h2>
-                    <div class="quick-actions__grid">
-                        <a href="builder.html" class="action-card">
-                            <div class="action-card__icon action-card__icon--primary">✨</div>
-                            <h3 class="action-card__title">Create Resume</h3>
-                            <p class="action-card__desc">Build a new resume from scratch with AI assistance.</p>
-                        </a>
-                        <a href="#" class="action-card">
-                            <div class="action-card__icon action-card__icon--accent">⬆️</div>
-                            <h3 class="action-card__title">Upload Resume</h3>
-                            <p class="action-card__desc">Import an existing resume to edit or improve.</p>
-                        </a>
-                        <a href="#" class="action-card">
-                            <div class="action-card__icon action-card__icon--success">🎯</div>
-                            <h3 class="action-card__title">ATS Score</h3>
-                            <p class="action-card__desc">Check your resume against Applicant Tracking Systems.</p>
-                        </a>
-                        <a href="#" class="action-card">
-                            <div class="action-card__icon action-card__icon--warning">🔍</div>
-                            <h3 class="action-card__title">Analyze Resume</h3>
-                            <p class="action-card__desc">Get detailed feedback and improvement suggestions.</p>
-                        </a>
+                <div class="preview-wrapper">
+                    <div id="preview-container" class="preview-container theme-professional">
+                        <!-- Resume Content Injected Here by JS -->
+                        <div class="preview-empty-state">
+                            <p>Please select a resume to preview.</p>
+                        </div>
                     </div>
-                </section>
+                </div>
             </main>
         </div>
     </div>
 
+    <!-- The actual print container which wraps the preview when printing -->
+    <div id="print-layer" class="print-layer"></div>
+
     <!-- Scripts -->
     <script src="../js/utils/helpers.js"></script>
     <script src="../js/pages/dashboard.js"></script>
+    <script src="../js/pages/preview.js"></script>
 </body>
 </html>
