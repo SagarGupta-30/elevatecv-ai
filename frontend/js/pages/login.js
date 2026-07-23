@@ -123,7 +123,11 @@ const LoginPage = (() => {
                 window.location.href = 'dashboard.html';
             }, 1500);
         } catch (error) {
-            showAlert('error', error.message || 'Something went wrong. Please try again.');
+            let errorMsg = error.message;
+            if (errorMsg === 'Failed to fetch') {
+                errorMsg = 'Unable to connect to the server. Please check your connection or if the backend is running.';
+            }
+            showAlert('error', errorMsg || 'Something went wrong. Please try again.');
         } finally {
             setLoading(false);
         }
