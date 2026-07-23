@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ElevateCV AI - Dashboard">
+    <title>Dashboard - ElevateCV AI</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar__header">
+                <a href="dashboard.html" class="sidebar__logo">
+                    <span class="sidebar__logo-icon">⚡</span>
+                    <span class="sidebar__logo-text">ElevateCV<span class="sidebar__logo-accent">AI</span></span>
+                </a>
+                <button class="sidebar__close" id="sidebar-close" aria-label="Close sidebar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <nav class="sidebar__nav">
+                <ul class="sidebar__menu">
+                    <li class="sidebar__item">
+                        <a href="dashboard.html" class="sidebar__link sidebar__link--active">
+                            <span class="sidebar__icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">📄</span>
+                            My Resumes
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">✍️</span>
+                            Resume Builder
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">🎯</span>
+                            ATS Analysis
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">🤝</span>
+                            Job Match
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="sidebar__divider"></div>
+                
+                <ul class="sidebar__menu">
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">👤</span>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link">
+                            <span class="sidebar__icon">⚙️</span>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Top Navigation -->
+            <header class="topbar">
+                <div class="topbar__left">
+                    <button class="topbar__toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="topbar__right">
+                    <div class="topbar__profile" id="profile-dropdown-toggle">
+                        <div class="topbar__avatar" id="user-avatar">U</div>
+                        <span class="topbar__username" id="user-name-display">User</span>
+                        <svg class="topbar__dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <div class="profile-dropdown__header">
+                                <span class="profile-dropdown__name" id="dropdown-user-name">User</span>
+                                <span class="profile-dropdown__email" id="dropdown-user-email">user@example.com</span>
+                            </div>
+                            <div class="profile-dropdown__divider"></div>
+                            <ul class="profile-dropdown__list">
+                                <li><a href="#" class="profile-dropdown__item">Profile</a></li>
+                                <li><a href="#" class="profile-dropdown__item">Settings</a></li>
+                                <div class="profile-dropdown__divider"></div>
+                                <li><button class="profile-dropdown__item profile-dropdown__item--danger" id="btn-logout">Logout</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="dashboard-content">
+                <!-- Welcome Card -->
+                <section class="welcome-card">
+                    <div class="welcome-card__content">
+                        <h1 class="welcome-card__title">Welcome back, <span id="welcome-first-name">User</span>! 👋</h1>
+                        <p class="welcome-card__subtitle">Ready to elevate your career today? Here's a quick overview of your progress.</p>
+                    </div>
+                </section>
+
+                <!-- Quick Action Cards -->
+                <section class="quick-actions">
+                    <h2 class="section-title">Quick Actions</h2>
+                    <div class="quick-actions__grid">
+                        <a href="#" class="action-card">
+                            <div class="action-card__icon action-card__icon--primary">✨</div>
+                            <h3 class="action-card__title">Create Resume</h3>
+                            <p class="action-card__desc">Build a new resume from scratch with AI assistance.</p>
+                        </a>
+                        <a href="#" class="action-card">
+                            <div class="action-card__icon action-card__icon--accent">⬆️</div>
+                            <h3 class="action-card__title">Upload Resume</h3>
+                            <p class="action-card__desc">Import an existing resume to edit or improve.</p>
+                        </a>
+                        <a href="#" class="action-card">
+                            <div class="action-card__icon action-card__icon--success">🎯</div>
+                            <h3 class="action-card__title">ATS Score</h3>
+                            <p class="action-card__desc">Check your resume against Applicant Tracking Systems.</p>
+                        </a>
+                        <a href="#" class="action-card">
+                            <div class="action-card__icon action-card__icon--warning">🔍</div>
+                            <h3 class="action-card__title">Analyze Resume</h3>
+                            <p class="action-card__desc">Get detailed feedback and improvement suggestions.</p>
+                        </a>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/utils/helpers.js"></script>
+    <script src="../js/pages/dashboard.js"></script>
+</body>
+</html>

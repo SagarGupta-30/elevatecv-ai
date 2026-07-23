@@ -120,7 +120,7 @@ const LoginPage = (() => {
             showAlert('success', 'Login successful! Redirecting...');
 
             setTimeout(() => {
-                window.location.href = '../index.html';
+                window.location.href = 'dashboard.html';
             }, 1500);
         } catch (error) {
             showAlert('error', error.message || 'Something went wrong. Please try again.');
