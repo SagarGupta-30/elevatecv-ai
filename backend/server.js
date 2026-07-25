@@ -1,6 +1,7 @@
 /**
  * ElevateCV AI — Server Entry Point
  * Connects to MongoDB and starts the Express server.
+ * Deploy: 2026-07-25 — CORS fix (plain array origin + explicit OPTIONS handler)
  */
 
 require('dotenv').config();

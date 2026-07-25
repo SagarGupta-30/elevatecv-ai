@@ -1,0 +1,23 @@
+# render.yaml — ElevateCV AI Render deployment configuration
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: elevatecv-ai-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        generateValue: false
+      - key: MONGO_URI
+        sync: false           # set manually in Render dashboard
+      - key: JWT_SECRET
+        sync: false           # set manually in Render dashboard
+      - key: JWT_EXPIRES_IN
+        value: 7d
+    healthCheckPath: /
+    autoDeploy: true
