@@ -4,7 +4,7 @@
  */
 
 const ResumePreview = (() => {
-    const API_BASE = 'http://localhost:5001/api/resumes';
+    const API_BASE = Config.API_BASE + '/resumes';
     
     // State
     let resumesList = [];

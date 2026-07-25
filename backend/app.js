@@ -6,23 +6,44 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+
 const healthRoute = require('./routes/health.route');
 const authRoutes = require('./routes/auth.routes');
+const resumeRoutes = require('./routes/resume.routes');
 
 const app = express();
 
-/* ── Middleware ── */
+/* ── CORS allowed origins ── */
+const allowedOrigins = [
+    // Local development
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+
+    // Production — Netlify frontend
+    'https://elevatecv-ai.netlify.app'
+];
+
 app.use(cors({
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5001', 'http://127.0.0.1:5001'],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (curl, Postman, server-to-server)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        callback(new Error(`CORS: origin '${origin}' is not allowed`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-
-const resumeRoutes = require('./routes/resume.routes');
 
 /* ── Routes ── */
 app.use('/', healthRoute);
@@ -42,6 +63,7 @@ app.use((req, res) => {
 /* ── Global Error Handler ── */
 app.use((err, req, res, next) => {
     console.error('Server Error:', err.message);
+
     res.status(err.status || 500).json({
         success: false,
         message: err.message || 'Internal Server Error',
