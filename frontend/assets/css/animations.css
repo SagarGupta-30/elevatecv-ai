@@ -2,15 +2,10 @@
    ElevateCV AI — Animations
    ============================================ */
 
+/* ── Entrance ──────────────────────────────── */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(24px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
@@ -18,58 +13,76 @@
     to   { opacity: 1; }
 }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.5;
-        transform: scale(0.85);
-    }
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Background ────────────────────────────── */
 @keyframes orbFloat {
-    0%, 100% {
-        transform: translate(0, 0) scale(1);
-    }
-    25% {
-        transform: translate(30px, -40px) scale(1.05);
-    }
-    50% {
-        transform: translate(-20px, -60px) scale(0.95);
-    }
-    75% {
-        transform: translate(-40px, -20px) scale(1.02);
-    }
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(24px, -48px) scale(1.04); }
+    66%       { transform: translate(-32px, -24px) scale(0.97); }
 }
 
 @keyframes floatSlow {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-12px);
-    }
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-14px); }
+}
+
+@keyframes floatMedium {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50%       { transform: translateY(-8px) rotate(1deg); }
+}
+
+/* ── Pulse / Glow ──────────────────────────── */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.82); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.3); }
+    50%       { box-shadow: 0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(59,130,246,0.2); }
 }
 
 @keyframes shimmer {
-    0% {
-        background-position: -200% center;
-    }
-    100% {
-        background-position: 200% center;
-    }
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
 }
 
-/* Utility: reveal on scroll */
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50%       { background-position: 100% 50%; }
+}
+
+@keyframes borderGlow {
+    0%, 100% { border-color: rgba(124,58,237,0.2); }
+    50%       { border-color: rgba(59,130,246,0.4); }
+}
+
+/* ── Scroll-Reveal Utility ─────────────────── */
 .reveal {
     opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transform: translateY(32px);
+    transition: opacity 0.65s ease-out, transform 0.65s ease-out;
 }
 
 .reveal--visible {
     opacity: 1;
     transform: translateY(0);
 }
+
+.reveal--delay-1 { transition-delay: 0.1s; }
+.reveal--delay-2 { transition-delay: 0.2s; }
+.reveal--delay-3 { transition-delay: 0.3s; }
+.reveal--delay-4 { transition-delay: 0.4s; }

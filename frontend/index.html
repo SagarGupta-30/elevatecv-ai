@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ElevateCV AI — Elevate Your Career with AI. Build professional, ATS-optimized resumes powered by artificial intelligence.">
-    <meta name="keywords" content="resume builder, AI resume, ATS optimization, career copilot, ElevateCV">
+    <meta name="description" content="ElevateCV AI — AI Resume Builder Built for Your Dream Career. Build ATS-optimized resumes with artificial intelligence.">
+    <meta name="keywords" content="resume builder, AI resume, ATS optimization, career copilot, ElevateCV AI">
     <meta name="author" content="ElevateCV AI">
-    <meta name="theme-color" content="#6C3CE1">
+    <meta name="theme-color" content="#080A14">
 
-    <title>ElevateCV AI — Elevate Your Career with AI</title>
+    <title>ElevateCV AI — AI Resume Builder Built for Your Dream Career</title>
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="assets/css/variables.css">
@@ -31,8 +31,9 @@
     <nav class="navbar" id="navbar">
         <div class="navbar__container">
             <a href="index.html" class="navbar__logo" id="navbar-logo">
-                <span class="navbar__logo-icon">⚡</span>
-                <span class="navbar__logo-text">ElevateCV<span class="navbar__logo-accent">AI</span></span>
+                <div class="navbar__logo-wrapper">
+                    <span class="navbar__logo-text">ElevateCV<span class="navbar__logo-accent">AI</span></span>
+                </div>
             </a>
 
             <ul class="navbar__menu" id="navbar-menu">
@@ -43,16 +44,16 @@
                     <a href="#features" class="navbar__link" id="nav-features">Features</a>
                 </li>
                 <li class="navbar__item">
-                    <a href="#about" class="navbar__link" id="nav-about">About</a>
+                    <a href="#how-it-works" class="navbar__link" id="nav-how-it-works">How It Works</a>
                 </li>
                 <li class="navbar__item">
-                    <a href="#contact" class="navbar__link" id="nav-contact">Contact</a>
+                    <a href="#about" class="navbar__link" id="nav-about">About</a>
                 </li>
             </ul>
 
             <div class="navbar__actions">
                 <a href="pages/login.html" class="btn btn--ghost" id="btn-login">Log In</a>
-                <a href="pages/signup.html" class="btn btn--primary" id="btn-get-started">Get Started</a>
+                <a href="pages/signup.html" class="btn btn--primary" id="btn-get-started">Start Building</a>
             </div>
 
             <button class="navbar__toggle" id="navbar-toggle" aria-label="Toggle navigation menu">
@@ -63,8 +64,9 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Main Content -->
     <main>
+        <!-- Hero Section -->
         <section class="hero" id="home">
             <div class="hero__bg">
                 <div class="hero__orb hero__orb--1"></div>
@@ -77,54 +79,59 @@
                 <div class="hero__content">
                     <div class="hero__badge" id="hero-badge">
                         <span class="hero__badge-dot"></span>
-                        <span class="hero__badge-text">AI-Powered Career Platform</span>
+                        <span class="hero__badge-text">Next-Gen AI Career Copilot</span>
                     </div>
 
                     <h1 class="hero__title" id="hero-title">
-                        Elevate Your Career
-                        <span class="hero__title-gradient">with AI</span>
+                        AI Resume Builder
+                        <span class="hero__title-gradient">Built for Your Dream Career</span>
                     </h1>
 
                     <p class="hero__subtitle" id="hero-subtitle">
-                        Build professional, ATS-optimized resumes in minutes. 
-                        Let our AI Career Copilot guide you to your dream job with 
-                        intelligent insights and personalized recommendations.
+                        Create ATS-friendly resumes, analyze resumes with AI, match jobs, and prepare for interviews—all in one intelligent platform.
                     </p>
 
                     <div class="hero__cta" id="hero-cta">
                         <a href="pages/signup.html" class="btn btn--primary btn--lg" id="btn-hero-start">
-                            <span>Start Building Free</span>
-                            <svg class="btn__icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <span>Get Started</span>
+                            <svg class="btn__icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
                                 <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </a>
                         <a href="#features" class="btn btn--outline btn--lg" id="btn-hero-learn">
-                            Learn More
+                            View Demo
                         </a>
                     </div>
 
                     <div class="hero__stats" id="hero-stats">
                         <div class="hero__stat">
-                            <span class="hero__stat-number" data-count="10000">0</span>
-                            <span class="hero__stat-suffix">+</span>
+                            <div class="hero__stat-group">
+                                <span class="hero__stat-number" data-count="10000">0</span>
+                                <span class="hero__stat-suffix">+</span>
+                            </div>
                             <span class="hero__stat-label">Resumes Created</span>
                         </div>
                         <div class="hero__stat-divider"></div>
                         <div class="hero__stat">
-                            <span class="hero__stat-number" data-count="95">0</span>
-                            <span class="hero__stat-suffix">%</span>
+                            <div class="hero__stat-group">
+                                <span class="hero__stat-number" data-count="98">0</span>
+                                <span class="hero__stat-suffix">%</span>
+                            </div>
                             <span class="hero__stat-label">ATS Pass Rate</span>
                         </div>
                         <div class="hero__stat-divider"></div>
                         <div class="hero__stat">
-                            <span class="hero__stat-number" data-count="50">0</span>
-                            <span class="hero__stat-suffix">+</span>
-                            <span class="hero__stat-label">Templates</span>
+                            <div class="hero__stat-group">
+                                <span class="hero__stat-number" data-count="45">0</span>
+                                <span class="hero__stat-suffix">%</span>
+                            </div>
+                            <span class="hero__stat-label">Salary Increase</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="hero__visual" id="hero-visual">
+                    <!-- Main Resume Card Mockup -->
                     <div class="hero__card hero__card--main">
                         <div class="hero__card-header">
                             <div class="hero__card-dots">
@@ -132,7 +139,7 @@
                                 <span class="hero__card-dot hero__card-dot--yellow"></span>
                                 <span class="hero__card-dot hero__card-dot--green"></span>
                             </div>
-                            <span class="hero__card-title">resume_preview.pdf</span>
+                            <span class="hero__card-title">executive_resume.pdf</span>
                         </div>
                         <div class="hero__card-body">
                             <div class="hero__card-line hero__card-line--title"></div>
@@ -149,20 +156,176 @@
                         </div>
                     </div>
 
+                    <!-- Floating Glass Card 1: ATS Score -->
                     <div class="hero__card hero__card--floating hero__card--ats">
                         <div class="hero__ats-score">
                             <svg class="hero__ats-ring" viewBox="0 0 80 80">
+                                <defs>
+                                    <linearGradient id="atsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#7C3AED" />
+                                        <stop offset="100%" stop-color="#3B82F6" />
+                                    </linearGradient>
+                                </defs>
                                 <circle cx="40" cy="40" r="34" stroke-width="6" fill="none" class="hero__ats-ring-bg"/>
                                 <circle cx="40" cy="40" r="34" stroke-width="6" fill="none" class="hero__ats-ring-fill"/>
                             </svg>
-                            <span class="hero__ats-number">92</span>
+                            <span class="hero__ats-number">95</span>
                         </div>
-                        <span class="hero__ats-label">ATS Score</span>
+                        <span class="hero__ats-label">ATS Match Score</span>
                     </div>
 
+                    <!-- Floating Glass Card 2: AI Suggestions -->
                     <div class="hero__card hero__card--floating hero__card--ai">
-                        <span class="hero__ai-icon">✨</span>
-                        <span class="hero__ai-text">AI Enhanced</span>
+                        <span class="hero__ai-indicator"></span>
+                        <span class="hero__ai-text">AI Content Enhanced</span>
+                    </div>
+
+                    <!-- Floating Glass Card 3: Job Match -->
+                    <div class="hero__card hero__card--floating hero__card--job">
+                        <span class="hero__job-match-badge">98%</span>
+                        <span class="hero__job-text">Senior Architect Match</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section" id="features">
+            <div class="container">
+                <div class="section__header reveal">
+                    <span class="section__label">Intelligent Features</span>
+                    <h2 class="section__title">Everything You Need to Get Hired Faster</h2>
+                    <p class="section__subtitle">
+                        Powered by enterprise-grade AI trained on millions of successful tech & executive resumes.
+                    </p>
+                </div>
+
+                <div class="features__grid">
+                    <div class="glass-card feature-card reveal reveal--delay-1">
+                        <div class="feature-card__icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-card__title">Real-Time AI Bullet Optimizer</h3>
+                        <p class="feature-card__desc">Transform weak bullet points into high-impact, metric-driven statements that hiring managers notice instantly.</p>
+                    </div>
+
+                    <div class="glass-card feature-card reveal reveal--delay-2">
+                        <div class="feature-card__icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-card__title">ATS Parser Simulation</h3>
+                        <p class="feature-card__desc">Scan your resume against top ATS algorithms (Workday, Greenhouse, Lever) to guarantee zero parse errors.</p>
+                    </div>
+
+                    <div class="glass-card feature-card reveal reveal--delay-3">
+                        <div class="feature-card__icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-card__title">Tailored Job Matching</h3>
+                        <p class="feature-card__desc">Paste any target Job Description and receive instant keyword optimization recommendations in seconds.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="section" id="how-it-works">
+            <div class="container">
+                <div class="section__header reveal">
+                    <span class="section__label">Simple Process</span>
+                    <h2 class="section__title">3 Steps to Your Perfect Resume</h2>
+                    <p class="section__subtitle">Designed for speed, precision, and maximum response rates from recruiters.</p>
+                </div>
+
+                <div class="steps__grid">
+                    <div class="glass-card step-card reveal reveal--delay-1">
+                        <span class="step-card__number">01</span>
+                        <h3 class="step-card__title">Input Your Career Data</h3>
+                        <p class="step-card__desc">Enter your work experience or import an existing PDF/Word resume to kickstart the process.</p>
+                    </div>
+
+                    <div class="glass-card step-card reveal reveal--delay-2">
+                        <span class="step-card__number">02</span>
+                        <h3 class="step-card__title">AI Analysis & Enhancements</h3>
+                        <p class="step-card__desc">Our AI engine refines your accomplishments, adds quantifiable metrics, and formats for ATS compliance.</p>
+                    </div>
+
+                    <div class="glass-card step-card reveal reveal--delay-3">
+                        <span class="step-card__number">03</span>
+                        <h3 class="step-card__title">Export & Win Interviews</h3>
+                        <p class="step-card__desc">Download pixel-perfect, recruiter-tested PDFs and land 3x more interview callbacks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="section" id="about">
+            <div class="container">
+                <div class="section__header reveal">
+                    <span class="section__label">Success Stories</span>
+                    <h2 class="section__title">Trusted by Top Professionals</h2>
+                    <p class="section__subtitle">Engineers, product managers, and leaders hired at Google, Meta, Apple, and high-growth startups.</p>
+                </div>
+
+                <div class="testimonials__grid">
+                    <div class="glass-card testimonial-card reveal reveal--delay-1">
+                        <p class="testimonial-card__quote">"ElevateCV AI increased my ATS match score from 62% to 94%. Within two weeks, I received interview invites from Stripe and Vercel!"</p>
+                        <div class="testimonial-card__author">
+                            <div class="testimonial-card__avatar">S</div>
+                            <div>
+                                <h4 class="testimonial-card__name">Sarah Jenkins</h4>
+                                <span class="testimonial-card__role">Senior Frontend Engineer</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card testimonial-card reveal reveal--delay-2">
+                        <p class="testimonial-card__quote">"The bullet point rewriter is pure magic. It converted generic bullet points into compelling impact statements effortlessly."</p>
+                        <div class="testimonial-card__author">
+                            <div class="testimonial-card__avatar">M</div>
+                            <div>
+                                <h4 class="testimonial-card__name">Marcus Vance</h4>
+                                <span class="testimonial-card__role">Product Manager @ Tech Scaleup</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card testimonial-card reveal reveal--delay-3">
+                        <p class="testimonial-card__quote">"The UI is exceptionally polished, minimal, and fast. It feels like using Linear or Notion for career building."</p>
+                        <div class="testimonial-card__author">
+                            <div class="testimonial-card__avatar">A</div>
+                            <div>
+                                <h4 class="testimonial-card__name">Alex Rivera</h4>
+                                <span class="testimonial-card__role">DevOps Lead</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Banner Section -->
+        <section class="section">
+            <div class="container">
+                <div class="cta-banner reveal">
+                    <div class="cta-banner__content">
+                        <h2 class="cta-banner__title">Ready to Elevate Your Next Career Move?</h2>
+                        <p class="cta-banner__desc">Join over 10,000+ professionals building career-winning resumes with AI.</p>
+                        <a href="pages/signup.html" class="btn btn--primary btn--lg">
+                            <span>Start Building Free</span>
+                            <svg class="btn__icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -175,12 +338,10 @@
             <div class="footer__grid">
                 <div class="footer__brand">
                     <a href="index.html" class="footer__logo">
-                        <span class="footer__logo-icon">⚡</span>
                         <span class="footer__logo-text">ElevateCV<span class="footer__logo-accent">AI</span></span>
                     </a>
                     <p class="footer__description">
-                        Empowering careers with AI-driven resume building 
-                        and intelligent career guidance.
+                        Enterprise-grade AI platform for resume creation, ATS optimization, and intelligent career acceleration.
                     </p>
                 </div>
 
@@ -188,17 +349,17 @@
                     <h3 class="footer__heading">Product</h3>
                     <ul class="footer__list">
                         <li><a href="#features" class="footer__link" id="footer-features">Features</a></li>
-                        <li><a href="#" class="footer__link" id="footer-templates">Templates</a></li>
-                        <li><a href="#" class="footer__link" id="footer-pricing">Pricing</a></li>
+                        <li><a href="#how-it-works" class="footer__link" id="footer-how">How it Works</a></li>
+                        <li><a href="pages/builder.html" class="footer__link" id="footer-builder">Builder</a></li>
                     </ul>
                 </div>
 
                 <div class="footer__links">
-                    <h3 class="footer__heading">Company</h3>
+                    <h3 class="footer__heading">Account</h3>
                     <ul class="footer__list">
-                        <li><a href="#about" class="footer__link" id="footer-about">About</a></li>
-                        <li><a href="#contact" class="footer__link" id="footer-contact">Contact</a></li>
-                        <li><a href="#" class="footer__link" id="footer-careers">Careers</a></li>
+                        <li><a href="pages/login.html" class="footer__link" id="footer-login">Log In</a></li>
+                        <li><a href="pages/signup.html" class="footer__link" id="footer-signup">Sign Up</a></li>
+                        <li><a href="pages/dashboard.html" class="footer__link" id="footer-dashboard">Dashboard</a></li>
                     </ul>
                 </div>
 
@@ -215,17 +376,17 @@
                 <p class="footer__copyright">&copy; 2026 ElevateCV AI. All rights reserved.</p>
                 <div class="footer__socials">
                     <a href="#" class="footer__social" id="social-twitter" aria-label="Twitter">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                         </svg>
                     </a>
                     <a href="#" class="footer__social" id="social-github" aria-label="GitHub">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
                         </svg>
                     </a>
                     <a href="#" class="footer__social" id="social-linkedin" aria-label="LinkedIn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                         </svg>
                     </a>
