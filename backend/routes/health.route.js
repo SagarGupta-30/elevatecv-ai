@@ -4,7 +4,7 @@
  */
 
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 
 router.get('/', (req, res) => {
     res.status(200).json({
@@ -12,8 +12,9 @@ router.get('/', (req, res) => {
         message: 'API is running',
         data: {
             project: 'ElevateCV AI',
-            version: '1.0.0',
-            status: 'running'
+            version: '1.0.2',          // bumped — confirms new code is live on Render
+            status: 'running',
+            env: process.env.NODE_ENV || 'production'
         },
         error: null
     });
