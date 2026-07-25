@@ -4,7 +4,7 @@
  */
 
 const SignupPage = (() => {
-    const API_BASE = 'http://localhost:5000/api/auth';
+    const API_BASE = 'http://localhost:5001/api/auth';
 
     const form           = Helpers.$('#signup-form');
     const nameInput      = Helpers.$('#signup-name');

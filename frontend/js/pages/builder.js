@@ -5,7 +5,7 @@
  */
 
 const ResumeBuilder = (() => {
-    const API_BASE = 'http://localhost:5000/api/resumes';
+    const API_BASE = 'http://localhost:5001/api/resumes';
     
     // State
     let skills = [];
@@ -257,40 +257,34 @@ const ResumeBuilder = (() => {
         // Extract dynamic lists
         Helpers.$$('#education-list .dynamic-item').forEach(item => {
             const college = item.querySelector('[name="edu_college"]').value.trim();
-            if (college) {
-                data.education.push({
-                    college,
-                    degree: item.querySelector('[name="edu_degree"]').value.trim(),
-                    branch: item.querySelector('[name="edu_branch"]').value.trim(),
-                    startYear: item.querySelector('[name="edu_start"]').value.trim(),
-                    endYear: item.querySelector('[name="edu_end"]').value.trim(),
-                    cgpa: item.querySelector('[name="edu_cgpa"]').value.trim()
-                });
+            const degree = item.querySelector('[name="edu_degree"]').value.trim();
+            const branch = item.querySelector('[name="edu_branch"]').value.trim();
+            const startYear = item.querySelector('[name="edu_start"]').value.trim();
+            const endYear = item.querySelector('[name="edu_end"]').value.trim();
+            const cgpa = item.querySelector('[name="edu_cgpa"]').value.trim();
+            if (college || degree || branch || startYear || endYear || cgpa) {
+                data.education.push({ college, degree, branch, startYear, endYear, cgpa });
             }
         });
 
         Helpers.$$('#projects-list .dynamic-item').forEach(item => {
             const title = item.querySelector('[name="proj_title"]').value.trim();
-            if (title) {
-                data.projects.push({
-                    title,
-                    description: item.querySelector('[name="proj_desc"]').value.trim(),
-                    technologies: item.querySelector('[name="proj_tech"]').value.trim(),
-                    githubLink: item.querySelector('[name="proj_github"]').value.trim(),
-                    liveDemo: item.querySelector('[name="proj_live"]').value.trim()
-                });
+            const description = item.querySelector('[name="proj_desc"]').value.trim();
+            const technologies = item.querySelector('[name="proj_tech"]').value.trim();
+            const githubLink = item.querySelector('[name="proj_github"]').value.trim();
+            const liveDemo = item.querySelector('[name="proj_live"]').value.trim();
+            if (title || description || technologies || githubLink || liveDemo) {
+                data.projects.push({ title, description, technologies, githubLink, liveDemo });
             }
         });
 
         Helpers.$$('#experience-list .dynamic-item').forEach(item => {
             const company = item.querySelector('[name="exp_company"]').value.trim();
-            if (company) {
-                data.experience.push({
-                    company,
-                    role: item.querySelector('[name="exp_role"]').value.trim(),
-                    duration: item.querySelector('[name="exp_duration"]').value.trim(),
-                    responsibilities: item.querySelector('[name="exp_resp"]').value.trim()
-                });
+            const role = item.querySelector('[name="exp_role"]').value.trim();
+            const duration = item.querySelector('[name="exp_duration"]').value.trim();
+            const responsibilities = item.querySelector('[name="exp_resp"]').value.trim();
+            if (company || role || duration || responsibilities) {
+                data.experience.push({ company, role, duration, responsibilities });
             }
         });
 
@@ -517,6 +511,7 @@ const ResumeBuilder = (() => {
      * Initialize Builder API binds
      */
     function initAPI() {
+        if (resumeSelector) resumeSelector.addEventListener('change', loadResume);
         if (btnLoad) btnLoad.addEventListener('click', loadResume);
         if (btnSave) btnSave.addEventListener('click', saveResume);
         if (btnDelete) btnDelete.addEventListener('click', deleteResume);

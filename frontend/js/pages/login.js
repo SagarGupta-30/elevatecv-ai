@@ -4,7 +4,7 @@
  */
 
 const LoginPage = (() => {
-    const API_BASE = 'http://localhost:5000/api/auth';
+    const API_BASE = 'http://localhost:5001/api/auth';
 
     const form        = Helpers.$('#login-form');
     const emailInput  = Helpers.$('#login-email');

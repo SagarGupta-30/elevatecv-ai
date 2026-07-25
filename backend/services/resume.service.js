@@ -69,7 +69,7 @@ class ResumeService {
         const resume = await Resume.findOneAndUpdate(
             { _id: resumeId, owner: userId },
             { $set: updateData },
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         );
 
         if (!resume) {
