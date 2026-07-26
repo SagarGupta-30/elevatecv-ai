@@ -1,6 +1,6 @@
 # ElevateCV AI
 
-> **Elevate Your Career with AI**
+> **Elevate Your Career with AI***
 
 ElevateCV AI is a production-ready, AI-powered Resume Builder & Career Copilot designed to help job seekers craft professional, ATS-optimized resumes and accelerate their career growth.
 
