@@ -6,7 +6,7 @@ ElevateCV AI is a production-ready, AI-powered Resume Builder & Career Copilot d
 
 ---
 
-## 🚀 Vision..
+## 🚀 Vision...
 
 To democratize career advancement by providing everyone access to intelligent, AI-driven resume building and career coaching tools — making professional-grade career documents accessible to all.
 
