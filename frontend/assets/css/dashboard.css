@@ -292,12 +292,15 @@
     background: var(--gradient-primary-soft);
     border: 1px solid rgba(124, 58, 237, 0.25);
     border-radius: var(--glass-radius);
-    padding: var(--space-8);
+    padding: var(--space-6) var(--space-8);
     color: var(--text-primary);
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-glow);
-    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 110px;
     z-index: 1;
 }
 
@@ -319,13 +322,14 @@
     z-index: 2;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: var(--space-2);
 }
 
 .welcome-card__title {
     font-size: var(--font-size-2xl);
-    line-height: 1.25;
-    margin: 0 0 var(--space-2) 0;
+    line-height: 1.3;
+    margin: 0;
     font-weight: var(--font-weight-extrabold);
     color: var(--text-primary);
     letter-spacing: -0.02em;
@@ -333,13 +337,25 @@
     overflow-wrap: break-word;
     position: relative;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.welcome-card__title #welcome-first-name {
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
 }
 
 .welcome-card__subtitle {
     font-size: var(--font-size-md);
     color: var(--text-muted);
     max-width: 600px;
-    line-height: var(--line-height-relaxed);
+    line-height: var(--line-height-normal);
     margin: 0;
 }
 
