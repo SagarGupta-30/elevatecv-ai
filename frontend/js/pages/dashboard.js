@@ -880,58 +880,7 @@ const Dashboard = (() => {
     }
 
     function showToast(message, type = 'success') {
-        const existing = document.getElementById('dash-toast');
-        if (existing) existing.remove();
-
-        const toast = document.createElement('div');
-        toast.id = 'dash-toast';
-
-        let bg = 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)';
-        let icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-
-        if (type === 'error') {
-            bg = 'rgba(239, 68, 68, 0.95)';
-            icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
-        } else if (type === 'info') {
-            bg = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)';
-            icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
-        }
-
-        toast.innerHTML = `<span style="display:inline-flex;align-items:center;margin-right:10px;">${icon}</span> <span>${esc(message)}</span>`;
-
-        Object.assign(toast.style, {
-            position: 'fixed',
-            bottom: '28px',
-            right: '28px',
-            background: bg,
-            color: '#fff',
-            padding: '14px 22px',
-            borderRadius: '14px',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-            fontFamily: 'var(--font-family)',
-            fontSize: '14px',
-            fontWeight: '500',
-            zIndex: '9999',
-            opacity: '0',
-            transform: 'translateY(12px)',
-            transition: 'opacity 0.3s, transform 0.3s',
-            maxWidth: '360px',
-            lineHeight: '1.4',
-            display: 'flex',
-            align-items: 'center'
-        });
-
-        document.body.appendChild(toast);
-        requestAnimationFrame(() => {
-            toast.style.opacity = '1';
-            toast.style.transform = 'translateY(0)';
-        });
-
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(12px)';
-            setTimeout(() => toast.remove(), 350);
-        }, 3500);
+        Helpers.showToast(message, type);
     }
 
     /**

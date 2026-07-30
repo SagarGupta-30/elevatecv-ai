@@ -149,7 +149,7 @@ const ResumePreview = (() => {
     ────────────────────────────────────────────────────────────────── */
     function handlePrint() {
         if (!currentResume) {
-            alert('Please select a resume before printing.');
+            Helpers.showToast('Please select a resume before printing.', 'warning');
             return;
         }
         window.print();

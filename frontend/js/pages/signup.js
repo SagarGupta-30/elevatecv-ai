@@ -4,7 +4,7 @@
  */
 
 const SignupPage = (() => {
-    const API_BASE = 'https://elevatecv-ai-e8ku.onrender.com/api/auth';
+    const API_BASE = Config.API_BASE + '/auth';
 
     const form = Helpers.$('#signup-form');
     const nameInput = Helpers.$('#signup-name');

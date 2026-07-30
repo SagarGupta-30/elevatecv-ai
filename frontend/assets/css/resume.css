@@ -348,32 +348,42 @@
     min-height: 100%;
 }
 
-@media (min-width: 1100px) {
-    .builder-split {
-        grid-template-columns: 56% 44%;
-        align-items: start;
-    }
-}
-
 .builder-split__form {
     min-width: 0;
 }
 
 .builder-split__preview {
     display: none;
-    position: sticky;
-    top: 0;
-    max-height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
     background: #f8fafc;
     border-left: 1px solid #e2e8f0;
     padding: 0;
 }
 
-@media (min-width: 1100px) {
+/* Tablet (768px – 1099px): Stack gracefully below wizard */
+@media (min-width: 768px) and (max-width: 1099px) {
     .builder-split__preview {
         display: block;
+        margin-top: var(--space-8);
+        border-top: 1px solid #e2e8f0;
+        border-left: none;
+        border-radius: var(--radius-lg);
+    }
+}
+
+/* Desktop (≥1100px): Side-by-side split grid */
+@media (min-width: 1100px) {
+    .builder-split {
+        grid-template-columns: 56% 44%;
+        align-items: start;
+    }
+
+    .builder-split__preview {
+        display: block;
+        position: sticky;
+        top: 0;
+        max-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 }
 

@@ -81,5 +81,17 @@ const Helpers = (() => {
         requestAnimationFrame(update);
     }
 
-    return { debounce, throttle, $, $$, animateCount };
+    /**
+     * Display a standardized toast notification.
+     * Delegates to ToastNotif if loaded, otherwise creates a fallback toast element.
+     */
+    function showToast(message, type = 'success', duration = 3500) {
+        if (typeof ToastNotif !== 'undefined' && ToastNotif.show) {
+            ToastNotif.show(message, type, duration);
+        } else {
+            console.log(`[Toast ${type.toUpperCase()}] ${message}`);
+        }
+    }
+
+    return { debounce, throttle, $, $$, animateCount, showToast };
 })();
