@@ -3,22 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ElevateCV AI - Resume Preview">
+    <meta name="description" content="ElevateCV AI — Preview and print your professional resume.">
     <meta name="theme-color" content="#080A14">
     <title>Preview Resume — ElevateCV AI</title>
 
     <!-- Google Fonts: Plus Jakarta Sans & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Stylesheets -->
+    <!-- Design System -->
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/global.css">
+
+    <!-- Dashboard layout (sidebar, topbar, profile dropdown) -->
     <link rel="stylesheet" href="../assets/css/dashboard.css">
+
+    <!-- Preview page chrome (controls, wrapper) -->
     <link rel="stylesheet" href="../assets/css/preview.css">
-    <link rel="stylesheet" href="../assets/css/templates.css">
+
+    <!-- Resume paper renderer styles -->
+    <link rel="stylesheet" href="../assets/css/resume.css">
 </head>
 <body>
     <div class="dashboard-layout hide-on-print">
@@ -34,7 +40,7 @@
                     </svg>
                 </button>
             </div>
-            
+
             <nav class="sidebar__nav">
                 <ul class="sidebar__menu">
                     <li class="sidebar__item">
@@ -97,7 +103,7 @@
                 </ul>
 
                 <div class="sidebar__divider"></div>
-                
+
                 <ul class="sidebar__menu">
                     <li class="sidebar__item">
                         <a href="#" class="sidebar__link">
@@ -115,7 +121,7 @@
                             <span class="sidebar__icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="3"/>
-                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68V4.5a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
                                 </svg>
                             </span>
                             Settings
@@ -143,7 +149,7 @@
                         <svg class="topbar__dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M6 9l6 6 6-6"/>
                         </svg>
-                        
+
                         <!-- Profile Dropdown -->
                         <div class="profile-dropdown" id="profile-dropdown">
                             <div class="profile-dropdown__header">
@@ -164,49 +170,53 @@
 
             <!-- Preview Content -->
             <main class="dashboard-content preview-dashboard">
-                <div class="preview-controls">
+
+                <!-- Controls Bar -->
+                <div class="preview-controls hide-on-print">
                     <div class="preview-controls__header">
                         <div>
-                            <h2 class="section-title" style="margin-bottom: var(--space-1)">Resume Preview</h2>
-                            <p class="section-subtitle">Select a saved resume and choose a template to preview and export.</p>
+                            <h1 class="section-title" style="margin-bottom: var(--space-1)">Resume Preview</h1>
+                            <p class="section-subtitle">Select a saved resume to preview and print.</p>
                         </div>
                         <div class="preview-controls__actions">
-                            <select id="resume-selector" class="form-input" style="width: 220px;">
+                            <select id="resume-selector" class="form-input" style="width: 240px;" aria-label="Select resume">
                                 <option value="">-- Load Resume --</option>
                             </select>
-                            <button id="btn-print" class="btn btn--primary">
+                            <button id="btn-print" class="btn btn--primary" aria-label="Print or save as PDF">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
+                                    <polyline points="6 9 6 2 18 2 18 9"/>
+                                    <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+                                    <rect x="6" y="14" width="12" height="8"/>
+                                </svg>
                                 Print / Save PDF
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="template-switcher">
-                        <button class="template-btn is-active" data-theme="theme-professional">Professional</button>
-                        <button class="template-btn" data-theme="theme-modern">Modern</button>
-                        <button class="template-btn" data-theme="theme-minimal">Minimal</button>
-                        <button class="template-btn" data-theme="theme-executive">Executive</button>
+                </div>
+
+                <!-- Resume Paper Render Target -->
+                <div class="preview-paper-wrapper" id="preview-paper-wrapper">
+                    <div id="preview-canvas" class="resume-paper">
+                        <!-- PreviewRenderer injects resume HTML here -->
+                        <p class="rv-empty">Select a resume above to preview it here.</p>
                     </div>
                 </div>
 
-                <div class="preview-wrapper">
-                    <div id="preview-container" class="preview-container theme-professional">
-                        <!-- Resume Content Injected Here by JS -->
-                        <div class="preview-empty-state">
-                            <p>Please select a resume to preview.</p>
-                        </div>
-                    </div>
-                </div>
             </main>
         </div>
     </div>
 
-    <!-- The actual print container which wraps the preview when printing -->
-    <div id="print-layer" class="print-layer"></div>
-
     <!-- Scripts -->
     <script src="../js/utils/helpers.js"></script>
     <script src="../js/utils/config.js"></script>
+
+    <!-- PreviewRenderer (shared component) -->
+    <script src="../js/components/previewRenderer.js"></script>
+
+    <!-- Dashboard.js handles auth guard, sidebar toggle, profile dropdown -->
     <script src="../js/pages/dashboard.js"></script>
+
+    <!-- Preview page controller -->
     <script src="../js/pages/preview.js"></script>
 </body>
 </html>

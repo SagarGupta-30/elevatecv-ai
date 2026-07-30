@@ -1,28 +1,46 @@
 /**
- * ElevateCV AI - Resume Preview Page
- * Handles fetching, rendering, and template switching for resumes.
+ * ElevateCV AI — Resume Preview Page Controller (Sprint 2 refactor)
+ *
+ * Responsibilities:
+ *   - Load the user's saved resume list from the API
+ *   - Populate the resume selector dropdown
+ *   - Load a specific resume on selection
+ *   - Delegate ALL rendering to PreviewRenderer (no inline HTML templates)
+ *   - Handle print action
+ *
+ * No rendering logic lives here.
+ * No emojis. No template switching.
+ * All HTML output is produced by PreviewRenderer.
+ *
+ * Preserved from Sprint 1:
+ *   - apiCall() wrapper with JWT auth
+ *   - fetchResumes(), updateResumeSelector(), loadResume()
+ *   - handlePrint() using window.print()
+ *   - Sidebar toggle / profile dropdown (handled by dashboard.js)
+ *   - Auth guard (handled by dashboard.js)
  */
 
 const ResumePreview = (() => {
     const API_BASE = Config.API_BASE + '/resumes';
-    
-    // State
-    let resumesList = [];
+
+    /* ── State ──────────────────────────────────────────────────────── */
+    let resumesList   = [];
     let currentResume = null;
-    let currentTheme = 'theme-professional';
 
-    // DOM Elements
-    const resumeSelector = Helpers.$('#resume-selector');
-    const previewContainer = Helpers.$('#preview-container');
-    const templateBtns = Helpers.$$('.template-btn');
-    const btnPrint = Helpers.$('#btn-print');
+    /* ── DOM refs ───────────────────────────────────────────────────── */
+    const resumeSelector  = Helpers.$('#resume-selector');
+    const previewCanvas   = Helpers.$('#preview-canvas');
+    const btnPrint        = Helpers.$('#btn-print');
 
-    /**
-     * API Fetch Wrapper with Auth
-     */
+    /* ──────────────────────────────────────────────────────────────────
+       API fetch wrapper — attaches JWT, handles 401
+    ────────────────────────────────────────────────────────────────── */
     async function apiCall(endpoint, options = {}) {
         const token = localStorage.getItem('token');
-        if (!token) throw new Error('Not authenticated');
+        if (!token) {
+            window.location.href = 'login.html';
+            throw new Error('Not authenticated');
+        }
 
         const headers = {
             'Content-Type': 'application/json',
@@ -30,10 +48,14 @@ const ResumePreview = (() => {
             ...(options.headers || {})
         };
 
-        const response = await fetch(`${API_BASE}${endpoint}`, {
-            ...options,
-            headers
-        });
+        const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+
+        if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+            throw new Error('Session expired. Redirecting to login…');
+        }
 
         const data = await response.json();
         if (!response.ok || !data.success) {
@@ -43,229 +65,117 @@ const ResumePreview = (() => {
         return data.data;
     }
 
-    /**
-     * Fetch all resumes for the current user
-     */
+    /* ──────────────────────────────────────────────────────────────────
+       Fetch all resumes for the current user
+    ────────────────────────────────────────────────────────────────── */
     async function fetchResumes() {
         try {
             resumesList = await apiCall('');
             updateResumeSelector();
-        } catch (error) {
-            console.error('Failed to fetch resumes:', error);
-            previewContainer.innerHTML = `<div class="preview-empty-state"><p style="color:var(--color-error)">Failed to load resumes.</p></div>`;
+
+            // If there's a resumeId in the URL, auto-select it
+            const urlParams = new URLSearchParams(window.location.search);
+            const resumeId  = urlParams.get('resumeId');
+            if (resumeId && resumeSelector) {
+                resumeSelector.value = resumeId;
+                await loadResume();
+            }
+        } catch (err) {
+            console.error('[ElevateCV Preview] Failed to fetch resumes:', err);
+            _showError('Failed to load your resumes. Please try refreshing.');
         }
     }
 
-    /**
-     * Update the Select Dropdown
-     */
+    /* ──────────────────────────────────────────────────────────────────
+       Populate the selector dropdown
+    ────────────────────────────────────────────────────────────────── */
     function updateResumeSelector() {
         if (!resumeSelector) return;
-        
+
         resumeSelector.innerHTML = '<option value="">-- Select Resume --</option>';
-        
+
         resumesList.forEach(resume => {
-            const option = document.createElement('option');
-            option.value = resume._id;
-            const title = resume.personalInformation?.fullName 
-                ? `${resume.personalInformation.fullName} - ${new Date(resume.updatedAt).toLocaleDateString()}` 
-                : `Resume (${new Date(resume.updatedAt).toLocaleDateString()})`;
-            option.textContent = title;
+            const option  = document.createElement('option');
+            option.value  = resume._id;
+
+            const name    = resume.personalInformation?.fullName;
+            const date    = resume.updatedAt
+                ? new Date(resume.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                : '';
+            option.textContent = name ? `${name}  (${date})` : `Resume — ${date}`;
             resumeSelector.appendChild(option);
         });
     }
 
-    /**
-     * Load a specific resume
-     */
+    /* ──────────────────────────────────────────────────────────────────
+       Load and render the selected resume
+    ────────────────────────────────────────────────────────────────── */
     async function loadResume() {
-        const id = resumeSelector.value;
+        const id = resumeSelector ? resumeSelector.value : null;
+
         if (!id) {
             currentResume = null;
-            previewContainer.innerHTML = `<div class="preview-empty-state"><p>Please select a resume to preview.</p></div>`;
+            if (previewCanvas) {
+                previewCanvas.innerHTML = '<p class="rv-empty">Select a resume above to preview it here.</p>';
+            }
             return;
+        }
+
+        // Show loading state
+        if (previewCanvas) {
+            previewCanvas.innerHTML = '<p class="rv-empty" style="color:#94a3b8;">Loading resume…</p>';
         }
 
         try {
-            previewContainer.innerHTML = `<div class="preview-empty-state"><p>Loading...</p></div>`;
             currentResume = await apiCall(`/${id}`);
-            renderResume();
-        } catch (error) {
-            console.error('Failed to load resume:', error);
-            previewContainer.innerHTML = `<div class="preview-empty-state"><p style="color:var(--color-error)">Failed to load resume.</p></div>`;
+
+            // Update URL without reload (nice-to-have for direct linking)
+            const newUrl = `${window.location.pathname}?resumeId=${id}`;
+            window.history.replaceState({ resumeId: id }, '', newUrl);
+
+            // Render via PreviewRenderer
+            if (previewCanvas && typeof PreviewRenderer !== 'undefined') {
+                PreviewRenderer.render(currentResume, previewCanvas);
+            }
+
+        } catch (err) {
+            console.error('[ElevateCV Preview] Failed to load resume:', err);
+            _showError(`Failed to load resume: ${err.message}`);
         }
     }
 
-    /**
-     * Generate HTML for a section
-     */
-    function generateSection(title, items, renderItem) {
-        if (!items || items.length === 0) return '';
-        
-        const itemsHtml = items.map(renderItem).join('');
-        return `
-            <div class="cv-section">
-                <h3 class="cv-section-title">${title}</h3>
-                <div class="cv-section-content">
-                    ${itemsHtml}
-                </div>
-            </div>
-        `;
-    }
-
-    /**
-     * Render the Resume into the DOM
-     */
-    function renderResume() {
-        if (!currentResume) return;
-
-        const info = currentResume.personalInformation || {};
-        
-        // Build Contact Links
-        const contactHtml = [
-            info.email ? `<div class="cv-contact-item"><span>📧</span> ${info.email}</div>` : '',
-            info.phone ? `<div class="cv-contact-item"><span>📱</span> ${info.phone}</div>` : '',
-            info.location ? `<div class="cv-contact-item"><span>📍</span> ${info.location}</div>` : '',
-            info.linkedin ? `<div class="cv-contact-item"><span>💼</span> ${info.linkedin}</div>` : '',
-            info.github ? `<div class="cv-contact-item"><span>💻</span> ${info.github}</div>` : '',
-            info.portfolio ? `<div class="cv-contact-item"><span>🌐</span> ${info.portfolio}</div>` : ''
-        ].filter(Boolean).join('');
-
-        // Build Skills
-        const skillsHtml = currentResume.skills && currentResume.skills.length > 0
-            ? `<div class="cv-section">
-                 <h3 class="cv-section-title">Skills</h3>
-                 <div class="cv-skills-list">
-                    ${currentResume.skills.map(skill => `<span class="cv-skill-tag">${skill}</span>`).join('')}
-                 </div>
-               </div>`
-            : '';
-
-        // Build Education
-        const eduHtml = generateSection('Education', currentResume.education, edu => `
-            <div class="cv-item">
-                <div class="cv-item-header">
-                    <span class="cv-item-title">${edu.college || ''}</span>
-                    <span class="cv-item-date">${edu.startYear || ''} - ${edu.endYear || 'Present'}</span>
-                </div>
-                <div class="cv-item-subtitle">${edu.degree || ''} ${edu.branch ? 'in ' + edu.branch : ''} ${edu.cgpa ? '| CGPA: ' + edu.cgpa : ''}</div>
-            </div>
-        `);
-
-        // Build Experience
-        const expHtml = generateSection('Experience', currentResume.experience, exp => `
-            <div class="cv-item">
-                <div class="cv-item-header">
-                    <span class="cv-item-title">${exp.role || ''}</span>
-                    <span class="cv-item-date">${exp.duration || ''}</span>
-                </div>
-                <div class="cv-item-subtitle">${exp.company || ''}</div>
-                ${exp.responsibilities ? `<div class="cv-item-desc" style="white-space: pre-wrap;">${exp.responsibilities}</div>` : ''}
-            </div>
-        `);
-
-        // Build Projects
-        const projHtml = generateSection('Projects', currentResume.projects, proj => `
-            <div class="cv-item">
-                <div class="cv-item-header">
-                    <span class="cv-item-title">${proj.title || ''}</span>
-                    <span class="cv-item-date">
-                        ${proj.githubLink ? `<a href="${proj.githubLink}" target="_blank">GitHub</a>` : ''}
-                        ${proj.githubLink && proj.liveDemo ? ' | ' : ''}
-                        ${proj.liveDemo ? `<a href="${proj.liveDemo}" target="_blank">Live Demo</a>` : ''}
-                    </span>
-                </div>
-                <div class="cv-item-subtitle">${proj.technologies ? 'Tech: ' + proj.technologies : ''}</div>
-                ${proj.description ? `<div class="cv-item-desc" style="white-space: pre-wrap;">${proj.description}</div>` : ''}
-            </div>
-        `);
-
-        // Build Certifications
-        const certHtml = generateSection('Certifications', currentResume.certifications, cert => `
-            <div class="cv-item">
-                <span class="cv-item-title">${cert.name || ''}</span>
-            </div>
-        `);
-
-        // Build Achievements
-        const achHtml = generateSection('Achievements', currentResume.achievements, ach => `
-            <div class="cv-item">
-                <span class="cv-item-title">${ach.description || ''}</span>
-            </div>
-        `);
-
-        const summaryHtml = currentResume.summary
-            ? `<div class="cv-section cv-summary">
-                 <h3 class="cv-section-title">Summary</h3>
-                 <div style="white-space: pre-wrap;">${currentResume.summary}</div>
-               </div>`
-            : '';
-
-        // Assemble Final HTML
-        previewContainer.innerHTML = `
-            <div class="cv-header">
-                <h1 class="cv-name">${info.fullName || 'Anonymous User'}</h1>
-                <div class="cv-contact">
-                    ${contactHtml}
-                </div>
-            </div>
-            ${summaryHtml}
-            ${skillsHtml}
-            ${expHtml}
-            ${eduHtml}
-            ${projHtml}
-            ${certHtml}
-            ${achHtml}
-        `;
-    }
-
-    /**
-     * Handle Template Switch
-     */
-    function handleThemeSwitch(e) {
-        if (!e.target.classList.contains('template-btn')) return;
-        
-        // Update active class on buttons
-        templateBtns.forEach(btn => btn.classList.remove('is-active'));
-        e.target.classList.add('is-active');
-
-        // Update container theme
-        const newTheme = e.target.getAttribute('data-theme');
-        previewContainer.className = `preview-container ${newTheme}`;
-        currentTheme = newTheme;
-    }
-
-    /**
-     * Handle Print
-     */
+    /* ──────────────────────────────────────────────────────────────────
+       Print handler
+    ────────────────────────────────────────────────────────────────── */
     function handlePrint() {
         if (!currentResume) {
-            alert('Please select a resume to print.');
+            alert('Please select a resume before printing.');
             return;
         }
-        
-        // The CSS @media print handles the hiding of UI elements automatically
         window.print();
     }
 
-    /**
-     * Initialize Preview Page
-     */
+    /* ──────────────────────────────────────────────────────────────────
+       Internal: display error in preview area
+    ────────────────────────────────────────────────────────────────── */
+    function _showError(message) {
+        if (!previewCanvas) return;
+        previewCanvas.innerHTML = `<p class="rv-empty" style="color:#ef4444;">${message}</p>`;
+    }
+
+    /* ──────────────────────────────────────────────────────────────────
+       Init
+    ────────────────────────────────────────────────────────────────── */
     function init() {
         if (resumeSelector) {
             resumeSelector.addEventListener('change', loadResume);
-        }
-        
-        const switcher = Helpers.$('.template-switcher');
-        if (switcher) {
-            switcher.addEventListener('click', handleThemeSwitch);
         }
 
         if (btnPrint) {
             btnPrint.addEventListener('click', handlePrint);
         }
 
-        // Fetch initial list
+        // Fetch resume list on page load
         fetchResumes();
     }
 
@@ -273,6 +183,6 @@ const ResumePreview = (() => {
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Note: Dashboard JS is also running, handling auth and global UI
+    // Note: dashboard.js also runs, handling auth guard and global UI.
     ResumePreview.init();
 });

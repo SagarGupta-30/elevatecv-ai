@@ -21,6 +21,9 @@
 
     <!-- Builder wizard styles — Sprint 2 -->
     <link rel="stylesheet" href="../assets/css/builder.css">
+
+    <!-- Resume paper styles — Sprint 2 Live Preview -->
+    <link rel="stylesheet" href="../assets/css/resume.css">
 </head>
 <body>
     <div class="dashboard-layout">
@@ -140,12 +143,35 @@
 
             <!-- ── Builder Content ───────────────────────────────────── -->
             <main class="dashboard-content builder-content" id="builder-main">
-                <!--
-                    The wizard shell is built dynamically by ResumeBuilderV2.init()
-                    in js/pages/builder.js. This keeps the HTML clean and modular.
-                    builder-container is the mount point.
-                -->
-                <div class="builder-container" id="builder-root"></div>
+                <div class="builder-split">
+
+                    <!-- LEFT: Wizard form (existing, untouched) -->
+                    <div class="builder-split__form">
+                        <!--
+                            The wizard shell is built dynamically by ResumeBuilderV2.init()
+                            in js/pages/builder.js. This keeps the HTML clean and modular.
+                            builder-container is the mount point.
+                        -->
+                        <div class="builder-container" id="builder-root"></div>
+                    </div>
+
+                    <!-- RIGHT: Live Preview Panel (desktop only, sticky) -->
+                    <div class="builder-split__preview" id="live-preview-panel" aria-label="Live resume preview" role="complementary">
+                        <div class="live-preview-panel">
+                            <div class="live-preview-panel__topbar">
+                                <span class="live-preview-panel__label">Live Preview</span>
+                                <span class="live-preview-panel__badge">
+                                    <span class="live-preview-panel__badge-dot" aria-hidden="true"></span>
+                                    Auto-updating
+                                </span>
+                            </div>
+                            <div class="live-preview-panel__canvas" id="live-preview-canvas">
+                                <!-- PreviewRenderer injects resume HTML here -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </main>
 
         </div><!-- /.main-wrapper -->
@@ -179,6 +205,9 @@
 
     <!-- Step panel renderers -->
     <script src="../js/components/stepPanels.js"></script>
+
+    <!-- Sprint 2: Live Preview Renderer -->
+    <script src="../js/components/previewRenderer.js"></script>
 
     <!-- Sprint 1: Dashboard (auth, sidebar, profile dropdown) — untouched -->
     <script src="../js/pages/dashboard.js"></script>

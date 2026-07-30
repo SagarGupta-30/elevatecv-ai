@@ -418,6 +418,12 @@ const ResumeBuilderV2 = (() => {
 
         // Initial ring state
         updateCompletionRing();
+
+        // ── Live Preview: attach PreviewRenderer to the right-side panel ──
+        const liveCanvas = document.getElementById('live-preview-canvas');
+        if (liveCanvas && typeof PreviewRenderer !== 'undefined') {
+            PreviewRenderer.attach(liveCanvas);
+        }
     }
 
     return { init };

@@ -1,0 +1,537 @@
+/*
+ * ElevateCV AI — Resume Paper Stylesheet (Sprint 2 Live Preview)
+ *
+ * Scope:    All rules live inside .resume-paper to avoid conflicts
+ *           with the dark dashboard theme.
+ * Design:   Professional · Minimal · ATS-friendly · Print-ready
+ * Layout:   Single column, A4 proportions (210mm × 297mm)
+ * No:       Gradients · Glassmorphism · Emojis · Decorative shadows
+ *
+ * Sections rendered by PreviewRenderer:
+ *   Header → Summary → Experience → Education →
+ *   Projects → Skills → Certifications → Languages
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   BASE PAPER SURFACE
+═══════════════════════════════════════════════════════════════════ */
+
+.resume-paper {
+    width: 100%;
+    min-height: 100%;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-family: 'Inter', 'Roboto', Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    line-height: 1.55;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 180px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
+    padding: 32px 24px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HEADER — Name + Contact
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-header {
+    text-align: center;
+    padding-bottom: 14pt;
+    margin-bottom: 14pt;
+    border-bottom: 1.5pt solid #1a1a1a;
+}
+
+.rv-name {
+    font-size: 24pt;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+    margin: 0 0 4pt;
+    line-height: 1.1;
+}
+
+/* Contact row */
+.rv-contact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    font-size: 9.5pt;
+    color: #374151;
+    margin-top: 5pt;
+}
+
+.rv-contact-link {
+    color: #1d4ed8;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.rv-contact-link:hover {
+    color: #1e40af;
+    text-decoration: underline;
+}
+
+/* CSS dot separator between contact items */
+.rv-contact-sep {
+    display: inline-block;
+    width: 3pt;
+    height: 3pt;
+    background: #94a3b8;
+    border-radius: 50%;
+    margin: 0 7pt;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-section {
+    margin-bottom: 13pt;
+}
+
+.rv-section-title {
+    font-size: 10.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #0f172a;
+    margin: 0 0 7pt;
+    padding-bottom: 3pt;
+    border-bottom: 1pt solid #d1d5db;
+}
+
+.rv-section-body {
+    /* no extra padding — items add their own spacing */
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SUMMARY
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-summary-text {
+    margin: 0;
+    color: #374151;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESUME ITEM (used by Experience, Education, Projects, Certs)
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-item {
+    margin-bottom: 10pt;
+    page-break-inside: avoid;
+}
+
+.rv-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Compact variant — for certs, languages */
+.rv-item--compact {
+    margin-bottom: 6pt;
+}
+
+.rv-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10pt;
+    margin-bottom: 2pt;
+}
+
+.rv-item-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.rv-item-title {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.3;
+}
+
+.rv-item-subtitle {
+    font-size: 10pt;
+    color: #374151;
+    font-style: italic;
+    margin-top: 1pt;
+}
+
+.rv-item-meta {
+    font-size: 9.5pt;
+    color: #6b7280;
+    margin-top: 2pt;
+}
+
+.rv-item-date {
+    font-size: 9.5pt;
+    color: #374151;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 1pt;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BULLET LISTS (Experience descriptions, Project descriptions)
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-bullets {
+    margin: 4pt 0 0 0;
+    padding-left: 14pt;
+    list-style: disc;
+}
+
+.rv-bullets li {
+    font-size: 10pt;
+    color: #374151;
+    margin-bottom: 2pt;
+    line-height: 1.5;
+    padding-left: 2pt;
+}
+
+.rv-bullets li:last-child {
+    margin-bottom: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CHIPS (Skills, Tech Stack)
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4pt;
+    margin-top: 4pt;
+}
+
+.rv-chip {
+    display: inline-block;
+    padding: 2pt 7pt;
+    background: #f1f5f9;
+    border: 0.5pt solid #cbd5e1;
+    border-radius: 3pt;
+    font-size: 9pt;
+    font-weight: 500;
+    color: #1e293b;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+/* Tech stack chips — slightly styled differently */
+.rv-chip--tech {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1e40af;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SKILLS — Category rows
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-skill-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8pt;
+    margin-bottom: 5pt;
+}
+
+.rv-skill-row:last-child {
+    margin-bottom: 0;
+}
+
+.rv-skill-label {
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: #374151;
+    white-space: nowrap;
+    padding-top: 3pt;
+    min-width: 90pt;
+    flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROJECT LINKS
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-proj-links {
+    font-size: 9pt;
+    font-weight: 400;
+    margin-left: 8pt;
+}
+
+.rv-link {
+    color: #1d4ed8;
+    text-decoration: none;
+    font-size: 9pt;
+}
+
+.rv-link:hover {
+    text-decoration: underline;
+}
+
+.rv-link--inherit {
+    color: inherit;
+    font-weight: 600;
+}
+
+.rv-link-sep {
+    display: inline-block;
+    margin: 0 5pt;
+    color: #9ca3af;
+    font-size: 9pt;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LANGUAGES
+═══════════════════════════════════════════════════════════════════ */
+
+.rv-languages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8pt 20pt;
+}
+
+.rv-lang-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1pt;
+}
+
+.rv-lang-name {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.rv-lang-prof {
+    font-size: 9pt;
+    color: #6b7280;
+    font-style: italic;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   BUILDER SPLIT LAYOUT
+   Left: wizard form  |  Right: live preview panel
+═══════════════════════════════════════════════════════════════════ */
+
+.builder-split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    min-height: 100%;
+}
+
+@media (min-width: 1100px) {
+    .builder-split {
+        grid-template-columns: 56% 44%;
+        align-items: start;
+    }
+}
+
+.builder-split__form {
+    min-width: 0;
+}
+
+.builder-split__preview {
+    display: none;
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #f8fafc;
+    border-left: 1px solid #e2e8f0;
+    padding: 0;
+}
+
+@media (min-width: 1100px) {
+    .builder-split__preview {
+        display: block;
+    }
+}
+
+/* Preview panel inner */
+.live-preview-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.live-preview-panel__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.live-preview-panel__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.live-preview-panel__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #22c55e;
+    font-weight: 500;
+}
+
+.live-preview-panel__badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: rv-pulse 2s ease-in-out infinite;
+}
+
+@keyframes rv-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+.live-preview-panel__canvas {
+    padding: 24px 20px;
+    flex: 1;
+}
+
+.live-preview-panel__canvas .resume-paper {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    border-radius: 3px;
+    padding: 28pt 26pt;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   PREVIEW PAGE WRAPPER (preview.html standalone)
+═══════════════════════════════════════════════════════════════════ */
+
+.preview-paper-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 32px 24px;
+    background: #f1f5f9;
+}
+
+.preview-paper-wrapper .resume-paper {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm 18mm;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    border-radius: 3px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   PRINT MEDIA — Clean A4 Output
+═══════════════════════════════════════════════════════════════════ */
+
+@media print {
+    /* Hide everything except the resume */
+    body > *:not(#print-root) {
+        display: none !important;
+    }
+
+    /* For preview.html — hide all chrome */
+    .sidebar,
+    .topbar,
+    .preview-controls,
+    .hide-on-print,
+    .live-preview-panel__topbar {
+        display: none !important;
+    }
+
+    .dashboard-layout,
+    .main-wrapper,
+    .dashboard-content,
+    .preview-dashboard,
+    .preview-wrapper,
+    .preview-paper-wrapper,
+    .builder-split,
+    .builder-split__preview,
+    .live-preview-panel {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .resume-paper {
+        width: 100% !important;
+        min-height: 100vh !important;
+        padding: 15mm 14mm !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        font-size: 10.5pt !important;
+    }
+
+    .rv-section {
+        page-break-inside: avoid;
+    }
+
+    .rv-item {
+        page-break-inside: avoid;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE SCALING FOR MOBILE PREVIEW (preview.html)
+═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+    .preview-paper-wrapper {
+        padding: 16px 8px;
+        background: #f8fafc;
+    }
+
+    .preview-paper-wrapper .resume-paper {
+        width: 100%;
+        min-height: auto;
+        padding: 20px 16px;
+    }
+}

@@ -1,12 +1,21 @@
 /* ============================================
-   ElevateCV AI - Preview Page Styles
+   ElevateCV AI — Preview Page Chrome Styles
+   (Controls bar, wrapper spacing, responsive)
+   ============================================
+   NOTE: Resume paper rendering styles (rv-*,
+   resume-paper, etc.) are in resume.css.
    ============================================ */
+
+/* ── Page Layout ──────────────────────────── */
 
 .preview-dashboard {
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
+    padding-bottom: var(--space-12);
 }
+
+/* ── Controls Bar ─────────────────────────── */
 
 .preview-controls {
     background: var(--glass-bg-strong);
@@ -23,144 +32,100 @@
     align-items: center;
     flex-wrap: wrap;
     gap: var(--space-4);
-    margin-bottom: var(--space-6);
 }
 
 .preview-controls__actions {
     display: flex;
     gap: var(--space-3);
     align-items: center;
-}
-
-.template-switcher {
-    display: flex;
-    gap: var(--space-3);
     flex-wrap: wrap;
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--border-base);
 }
 
-.template-btn {
-    padding: var(--space-2) var(--space-4);
-    border: 1px solid var(--border-base);
-    border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted);
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-sm);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
+/* ── Paper Wrapper ────────────────────────── */
 
-.template-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-primary);
-}
-
-.template-btn.is-active {
-    background: var(--gradient-primary-soft);
-    color: var(--text-primary);
-    border-color: rgba(124, 58, 237, 0.4);
-}
-
-.preview-wrapper {
+.preview-paper-wrapper {
     display: flex;
     justify-content: center;
-    padding: var(--space-8);
     background: var(--bg-surface);
     border: 1px solid var(--border-base);
     border-radius: var(--glass-radius);
+    padding: var(--space-8);
     overflow-x: auto;
 }
 
-/* A4 Aspect Ratio container (approx 1 : 1.414) */
-.preview-container {
+.preview-paper-wrapper .resume-paper {
     width: 210mm;
     min-height: 297mm;
-    background: #FFFFFF; /* High contrast paper white for printing */
-    box-shadow: var(--shadow-xl);
-    padding: 15mm;
-    box-sizing: border-box;
-    position: relative;
-    transform-origin: top center;
-    transition: all 0.3s ease;
-    border-radius: 4px;
+    padding: 20mm 18mm;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    border-radius: 3px;
 }
 
-.preview-empty-state {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--text-muted);
-    font-style: italic;
-    min-height: 250mm;
-}
+/* ── Print Rules ──────────────────────────── */
 
-/* Print Specific Rules */
 @media print {
-    body {
-        margin: 0;
-        padding: 0;
-        background: white !important;
-    }
-    
-    .hide-on-print,
+    /* Hide all dashboard chrome */
     .sidebar,
     .topbar,
-    .preview-controls {
+    .preview-controls,
+    .hide-on-print {
         display: none !important;
     }
 
-    .main-wrapper {
+    /* Remove layout wrappers */
+    .dashboard-layout,
+    .main-wrapper,
+    .dashboard-content,
+    .preview-dashboard,
+    .preview-paper-wrapper {
+        display: block !important;
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
-    }
-
-    .dashboard-layout {
-        display: block !important;
-    }
-
-    .preview-wrapper {
-        padding: 0 !important;
         background: transparent !important;
         border: none !important;
-    }
-
-    .preview-container {
-        width: 100% !important;
-        min-height: 100% !important;
         box-shadow: none !important;
-        padding: 10mm !important;
-        margin: 0 !important;
-        transform: scale(1) !important;
-        page-break-inside: auto;
+    }
+
+    /* Full-page resume paper */
+    .resume-paper {
+        width: 100% !important;
+        min-height: 100vh !important;
+        padding: 15mm 14mm !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 0;
     }
 }
 
-/* Responsive scaling for mobile preview */
-@media (max-width: 1024px) {
-    .preview-container {
-        transform: scale(0.8);
-        margin-bottom: -60mm;
-    }
-}
+/* ── Responsive ───────────────────────────── */
 
-@media (max-width: 768px) {
-    .preview-container {
-        transform: scale(0.6);
-        margin-bottom: -115mm;
+@media (max-width: 900px) {
+    .preview-paper-wrapper {
+        padding: var(--space-4) var(--space-3);
     }
+
+    .preview-paper-wrapper .resume-paper {
+        width: 100%;
+        min-height: auto;
+        padding: 20px 16px;
+    }
+
     .preview-controls__header {
         flex-direction: column;
         align-items: flex-start;
     }
-}
 
-@media (max-width: 480px) {
-    .preview-container {
-        transform: scale(0.45);
-        margin-bottom: -160mm;
+    .preview-controls__actions {
+        width: 100%;
+    }
+
+    .preview-controls__actions .form-input {
+        flex: 1;
+        width: auto !important;
     }
 }
