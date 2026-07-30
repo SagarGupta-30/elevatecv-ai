@@ -1,6 +1,6 @@
 const http = require('http');
 
-const API_BASE = 'http://localhost:5001';
+const API_BASE = 'https://elevatecv-ai-e8ku.onrender.com';
 
 async function request(path, options = {}) {
     const url = new URL(path, API_BASE);

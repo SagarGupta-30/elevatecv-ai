@@ -4,19 +4,19 @@
  */
 
 const SignupPage = (() => {
-    const API_BASE = Config.API_BASE + '/auth';
+    const API_BASE = 'https://elevatecv-ai-e8ku.onrender.com/api/auth';
 
-    const form           = Helpers.$('#signup-form');
-    const nameInput      = Helpers.$('#signup-name');
-    const emailInput     = Helpers.$('#signup-email');
-    const passInput      = Helpers.$('#signup-password');
-    const confirmInput   = Helpers.$('#signup-confirm-password');
-    const submitBtn      = Helpers.$('#signup-submit');
-    const togglePass     = Helpers.$('#signup-toggle-password');
-    const alertError     = Helpers.$('#signup-alert-error');
-    const alertSuccess   = Helpers.$('#signup-alert-success');
-    const errorText      = Helpers.$('#signup-error-text');
-    const successText    = Helpers.$('#signup-success-text');
+    const form = Helpers.$('#signup-form');
+    const nameInput = Helpers.$('#signup-name');
+    const emailInput = Helpers.$('#signup-email');
+    const passInput = Helpers.$('#signup-password');
+    const confirmInput = Helpers.$('#signup-confirm-password');
+    const submitBtn = Helpers.$('#signup-submit');
+    const togglePass = Helpers.$('#signup-toggle-password');
+    const alertError = Helpers.$('#signup-alert-error');
+    const alertSuccess = Helpers.$('#signup-alert-success');
+    const errorText = Helpers.$('#signup-error-text');
+    const successText = Helpers.$('#signup-success-text');
 
     /** Show field-level error */
     function showFieldError(inputEl, errorEl, message) {
@@ -59,9 +59,9 @@ const SignupPage = (() => {
     /** Validate form fields */
     function validate() {
         let valid = true;
-        const nameErr    = Helpers.$('#signup-name-error');
-        const emailErr   = Helpers.$('#signup-email-error');
-        const passErr    = Helpers.$('#signup-password-error');
+        const nameErr = Helpers.$('#signup-name-error');
+        const emailErr = Helpers.$('#signup-email-error');
+        const passErr = Helpers.$('#signup-password-error');
         const confirmErr = Helpers.$('#signup-confirm-password-error');
 
         clearFieldError(nameInput, nameErr);
@@ -69,10 +69,10 @@ const SignupPage = (() => {
         clearFieldError(passInput, passErr);
         clearFieldError(confirmInput, confirmErr);
 
-        const name     = nameInput.value.trim();
-        const email    = emailInput.value.trim();
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
         const password = passInput.value;
-        const confirm  = confirmInput.value;
+        const confirm = confirmInput.value;
 
         if (!name) {
             showFieldError(nameInput, nameErr, 'Name is required');
