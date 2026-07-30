@@ -1,0 +1,10 @@
+# ElevateCV AI - Robots.txt
+User-agent: *
+Allow: /
+Allow: /index.html
+
+Disallow: /pages/dashboard.html
+Disallow: /pages/builder.html
+Disallow: /pages/preview.html
+
+Sitemap: https://elevatecv-ai.netlify.app/sitemap.xml

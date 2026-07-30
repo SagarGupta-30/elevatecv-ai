@@ -1039,37 +1039,19 @@
     gap: var(--space-3);
 }
 
-/* --- Responsive Layout Updates --- */
-@media (max-width: 768px) {
-    .dashboard-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
+/* ═══════════════════════════════════════════════════════════════════
+   CONSOLIDATED RESPONSIVE BREAKPOINTS (480px / 768px / 1024px / 1280px)
+   ═══════════════════════════════════════════════════════════════════ */
 
-    .dashboard-controls__left {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .search-box {
-        max-width: 100%;
-    }
-
-    .filter-tabs {
-        overflow-x: auto;
-    }
-
-    .dashboard-controls__right {
-        justify-content: space-between;
-    }
-}
-@media (max-width: 1024px) {
+/* Laptop / Large Tablet — 1280px */
+@media (max-width: 1280px) {
     .dashboard-stats__grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (max-width: 992px) {
+/* Tablet / Mobile Drawer — 1024px */
+@media (max-width: 1024px) {
     .sidebar {
         position: fixed;
         top: 0;
@@ -1101,23 +1083,65 @@
 
     .welcome-card {
         padding: var(--space-6);
-    }
-
-    .welcome-card__title {
-        font-size: var(--font-size-xl);
+        min-height: auto;
     }
 }
 
-@media (max-width: 576px) {
+/* Mobile Layout — 768px */
+@media (max-width: 768px) {
     .dashboard-stats__grid {
         grid-template-columns: 1fr;
     }
 
-    .quick-actions__grid {
-        grid-template-columns: 1fr;
+    .dashboard-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dashboard-controls__left {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: 100%;
+    }
+
+    .filter-tabs {
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .dashboard-controls__right {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sort-select-wrap,
+    .sort-select {
+        width: 100%;
     }
 
     .topbar__username {
         display: none;
+    }
+}
+
+/* Small Mobile — 480px */
+@media (max-width: 480px) {
+    .resumes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-card__title {
+        font-size: var(--font-size-lg);
+    }
+
+    .welcome-card__subtitle {
+        font-size: var(--font-size-sm);
+    }
+
+    .modal-container {
+        padding: 0;
     }
 }
