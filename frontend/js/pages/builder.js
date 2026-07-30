@@ -1,538 +1,328 @@
 /**
- * ElevateCV AI - Resume Builder
- * Handles dynamic form interactions: expand/collapse, adding/removing entries, and skills management.
- * Integrates with Resume CRUD backend.
+ * ElevateCV AI — Resume Builder v2 (Sprint 2)
+ * Orchestrator: wires together all wizard components.
+ *
+ * Architecture:
+ *   BuilderState   → Single source of truth (state/builderState.js)
+ *   WIZARD_STEPS   → Step config (components/wizardSteps.js)
+ *   ProgressBar    → Progress bar UI (components/progressBar.js)
+ *   WizardNav      → Back/Next/Save navigation (components/wizardNav.js)
+ *   Step*          → Per-step panel renderers (components/stepPanels.js)
+ *   TagInput       → Tag chip input (components/tagInput.js)
+ *   BulletEditor   → Bullet list input (components/bulletEditor.js)
+ *
+ * This file contains NO API calls. All data stays in BuilderState.
+ * Dashboard.js (Sprint 1) handles auth, sidebar, and profile dropdown — untouched.
  */
 
-const ResumeBuilder = (() => {
-    const API_BASE = Config.API_BASE + '/resumes';
-    
-    // State
-    let skills = [];
-    let currentResumeId = null;
-    let resumesList = [];
+const ResumeBuilderV2 = (() => {
 
-    // DOM Elements
-    const resumeSelector = Helpers.$('#resume-selector');
-    const btnLoad = Helpers.$('#btn-load-resume');
-    const btnSave = Helpers.$('#btn-save-resume');
-    const btnDelete = Helpers.$('#btn-delete-resume');
-    const statusText = Helpers.$('#builder-status');
+    /* ── Map step ID → panel renderer module ───────────────────────── */
+    const STEP_RENDERERS = {
+        1: StepPersonal,
+        2: StepEducation,
+        3: StepExperience,
+        4: StepProjects,
+        5: StepSkills,
+        6: StepCertifications,
+        7: StepLanguages,
+        8: StepReview
+    };
 
-    /**
-     * Set UI Status Notification
-     */
-    function setStatus(message, isError = false) {
-        if (!statusText) return;
-        statusText.style.display = 'inline-block';
-        statusText.style.color = isError ? 'var(--color-error)' : 'var(--color-neutral-500)';
-        statusText.textContent = message;
-        
-        if (!isError && message !== 'Saving...') {
-            setTimeout(() => {
-                statusText.style.display = 'none';
-            }, 3000);
+    /* ── Track which panels have been rendered (cache) ─────────────── */
+    const renderedPanels = new Set();
+
+    /* ── DOM refs ───────────────────────────────────────────────────── */
+    let panelsContainer = null;
+    let progressEl      = null;
+    let navEl           = null;
+
+    /* ─────────────────────────────────────────────────────────────── */
+    /*  Build the static shell into .builder-container                 */
+    /* ─────────────────────────────────────────────────────────────── */
+    function buildShell() {
+        const container = document.querySelector('.builder-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <!-- SVG defs for ring gradient (hidden) -->
+            <svg width="0" height="0" style="position:absolute">
+                <defs>
+                    <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%"   stop-color="#7C3AED"/>
+                        <stop offset="100%" stop-color="#3B82F6"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <!-- Wizard Header -->
+            <div class="wizard-header" id="wizard-header">
+                <div class="wizard-meta">
+                    <div class="wizard-title-area">
+                        <span class="wizard-resume-title" id="wiz-title" title="Click to rename" role="button" tabindex="0">Untitled Resume</span>
+                        <span class="wizard-status-badge wizard-status-badge--draft" id="wiz-status-badge">Draft</span>
+                    </div>
+                    <div class="wizard-actions">
+                        <div class="completion-ring-wrap" id="completion-ring-wrap">
+                            <div class="completion-ring" id="completion-ring">
+                                <svg width="48" height="48" viewBox="0 0 48 48">
+                                    <circle class="completion-ring__track" cx="24" cy="24" r="18"/>
+                                    <circle class="completion-ring__fill" id="ring-fill" cx="24" cy="24" r="18"/>
+                                </svg>
+                                <div class="completion-ring__pct" id="ring-pct">0%</div>
+                            </div>
+                            <div class="completion-ring-label">
+                                <div class="completion-ring-label__title">Completion</div>
+                                <div class="completion-ring-label__sub" id="ring-label-sub">Getting started</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="wizard-progress" id="wizard-progress"></div>
+
+            <!-- Step Panels -->
+            <div class="wizard-panels" id="wizard-panels">
+                ${WIZARD_STEPS.map(s => `
+                    <div class="wizard-panel" id="panel-step-${s.id}" data-step="${s.id}" role="tabpanel" aria-label="${s.title}"></div>
+                `).join('')}
+            </div>
+
+            <!-- Navigation -->
+            <div id="wizard-nav"></div>
+        `;
+
+        progressEl      = document.getElementById('wizard-progress');
+        panelsContainer = document.getElementById('wizard-panels');
+        navEl           = document.getElementById('wizard-nav');
+    }
+
+    /* ─────────────────────────────────────────────────────────────── */
+    /*  Render + show a specific panel                                 */
+    /* ─────────────────────────────────────────────────────────────── */
+    function showPanel(stepId) {
+        // Hide all panels
+        document.querySelectorAll('.wizard-panel').forEach(el => el.classList.remove('is-active'));
+
+        const panelEl = document.getElementById(`panel-step-${stepId}`);
+        if (!panelEl) return;
+
+        // Render panel if not already rendered (or always re-render Review)
+        const renderer = STEP_RENDERERS[stepId];
+        if (renderer && (!renderedPanels.has(stepId) || stepId === 8)) {
+            renderer.render(panelEl);
+            renderedPanels.add(stepId);
+        }
+
+        panelEl.classList.add('is-active');
+    }
+
+    /* ─────────────────────────────────────────────────────────────── */
+    /*  Flush form data into state for the given step                  */
+    /* ─────────────────────────────────────────────────────────────── */
+    function flushStep(stepId) {
+        const renderer = STEP_RENDERERS[stepId];
+        if (renderer && typeof renderer.flush === 'function') {
+            renderer.flush();
+        }
+        updateCompletionRing();
+    }
+
+    /* ─────────────────────────────────────────────────────────────── */
+    /*  Completion ring — visual only, no calculation logic            */
+    /* ─────────────────────────────────────────────────────────────── */
+    function updateCompletionRing() {
+        // Visual-only: approximates based on which sections have data
+        const d = BuilderState.get();
+        let filled = 0;
+        const total = 7; // 7 content steps (not counting Review)
+
+        if (d.personalInformation.fullName) filled++;
+        if (d.education.length > 0) filled++;
+        if (d.experience.length > 0) filled++;
+        if (d.projects.length > 0) filled++;
+        const hasSkills = Object.values(d.skills || {}).some(arr => arr.length > 0);
+        if (hasSkills) filled++;
+        if (d.certifications.length > 0) filled++;
+        if (d.languages.length > 0) filled++;
+
+        const pct = Math.round((filled / total) * 100);
+        const circumference = 113;
+        const offset = circumference - (circumference * pct / 100);
+
+        const ringFill  = document.getElementById('ring-fill');
+        const ringPct   = document.getElementById('ring-pct');
+        const ringSub   = document.getElementById('ring-label-sub');
+
+        if (ringFill)  ringFill.style.strokeDashoffset = offset;
+        if (ringPct)   ringPct.textContent = `${pct}%`;
+        if (ringSub) {
+            if (pct === 0)        ringSub.textContent = 'Getting started';
+            else if (pct < 40)    ringSub.textContent = 'Keep going!';
+            else if (pct < 70)    ringSub.textContent = 'Looking good!';
+            else if (pct < 100)   ringSub.textContent = 'Almost done!';
+            else                  ringSub.textContent = 'Complete! 🎉';
         }
     }
 
-    /**
-     * API Fetch Wrapper with Auth
-     */
-    async function apiCall(endpoint, options = {}) {
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error('Not authenticated');
+    /* ─────────────────────────────────────────────────────────────── */
+    /*  Inline title editing                                           */
+    /* ─────────────────────────────────────────────────────────────── */
+    function initTitleEdit() {
+        const titleEl = document.getElementById('wiz-title');
+        if (!titleEl) return;
 
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            ...(options.headers || {})
-        };
+        function startEdit() {
+            const current = BuilderState.get().title || 'Untitled Resume';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'wizard-resume-title-input';
+            input.value = current;
+            input.maxLength = 60;
+            titleEl.replaceWith(input);
+            input.focus();
+            input.select();
 
-        const response = await fetch(`${API_BASE}${endpoint}`, {
-            ...options,
-            headers
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.message || 'API request failed');
-        }
-
-        return data.data;
-    }
-
-    /**
-     * Fetch all resumes for the current user
-     */
-    async function fetchResumes() {
-        try {
-            resumesList = await apiCall('');
-            updateResumeSelector();
-        } catch (error) {
-            console.error('Failed to fetch resumes:', error);
-            setStatus('Failed to load resumes', true);
-        }
-    }
-
-    /**
-     * Update the Select Dropdown
-     */
-    function updateResumeSelector() {
-        if (!resumeSelector) return;
-        
-        // Keep the first option
-        resumeSelector.innerHTML = '<option value="">-- Create New Resume --</option>';
-        
-        resumesList.forEach(resume => {
-            const option = document.createElement('option');
-            option.value = resume._id;
-            // Use name or created date as label
-            const title = resume.personalInformation?.fullName 
-                ? `${resume.personalInformation.fullName} - ${new Date(resume.updatedAt).toLocaleDateString()}` 
-                : `Resume (${new Date(resume.updatedAt).toLocaleDateString()})`;
-            option.textContent = title;
-            resumeSelector.appendChild(option);
-        });
-
-        if (currentResumeId) {
-            resumeSelector.value = currentResumeId;
-        }
-    }
-
-    /**
-     * Load a specific resume into the form
-     */
-    async function loadResume() {
-        const id = resumeSelector.value;
-        if (!id) {
-            // Clear form
-            document.getElementById('resume-form').reset();
-            currentResumeId = null;
-            skills = [];
-            renderSkills();
-            btnDelete.style.display = 'none';
-            // Clear dynamic lists
-            ['education-list', 'projects-list', 'experience-list', 'certifications-list', 'achievements-list'].forEach(listId => {
-                const list = Helpers.$(`#${listId}`);
-                if (list) list.innerHTML = '';
-            });
-            // Re-add one empty item each
-            initDynamicLists(true);
-            return;
-        }
-
-        try {
-            setStatus('Loading...');
-            const resume = await apiCall(`/${id}`);
-            currentResumeId = resume._id;
-            populateForm(resume);
-            btnDelete.style.display = 'inline-block';
-            setStatus('Resume loaded');
-        } catch (error) {
-            console.error('Failed to load resume:', error);
-            setStatus('Failed to load resume', true);
-        }
-    }
-
-    /**
-     * Populate the form with resume data
-     */
-    function populateForm(data) {
-        // Clear current dynamic lists
-        ['education-list', 'projects-list', 'experience-list', 'certifications-list', 'achievements-list'].forEach(listId => {
-            const list = Helpers.$(`#${listId}`);
-            if (list) list.innerHTML = '';
-        });
-
-        const form = document.getElementById('resume-form');
-        if (!form) return;
-
-        // Personal Info
-        if (data.personalInformation) {
-            form.querySelector('[name="fullName"]').value = data.personalInformation.fullName || '';
-            form.querySelector('[name="email"]').value = data.personalInformation.email || '';
-            form.querySelector('[name="phone"]').value = data.personalInformation.phone || '';
-            form.querySelector('[name="location"]').value = data.personalInformation.location || '';
-            form.querySelector('[name="linkedin"]').value = data.personalInformation.linkedin || '';
-            form.querySelector('[name="github"]').value = data.personalInformation.github || '';
-            form.querySelector('[name="portfolio"]').value = data.personalInformation.portfolio || '';
-        }
-
-        // Summary
-        form.querySelector('[name="summary"]').value = data.summary || '';
-
-        // Education
-        if (data.education && data.education.length > 0) {
-            data.education.forEach(edu => {
-                const node = addDynamicItem('tpl-education', 'education-list');
-                if (node) {
-                    node.querySelector('[name="edu_college"]').value = edu.college || '';
-                    node.querySelector('[name="edu_degree"]').value = edu.degree || '';
-                    node.querySelector('[name="edu_branch"]').value = edu.branch || '';
-                    node.querySelector('[name="edu_start"]').value = edu.startYear || '';
-                    node.querySelector('[name="edu_end"]').value = edu.endYear || '';
-                    node.querySelector('[name="edu_cgpa"]').value = edu.cgpa || '';
-                }
-            });
-        }
-
-        // Skills
-        skills = data.skills || [];
-        renderSkills();
-
-        // Projects
-        if (data.projects && data.projects.length > 0) {
-            data.projects.forEach(proj => {
-                const node = addDynamicItem('tpl-project', 'projects-list');
-                if (node) {
-                    node.querySelector('[name="proj_title"]').value = proj.title || '';
-                    node.querySelector('[name="proj_desc"]').value = proj.description || '';
-                    node.querySelector('[name="proj_tech"]').value = proj.technologies || '';
-                    node.querySelector('[name="proj_github"]').value = proj.githubLink || '';
-                    node.querySelector('[name="proj_live"]').value = proj.liveDemo || '';
-                }
-            });
-        }
-
-        // Experience
-        if (data.experience && data.experience.length > 0) {
-            data.experience.forEach(exp => {
-                const node = addDynamicItem('tpl-experience', 'experience-list');
-                if (node) {
-                    node.querySelector('[name="exp_company"]').value = exp.company || '';
-                    node.querySelector('[name="exp_role"]').value = exp.role || '';
-                    node.querySelector('[name="exp_duration"]').value = exp.duration || '';
-                    node.querySelector('[name="exp_resp"]').value = exp.responsibilities || '';
-                }
-            });
-        }
-
-        // Certifications
-        if (data.certifications && data.certifications.length > 0) {
-            data.certifications.forEach(cert => {
-                const node = addDynamicItem('tpl-certification', 'certifications-list');
-                if (node) {
-                    node.querySelector('[name="cert_name"]').value = cert.name || '';
-                }
-            });
-        }
-
-        // Achievements
-        if (data.achievements && data.achievements.length > 0) {
-            data.achievements.forEach(ach => {
-                const node = addDynamicItem('tpl-achievement', 'achievements-list');
-                if (node) {
-                    node.querySelector('[name="achieve_desc"]').value = ach.description || '';
-                }
-            });
-        }
-    }
-
-    /**
-     * Gather Form Data
-     */
-    function getFormData() {
-        const form = document.getElementById('resume-form');
-        if (!form) return null;
-
-        const data = {
-            personalInformation: {
-                fullName: form.querySelector('[name="fullName"]').value.trim(),
-                email: form.querySelector('[name="email"]').value.trim(),
-                phone: form.querySelector('[name="phone"]').value.trim(),
-                location: form.querySelector('[name="location"]').value.trim(),
-                linkedin: form.querySelector('[name="linkedin"]').value.trim(),
-                github: form.querySelector('[name="github"]').value.trim(),
-                portfolio: form.querySelector('[name="portfolio"]').value.trim()
-            },
-            summary: form.querySelector('[name="summary"]').value.trim(),
-            skills: [...skills],
-            education: [],
-            projects: [],
-            experience: [],
-            certifications: [],
-            achievements: []
-        };
-
-        // Extract dynamic lists
-        Helpers.$$('#education-list .dynamic-item').forEach(item => {
-            const college = item.querySelector('[name="edu_college"]').value.trim();
-            const degree = item.querySelector('[name="edu_degree"]').value.trim();
-            const branch = item.querySelector('[name="edu_branch"]').value.trim();
-            const startYear = item.querySelector('[name="edu_start"]').value.trim();
-            const endYear = item.querySelector('[name="edu_end"]').value.trim();
-            const cgpa = item.querySelector('[name="edu_cgpa"]').value.trim();
-            if (college || degree || branch || startYear || endYear || cgpa) {
-                data.education.push({ college, degree, branch, startYear, endYear, cgpa });
-            }
-        });
-
-        Helpers.$$('#projects-list .dynamic-item').forEach(item => {
-            const title = item.querySelector('[name="proj_title"]').value.trim();
-            const description = item.querySelector('[name="proj_desc"]').value.trim();
-            const technologies = item.querySelector('[name="proj_tech"]').value.trim();
-            const githubLink = item.querySelector('[name="proj_github"]').value.trim();
-            const liveDemo = item.querySelector('[name="proj_live"]').value.trim();
-            if (title || description || technologies || githubLink || liveDemo) {
-                data.projects.push({ title, description, technologies, githubLink, liveDemo });
-            }
-        });
-
-        Helpers.$$('#experience-list .dynamic-item').forEach(item => {
-            const company = item.querySelector('[name="exp_company"]').value.trim();
-            const role = item.querySelector('[name="exp_role"]').value.trim();
-            const duration = item.querySelector('[name="exp_duration"]').value.trim();
-            const responsibilities = item.querySelector('[name="exp_resp"]').value.trim();
-            if (company || role || duration || responsibilities) {
-                data.experience.push({ company, role, duration, responsibilities });
-            }
-        });
-
-        Helpers.$$('#certifications-list .dynamic-item').forEach(item => {
-            const name = item.querySelector('[name="cert_name"]').value.trim();
-            if (name) data.certifications.push({ name });
-        });
-
-        Helpers.$$('#achievements-list .dynamic-item').forEach(item => {
-            const desc = item.querySelector('[name="achieve_desc"]').value.trim();
-            if (desc) data.achievements.push({ description: desc });
-        });
-
-        return data;
-    }
-
-    /**
-     * Save Resume
-     */
-    async function saveResume() {
-        const data = getFormData();
-        if (!data) return;
-
-        if (!data.personalInformation.fullName || !data.personalInformation.email) {
-            setStatus('Full Name and Email are required', true);
-            return;
-        }
-        if (data.education.length === 0) {
-            setStatus('At least one Education entry is required', true);
-            return;
-        }
-
-        try {
-            setStatus('Saving...');
-            let resume;
-            if (currentResumeId) {
-                // Update
-                resume = await apiCall(`/${currentResumeId}`, {
-                    method: 'PUT',
-                    body: JSON.stringify(data)
-                });
-                setStatus('Resume updated successfully');
-            } else {
-                // Create
-                resume = await apiCall('', {
-                    method: 'POST',
-                    body: JSON.stringify(data)
-                });
-                currentResumeId = resume._id;
-                btnDelete.style.display = 'inline-block';
-                setStatus('Resume created successfully');
-            }
-            await fetchResumes(); // Refresh dropdown
-        } catch (error) {
-            console.error('Failed to save resume:', error);
-            setStatus(error.message || 'Failed to save resume', true);
-        }
-    }
-
-    /**
-     * Delete Resume
-     */
-    async function deleteResume() {
-        if (!currentResumeId) return;
-
-        if (!confirm('Are you sure you want to delete this resume?')) return;
-
-        try {
-            setStatus('Deleting...');
-            await apiCall(`/${currentResumeId}`, { method: 'DELETE' });
-            setStatus('Resume deleted successfully');
-            currentResumeId = null;
-            resumeSelector.value = '';
-            loadResume(); // This will clear the form
-            await fetchResumes(); // Refresh dropdown
-        } catch (error) {
-            console.error('Failed to delete resume:', error);
-            setStatus('Failed to delete resume', true);
-        }
-    }
-
-    /**
-     * Initialize Section Accordions
-     */
-    function initAccordions() {
-        const headers = Helpers.$$('.builder-section__header');
-        
-        headers.forEach(header => {
-            header.addEventListener('click', (e) => {
-                if (e.target.tagName === 'BUTTON' && !e.target.closest('.builder-section__toggle')) return;
-
-                const targetId = header.getAttribute('data-toggle');
-                const body = Helpers.$(`#${targetId}`);
-                
-                const isExpanded = header.classList.contains('is-expanded');
-                
-                if (!isExpanded) {
-                    header.classList.add('is-expanded');
-                    if (body) body.classList.add('is-visible');
-                } else {
-                    header.classList.remove('is-expanded');
-                    if (body) body.classList.remove('is-visible');
-                }
-            });
-        });
-
-        const personalInfoHeader = Helpers.$('[data-toggle="personal-info"]');
-        if (personalInfoHeader) {
-            personalInfoHeader.click();
-        }
-    }
-
-    /**
-     * Helper to Add Dynamic Items from Template
-     */
-    function addDynamicItem(templateId, listId) {
-        const template = Helpers.$(`#${templateId}`);
-        const list = Helpers.$(`#${listId}`);
-        
-        if (!template || !list) return null;
-
-        const clone = template.content.cloneNode(true);
-        const itemNode = clone.querySelector('.dynamic-item');
-        
-        const removeBtn = itemNode.querySelector('.remove-item');
-        if (removeBtn) {
-            removeBtn.addEventListener('click', () => {
-                itemNode.remove();
-            });
-        }
-
-        list.appendChild(itemNode);
-        return itemNode;
-    }
-
-    /**
-     * Initialize Dynamic Lists
-     */
-    function initDynamicLists(forceClear = false) {
-        const config = [
-            { btnId: 'add-education', tplId: 'tpl-education', listId: 'education-list' },
-            { btnId: 'add-project', tplId: 'tpl-project', listId: 'projects-list' },
-            { btnId: 'add-experience', tplId: 'tpl-experience', listId: 'experience-list' },
-            { btnId: 'add-certification', tplId: 'tpl-certification', listId: 'certifications-list' },
-            { btnId: 'add-achievement', tplId: 'tpl-achievement', listId: 'achievements-list' }
-        ];
-
-        config.forEach(({ btnId, tplId, listId }) => {
-            if (forceClear) {
-                // If resetting, just add the initial empty item without re-binding button listener
-                addDynamicItem(tplId, listId);
-                return;
+            function commitEdit() {
+                const newTitle = input.value.trim() || 'Untitled Resume';
+                BuilderState.set('title', newTitle);
+                const newSpan = document.createElement('span');
+                newSpan.id = 'wiz-title';
+                newSpan.className = 'wizard-resume-title';
+                newSpan.title = 'Click to rename';
+                newSpan.role = 'button';
+                newSpan.tabIndex = 0;
+                newSpan.textContent = newTitle;
+                input.replaceWith(newSpan);
+                newSpan.addEventListener('click', startEdit);
+                newSpan.addEventListener('keydown', e => { if (e.key === 'Enter') startEdit(); });
             }
 
-            const btn = Helpers.$(`#${btnId}`);
-            if (btn) {
-                btn.addEventListener('click', () => addDynamicItem(tplId, listId));
-                addDynamicItem(tplId, listId);
-            }
-        });
-    }
-
-    /**
-     * Render Skills
-     */
-    function renderSkills() {
-        const skillsContainer = Helpers.$('#skills-container');
-        if (!skillsContainer) return;
-
-        skillsContainer.innerHTML = '';
-        skills.forEach((skill, index) => {
-            const tag = document.createElement('div');
-            tag.className = 'skill-tag';
-            
-            const text = document.createElement('span');
-            text.textContent = skill;
-            
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'skill-tag__remove';
-            removeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
-            removeBtn.setAttribute('aria-label', 'Remove skill');
-            removeBtn.type = 'button';
-            
-            removeBtn.addEventListener('click', () => {
-                skills.splice(index, 1);
-                renderSkills();
+            input.addEventListener('blur', commitEdit);
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); commitEdit(); }
+                if (e.key === 'Escape') { input.value = BuilderState.get().title; commitEdit(); }
             });
-
-            tag.appendChild(text);
-            tag.appendChild(removeBtn);
-            skillsContainer.appendChild(tag);
-        });
-    }
-
-    /**
-     * Initialize Skills Manager
-     */
-    function initSkills() {
-        const skillInput = Helpers.$('#skill-input');
-        const addSkillBtn = Helpers.$('#add-skill');
-
-        if (!skillInput || !addSkillBtn) return;
-
-        function addSkill() {
-            const val = skillInput.value.trim();
-            if (val && !skills.includes(val)) {
-                skills.push(val);
-                skillInput.value = '';
-                renderSkills();
-            }
         }
 
-        addSkillBtn.addEventListener('click', addSkill);
+        titleEl.addEventListener('click', startEdit);
+        titleEl.addEventListener('keydown', e => { if (e.key === 'Enter') startEdit(); });
+    }
 
-        skillInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addSkill();
+    /* ─────────────────────────────────────────────────────────────── */
+    /*  Save handler — notified via wizard:save custom event           */
+    /*  (No API call yet — Sprint 3 will hook the actual POST/PUT)     */
+    /* ─────────────────────────────────────────────────────────────── */
+    function initSaveHandler() {
+        document.addEventListener('wizard:save', (e) => {
+            const data = e.detail.resumeData;
+            console.log('[ElevateCV] Resume data ready for save:', data);
+
+            // Visual feedback
+            const badge = document.getElementById('wiz-status-badge');
+            if (badge) {
+                badge.textContent = 'Saved (local)';
+                badge.classList.remove('wizard-status-badge--draft');
+                badge.classList.add('wizard-status-badge--saved');
+                setTimeout(() => {
+                    badge.textContent = 'Draft';
+                    badge.classList.add('wizard-status-badge--draft');
+                    badge.classList.remove('wizard-status-badge--saved');
+                }, 3000);
             }
+
+            // Dispatch a toast notification
+            showToast('Resume data captured! API integration coming in Sprint 3.', 'success');
         });
     }
 
-    /**
-     * Initialize Builder API binds
-     */
-    function initAPI() {
-        if (resumeSelector) resumeSelector.addEventListener('change', loadResume);
-        if (btnLoad) btnLoad.addEventListener('click', loadResume);
-        if (btnSave) btnSave.addEventListener('click', saveResume);
-        if (btnDelete) btnDelete.addEventListener('click', deleteResume);
+    /* ─────────────────────────────────────────────────────────────── */
+    /*  Toast notification                                             */
+    /* ─────────────────────────────────────────────────────────────── */
+    function showToast(message, type = 'success') {
+        const existing = document.getElementById('wiz-toast');
+        if (existing) existing.remove();
 
-        // Initial fetch
-        fetchResumes();
+        const toast = document.createElement('div');
+        toast.id = 'wiz-toast';
+        toast.textContent = message;
+
+        const isSuccess = type === 'success';
+        Object.assign(toast.style, {
+            position: 'fixed',
+            bottom: '28px',
+            right: '28px',
+            background: isSuccess
+                ? 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)'
+                : 'rgba(239, 68, 68, 0.9)',
+            color: '#fff',
+            padding: '14px 22px',
+            borderRadius: '14px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+            fontFamily: 'var(--font-family)',
+            fontSize: '14px',
+            fontWeight: '500',
+            zIndex: '9999',
+            opacity: '0',
+            transform: 'translateY(12px)',
+            transition: 'opacity 0.3s, transform 0.3s',
+            maxWidth: '340px',
+            lineHeight: '1.4'
+        });
+
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+        });
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(12px)';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
     }
 
-    /**
-     * Initialize Builder
-     */
+    /* ─────────────────────────────────────────────────────────────── */
+    /*  Bootstrap                                                       */
+    /* ─────────────────────────────────────────────────────────────── */
     function init() {
-        initAccordions();
-        initDynamicLists();
-        initSkills();
-        initAPI();
+        buildShell();
+
+        // Progress bar component
+        ProgressBar.init(progressEl);
+
+        // Navigation component
+        WizardNav.init(navEl, {
+            onFlush:  (step) => flushStep(step),
+            onReview: () => showPanel(8)
+        });
+
+        // Show initial panel (Step 1)
+        showPanel(BuilderState.getStep());
+
+        // Re-render panel on every step change
+        BuilderState.subscribe(step => {
+            showPanel(step);
+            updateCompletionRing();
+        });
+
+        // Inline title editor
+        initTitleEdit();
+
+        // Save handler
+        initSaveHandler();
+
+        // Initial ring state
+        updateCompletionRing();
     }
 
     return { init };
 })();
 
+/* ── Boot on DOM ready ──────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-    ResumeBuilder.init();
+    ResumeBuilderV2.init();
 });
