@@ -212,29 +212,101 @@ const ResumeBuilderV2 = (() => {
     }
 
     /* ─────────────────────────────────────────────────────────────── */
+    /*  Load resume from URL parameter if present                     */
+    /* ─────────────────────────────────────────────────────────────── */
+    async function initLoad() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const resumeId = urlParams.get('resumeId');
+
+        if (!resumeId) {
+            BuilderState.reset();
+            return;
+        }
+
+        try {
+            showToast('Loading resume...', 'info');
+            const serverResume = await ResumeService.getById(resumeId);
+            if (serverResume) {
+                BuilderState.hydrate(serverResume);
+                showPanel(BuilderState.getStep());
+                updateCompletionRing();
+                showToast('Resume loaded successfully', 'success');
+            }
+        } catch (err) {
+            console.error('[ElevateCV] Error loading resume:', err);
+            showToast(err.message || 'Failed to load resume. Initialized new draft.', 'error');
+            BuilderState.reset();
+        }
+    }
+
+    /* ─────────────────────────────────────────────────────────────── */
     /*  Save handler — notified via wizard:save custom event           */
-    /*  (No API call yet — Sprint 3 will hook the actual POST/PUT)     */
     /* ─────────────────────────────────────────────────────────────── */
     function initSaveHandler() {
-        document.addEventListener('wizard:save', (e) => {
-            const data = e.detail.resumeData;
-            console.log('[ElevateCV] Resume data ready for save:', data);
+        document.addEventListener('wizard:save', async (e) => {
+            const saveBtn = document.getElementById('wiz-btn-save');
+            const originalBtnHtml = saveBtn ? saveBtn.innerHTML : 'Save Resume';
 
-            // Visual feedback
-            const badge = document.getElementById('wiz-status-badge');
-            if (badge) {
-                badge.textContent = 'Saved (local)';
-                badge.classList.remove('wizard-status-badge--draft');
-                badge.classList.add('wizard-status-badge--saved');
-                setTimeout(() => {
-                    badge.textContent = 'Draft';
-                    badge.classList.add('wizard-status-badge--draft');
-                    badge.classList.remove('wizard-status-badge--saved');
-                }, 3000);
+            if (BuilderState.isSavingNow()) return;
+
+            try {
+                // Set loading indicator on button
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = `
+                        <svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
+                            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+                        </svg>
+                        Saving...
+                    `;
+                }
+
+                BuilderState.setSaving(true);
+                const currentStep = BuilderState.getStep();
+                flushStep(currentStep);
+
+                const data = BuilderState.get();
+                const existingId = BuilderState.getId();
+                let savedResume;
+
+                if (existingId) {
+                    savedResume = await ResumeService.update(existingId, data);
+                } else {
+                    savedResume = await ResumeService.createResume(data);
+                }
+
+                if (savedResume && savedResume._id) {
+                    BuilderState.setId(savedResume._id);
+
+                    // Update URL silently without full reload
+                    const newUrl = `${window.location.pathname}?resumeId=${savedResume._id}`;
+                    window.history.pushState({ path: newUrl }, '', newUrl);
+
+                    // Update visual status badge
+                    const badge = document.getElementById('wiz-status-badge');
+                    if (badge) {
+                        badge.textContent = 'Saved';
+                        badge.classList.remove('wizard-status-badge--draft');
+                        badge.classList.add('wizard-status-badge--saved');
+                        setTimeout(() => {
+                            badge.textContent = 'Draft';
+                            badge.classList.add('wizard-status-badge--draft');
+                            badge.classList.remove('wizard-status-badge--saved');
+                        }, 4000);
+                    }
+
+                    showToast('Resume saved successfully!', 'success');
+                }
+            } catch (err) {
+                console.error('[ElevateCV] Save error:', err);
+                showToast(err.message || 'Failed to save resume. Local edits preserved.', 'error');
+            } finally {
+                BuilderState.setSaving(false);
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalBtnHtml;
+                }
             }
-
-            // Dispatch a toast notification
-            showToast('Resume data captured! API integration coming in Sprint 3.', 'success');
         });
     }
 
@@ -247,16 +319,25 @@ const ResumeBuilderV2 = (() => {
 
         const toast = document.createElement('div');
         toast.id = 'wiz-toast';
-        toast.textContent = message;
 
-        const isSuccess = type === 'success';
+        let bg = 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)';
+        let icon = '✅';
+
+        if (type === 'error') {
+            bg = 'rgba(239, 68, 68, 0.95)';
+            icon = '❌';
+        } else if (type === 'info') {
+            bg = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)';
+            icon = 'ℹ️';
+        }
+
+        toast.innerHTML = `<span style="margin-right: 8px;">${icon}</span> ${message}`;
+
         Object.assign(toast.style, {
             position: 'fixed',
             bottom: '28px',
             right: '28px',
-            background: isSuccess
-                ? 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)'
-                : 'rgba(239, 68, 68, 0.9)',
+            background: bg,
             color: '#fff',
             padding: '14px 22px',
             borderRadius: '14px',
@@ -268,8 +349,10 @@ const ResumeBuilderV2 = (() => {
             opacity: '0',
             transform: 'translateY(12px)',
             transition: 'opacity 0.3s, transform 0.3s',
-            maxWidth: '340px',
-            lineHeight: '1.4'
+            maxWidth: '360px',
+            lineHeight: '1.4',
+            display: 'flex',
+            alignItems: 'center'
         });
 
         document.body.appendChild(toast);
@@ -288,7 +371,7 @@ const ResumeBuilderV2 = (() => {
     /* ─────────────────────────────────────────────────────────────── */
     /*  Bootstrap                                                       */
     /* ─────────────────────────────────────────────────────────────── */
-    function init() {
+    async function init() {
         buildShell();
 
         // Progress bar component
@@ -315,6 +398,9 @@ const ResumeBuilderV2 = (() => {
         // Save handler
         initSaveHandler();
 
+        // Load resume if URL contains resumeId
+        await initLoad();
+
         // Initial ring state
         updateCompletionRing();
     }
@@ -326,3 +412,4 @@ const ResumeBuilderV2 = (() => {
 document.addEventListener('DOMContentLoaded', () => {
     ResumeBuilderV2.init();
 });
+
