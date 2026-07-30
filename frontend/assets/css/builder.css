@@ -462,17 +462,26 @@
     border: 1.5px solid var(--border-base);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    transition: border-color var(--transition-base);
-    animation: entryIn 0.3s ease-out;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    animation: entryIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes entryIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.entry-card--anim-out {
+    animation: entryOut 0.25s ease-in forwards !important;
+}
+
+@keyframes entryOut {
+    from { opacity: 1; transform: translateY(0); max-height: 600px; opacity: 1; }
+    to   { opacity: 0; transform: translateY(-10px); max-height: 0; padding-top: 0; padding-bottom: 0; margin: 0; }
 }
 
 .entry-card:hover {
-    border-color: rgba(124, 58, 237, 0.2);
+    border-color: rgba(124, 58, 237, 0.25);
 }
 
 .entry-card__header {
@@ -482,12 +491,29 @@
     padding: var(--space-4) var(--space-5);
     background: rgba(15, 23, 42, 0.5);
     border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition-fast);
+}
+
+.entry-card__header:hover {
+    background: rgba(30, 41, 59, 0.6);
+}
+
+.entry-card.is-collapsed .entry-card__header {
+    border-bottom-color: transparent;
 }
 
 .entry-card__header-left {
     display: flex;
     align-items: center;
     gap: var(--space-3);
+}
+
+.entry-card__header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
 }
 
 .entry-card__num {
@@ -519,6 +545,42 @@
 
 .entry-card__body {
     padding: var(--space-5);
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease-out, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 1200px;
+    opacity: 1;
+    overflow: hidden;
+}
+
+.entry-card.is-collapsed .entry-card__body {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    pointer-events: none;
+}
+
+.btn-entry-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background var(--transition-fast), color var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.btn-entry-toggle:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+}
+
+.entry-card.is-collapsed .btn-entry-toggle svg {
+    transform: rotate(-90deg);
 }
 
 .btn-entry-remove {
@@ -1028,3 +1090,34 @@
         display: none;
     }
 }
+
+/* ── Validation & Animation Additions ──────────────────────────────── */
+
+.form-input.is-invalid,
+.form-select.is-invalid,
+.form-textarea.is-invalid {
+    border-color: var(--color-error) !important;
+    background: rgba(239, 68, 68, 0.06) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18) !important;
+}
+
+.form-error-text {
+    font-size: 11px;
+    color: var(--color-error);
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: entryIn 0.2s ease-out;
+}
+
+@keyframes tagInputShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+
+.tag-input-shake {
+    animation: tagInputShake 0.3s ease-in-out;
+}
+

@@ -1,32 +1,41 @@
 /**
  * ElevateCV AI — Step Panel Renderers
- * One function per wizard step. Each function:
- *   1. Renders the HTML into its panel element.
- *   2. Pre-populates fields from BuilderState.
- *   3. Returns a flush() function that reads the DOM back into BuilderState.
+ * One module per wizard step.
  *
- * NO API calls. NO fetch. Pure DOM + state.
+ * Responsibilities:
+ *   1. Renders HTML into panel elements with clean SVG iconography (no unicode emojis).
+ *   2. Provides dynamic repeatable section cards (Education, Experience, Projects, Certifications, Languages)
+ *      with Add, Remove (animated exit), Edit, Collapsible bodies, and live header summary updates.
+ *   3. Instant BuilderState synchronization on input/change.
+ *   4. Validation engine for required fields with visual highlighting (.is-invalid).
  */
 
-/* ─────────────────────────────────────────────────────────────────────────
-   Shared helpers
-───────────────────────────────────────────────────────────────────────── */
+/* ── SVG Icon Definitions (Clean & Modern) ────────────────────────────── */
+const PANEL_ICONS = {
+    personal: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+    summary:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
+    education:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+    experience:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+    projects: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.35 22.35 0 0 1-3.95 2z"/></svg>`,
+    skills:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+    certs:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>`,
+    languages:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+    review:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+    chevron:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`,
+    trash:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>`,
+    plus:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`
+};
 
-/** Generate a unique ID suffix for elements inside dynamic entries */
+/* ── Shared Helpers ─────────────────────────────────────────────────────── */
+
 let _uid = 0;
 function uid() { return ++_uid; }
 
-/** Safely get a value from a nested path in an object */
-function deepGet(obj, ...keys) {
-    return keys.reduce((o, k) => (o && o[k] !== undefined ? o[k] : ''), obj);
-}
-
-/** Create a section card wrapper */
-function wrapCard(icon, title, subtitle, bodyHtml) {
+function wrapCard(iconSvg, title, subtitle, bodyHtml) {
     return `
         <div class="wiz-card">
             <div class="wiz-card__head">
-                <div class="wiz-card__icon">${icon}</div>
+                <div class="wiz-card__icon">${iconSvg}</div>
                 <div>
                     <div class="wiz-card__title">${title}</div>
                     <div class="wiz-card__subtitle">${subtitle}</div>
@@ -37,7 +46,6 @@ function wrapCard(icon, title, subtitle, bodyHtml) {
     `;
 }
 
-/** Escape HTML to prevent XSS in dynamic content */
 function esc(str) {
     return (str || '').replace(/[&<>"']/g, c => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -53,7 +61,7 @@ const StepPersonal = (() => {
     function render(panelEl) {
         const data = BuilderState.get().personalInformation;
 
-        panelEl.innerHTML = wrapCard('👤', 'Personal Information', 'Your contact details and professional links', `
+        panelEl.innerHTML = wrapCard(PANEL_ICONS.personal, 'Personal Information', 'Your contact details and professional links', `
             <div class="form-grid">
                 <div class="form-group">
                     <label class="form-label" for="pi-fullName">Full Name <span class="required">*</span></label>
@@ -85,16 +93,30 @@ const StepPersonal = (() => {
                 </div>
             </div>
             <div style="margin-top:var(--space-6);">
-                ${wrapCard('📝', 'Professional Summary', 'A brief overview about yourself', `
+                ${wrapCard(PANEL_ICONS.summary, 'Professional Summary', 'A brief overview about yourself', `
                     <div class="form-group">
                         <textarea id="pi-summary" class="form-textarea" rows="5"
-                            placeholder="Passionate software engineer with 3+ years of experience building scalable web applications…"
+                            placeholder="Passionate software engineer with experience building scalable web applications…"
                         >${esc(BuilderState.get().professionalSummary)}</textarea>
-                        <span class="form-hint">Tip: Keep it to 3–5 sentences focused on your most relevant experience.</span>
+                        <span class="form-hint">Tip: Keep it to 3–5 sentences focused on your key strengths and experience.</span>
                     </div>
                 `)}
             </div>
         `);
+
+        // Real-time synchronization listeners
+        const inputs = panelEl.querySelectorAll('input, textarea');
+        inputs.forEach(inp => {
+            inp.addEventListener('input', () => {
+                flush();
+                // Clear validation highlight on typing
+                if (inp.classList.contains('is-invalid')) {
+                    inp.classList.remove('is-invalid');
+                    const errHint = inp.parentNode.querySelector('.form-error-text');
+                    if (errHint) errHint.remove();
+                }
+            });
+        });
     }
 
     function flush() {
@@ -112,43 +134,45 @@ const StepPersonal = (() => {
 })();
 
 /* ─────────────────────────────────────────────────────────────────────────
-   STEP 2 — Education
+   STEP 2 — Education (Dynamic Repeatable)
 ───────────────────────────────────────────────────────────────────────── */
 
 const StepEducation = (() => {
+    const LIST_ID = 'edu-entry-list';
 
-    const EDU_LIST_ID = 'edu-entry-list';
-
-    function createEntryHTML(edu = {}, idx = 0) {
+    function createEntryHTML(edu = {}, idx = 0, isCollapsed = false) {
         const id = uid();
         return `
-            <div class="entry-card" data-entry="edu">
-                <div class="entry-card__header">
+            <div class="entry-card ${isCollapsed ? 'is-collapsed' : ''}" data-entry="edu" data-uid="${id}">
+                <div class="entry-card__header" role="button" tabindex="0">
                     <div class="entry-card__header-left">
                         <div class="entry-card__num">${idx + 1}</div>
                         <div>
-                            <div class="entry-card__label">${esc(edu.college) || 'New Education Entry'}</div>
-                            <div class="entry-card__label-sub">${esc(edu.degree) || 'Degree / Program'}</div>
+                            <div class="entry-card__label edu-label-title">${esc(edu.college) || 'New Education Entry'}</div>
+                            <div class="entry-card__label-sub edu-label-sub">${esc(edu.degree) || 'Degree / Qualification'}</div>
                         </div>
                     </div>
-                    <button type="button" class="btn-entry-remove" aria-label="Remove education entry">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                    </button>
+                    <div class="entry-card__header-right">
+                        <button type="button" class="btn-entry-toggle" aria-label="Toggle section">
+                            ${PANEL_ICONS.chevron}
+                        </button>
+                        <button type="button" class="btn-entry-remove" aria-label="Remove education entry">
+                            ${PANEL_ICONS.trash}
+                        </button>
+                    </div>
                 </div>
                 <div class="entry-card__body">
                     <div class="form-grid">
                         <div class="form-group form-group--full">
                             <label class="form-label">College / University</label>
-                            <input type="text" class="form-input edu-college" placeholder="Indian Institute of Technology, Delhi" value="${esc(edu.college)}">
+                            <input type="text" class="form-input edu-college" placeholder="Indian Institute of Technology" value="${esc(edu.college)}">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Degree</label>
-                            <input type="text" class="form-input edu-degree" placeholder="B.Tech" value="${esc(edu.degree)}">
+                            <input type="text" class="form-input edu-degree" placeholder="B.Tech / Bachelor of Science" value="${esc(edu.degree)}">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Branch / Field</label>
+                            <label class="form-label">Branch / Field of Study</label>
                             <input type="text" class="form-input edu-branch" placeholder="Computer Science & Engineering" value="${esc(edu.branch)}">
                         </div>
                         <div class="form-group">
@@ -169,63 +193,85 @@ const StepEducation = (() => {
         `;
     }
 
-    function bindEntry(entryEl) {
+    function bindEntryEvents(entryEl) {
+        const header = entryEl.querySelector('.entry-card__header');
+        const toggleBtn = entryEl.querySelector('.btn-entry-toggle');
         const removeBtn = entryEl.querySelector('.btn-entry-remove');
-        if (removeBtn) {
-            removeBtn.addEventListener('click', () => {
-                entryEl.style.opacity = '0';
-                entryEl.style.transform = 'translateY(-8px)';
-                entryEl.style.transition = 'opacity 0.2s, transform 0.2s';
-                setTimeout(() => {
-                    entryEl.remove();
-                    renumberEntries(EDU_LIST_ID);
-                }, 200);
-            });
-        }
+        const collegeInp = entryEl.querySelector('.edu-college');
+        const degreeInp  = entryEl.querySelector('.edu-degree');
+        const labelTitle = entryEl.querySelector('.edu-label-title');
+        const labelSub   = entryEl.querySelector('.edu-label-sub');
+
+        // Collapse / Expand toggle
+        const toggleCollapse = (e) => {
+            if (e.target.closest('.btn-entry-remove')) return;
+            entryEl.classList.toggle('is-collapsed');
+        };
+
+        header.addEventListener('click', toggleCollapse);
+        header.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCollapse(e); } });
+
+        // Remove entry with exit animation
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            entryEl.classList.add('entry-card--anim-out');
+            setTimeout(() => {
+                entryEl.remove();
+                renumberEntries();
+                flush();
+            }, 230);
+        });
+
+        // Real-time live header updates and instant BuilderState sync
+        const onInput = () => {
+            labelTitle.textContent = collegeInp.value.trim() || 'New Education Entry';
+            labelSub.textContent   = degreeInp.value.trim()  || 'Degree / Qualification';
+            flush();
+        };
+
+        entryEl.querySelectorAll('input').forEach(inp => inp.addEventListener('input', onInput));
     }
 
-    function renumberEntries(listId) {
-        document.querySelectorAll(`#${listId} .entry-card`).forEach((el, idx) => {
+    function renumberEntries() {
+        document.querySelectorAll(`#${LIST_ID} .entry-card`).forEach((el, idx) => {
             const num = el.querySelector('.entry-card__num');
             if (num) num.textContent = idx + 1;
         });
     }
 
     function render(panelEl) {
-        const educationList = BuilderState.get().education;
+        const educationList = BuilderState.get().education || [];
 
-        panelEl.innerHTML = wrapCard('🎓', 'Education', 'Academic background and qualifications', `
-            <div class="entry-list" id="${EDU_LIST_ID}">
+        panelEl.innerHTML = wrapCard(PANEL_ICONS.education, 'Education', 'Academic background and qualifications', `
+            <div class="entry-list" id="${LIST_ID}">
                 ${educationList.length > 0
-                    ? educationList.map((e, i) => createEntryHTML(e, i)).join('')
-                    : createEntryHTML({}, 0)}
+                    ? educationList.map((e, i) => createEntryHTML(e, i, i > 0)).join('')
+                    : createEntryHTML({}, 0, false)}
             </div>
             <button type="button" class="btn-add-entry" id="edu-add-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M12 5v14M5 12h14"/>
-                </svg>
-                Add Education
+                ${PANEL_ICONS.plus}
+                Add Education Entry
             </button>
         `);
 
-        // Bind existing entries
-        panelEl.querySelectorAll('[data-entry="edu"]').forEach(bindEntry);
+        panelEl.querySelectorAll('[data-entry="edu"]').forEach(bindEntryEvents);
 
-        // Add new entry
         panelEl.querySelector('#edu-add-btn').addEventListener('click', () => {
-            const list = document.getElementById(EDU_LIST_ID);
+            const list = document.getElementById(LIST_ID);
             const count = list.querySelectorAll('[data-entry="edu"]').length;
             const tmp = document.createElement('div');
-            tmp.innerHTML = createEntryHTML({}, count);
+            tmp.innerHTML = createEntryHTML({}, count, false);
             const entryEl = tmp.firstElementChild;
-            bindEntry(entryEl);
+            bindEntryEvents(entryEl);
             list.appendChild(entryEl);
+            entryEl.querySelector('input')?.focus();
+            flush();
         });
     }
 
     function flush() {
         const entries = [];
-        document.querySelectorAll(`#${EDU_LIST_ID} [data-entry="edu"]`).forEach(el => {
+        document.querySelectorAll(`#${LIST_ID} [data-entry="edu"]`).forEach(el => {
             entries.push({
                 college:   el.querySelector('.edu-college')?.value.trim()   || '',
                 degree:    el.querySelector('.edu-degree')?.value.trim()    || '',
@@ -242,41 +288,43 @@ const StepEducation = (() => {
 })();
 
 /* ─────────────────────────────────────────────────────────────────────────
-   STEP 3 — Experience
+   STEP 3 — Experience (Dynamic Repeatable + Bullet Editor)
 ───────────────────────────────────────────────────────────────────────── */
 
 const StepExperience = (() => {
+    const LIST_ID = 'exp-entry-list';
+    const bulletInstances = {};
 
-    const EXP_LIST_ID = 'exp-entry-list';
-    const bulletEditorInstances = {};
-
-    function createEntryEl(exp = {}, idx = 0) {
+    function createEntryEl(exp = {}, idx = 0, isCollapsed = false) {
         const id = uid();
         const wrapper = document.createElement('div');
-        wrapper.className = 'entry-card';
+        wrapper.className = `entry-card ${isCollapsed ? 'is-collapsed' : ''}`;
         wrapper.dataset.entry = 'exp';
         wrapper.dataset.uid = id;
 
         wrapper.innerHTML = `
-            <div class="entry-card__header">
+            <div class="entry-card__header" role="button" tabindex="0">
                 <div class="entry-card__header-left">
                     <div class="entry-card__num">${idx + 1}</div>
                     <div>
-                        <div class="entry-card__label">${esc(exp.role) || 'New Experience Entry'}</div>
-                        <div class="entry-card__label-sub">${esc(exp.company) || 'Company'}</div>
+                        <div class="entry-card__label exp-label-title">${esc(exp.role) || 'New Experience Entry'}</div>
+                        <div class="entry-card__label-sub exp-label-sub">${esc(exp.company) || 'Company'}</div>
                     </div>
                 </div>
-                <button type="button" class="btn-entry-remove" aria-label="Remove experience">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </button>
+                <div class="entry-card__header-right">
+                    <button type="button" class="btn-entry-toggle" aria-label="Toggle section">
+                        ${PANEL_ICONS.chevron}
+                    </button>
+                    <button type="button" class="btn-entry-remove" aria-label="Remove experience">
+                        ${PANEL_ICONS.trash}
+                    </button>
+                </div>
             </div>
             <div class="entry-card__body">
                 <div class="form-grid" style="margin-bottom:var(--space-5);">
                     <div class="form-group">
                         <label class="form-label">Company</label>
-                        <input type="text" class="form-input exp-company" placeholder="Google" value="${esc(exp.company)}">
+                        <input type="text" class="form-input exp-company" placeholder="Google / Microsoft" value="${esc(exp.company)}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Role / Title</label>
@@ -308,101 +356,118 @@ const StepExperience = (() => {
             </div>
         `;
 
-        // Current job checkbox toggles end date
-        const cbCurrent  = wrapper.querySelector('.exp-isCurrent');
+        const header = wrapper.querySelector('.entry-card__header');
+        const removeBtn = wrapper.querySelector('.btn-entry-remove');
+        const roleInp = wrapper.querySelector('.exp-role');
+        const companyInp = wrapper.querySelector('.exp-company');
+        const labelTitle = wrapper.querySelector('.exp-label-title');
+        const labelSub = wrapper.querySelector('.exp-label-sub');
+        const cbCurrent = wrapper.querySelector('.exp-isCurrent');
         const endDateInp = wrapper.querySelector('.exp-endDate');
+
+        // Toggle collapse
+        const toggleCollapse = (e) => {
+            if (e.target.closest('.btn-entry-remove')) return;
+            wrapper.classList.toggle('is-collapsed');
+        };
+        header.addEventListener('click', toggleCollapse);
+
+        // Current job checkbox
         cbCurrent.addEventListener('change', () => {
             endDateInp.disabled = cbCurrent.checked;
             if (cbCurrent.checked) endDateInp.value = '';
+            flush();
         });
 
         // Remove button
-        wrapper.querySelector('.btn-entry-remove').addEventListener('click', () => {
-            delete bulletEditorInstances[id];
-            wrapper.style.opacity = '0';
-            wrapper.style.transform = 'translateY(-8px)';
-            wrapper.style.transition = 'opacity 0.2s, transform 0.2s';
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            delete bulletInstances[id];
+            wrapper.classList.add('entry-card--anim-out');
             setTimeout(() => {
                 wrapper.remove();
-                renumberEntries(EXP_LIST_ID);
-            }, 200);
+                renumberEntries();
+                flush();
+            }, 230);
         });
 
-        // Bullet editor
+        // Live header text & sync
+        const onInput = () => {
+            labelTitle.textContent = roleInp.value.trim() || 'New Experience Entry';
+            labelSub.textContent   = companyInp.value.trim() || 'Company';
+            flush();
+        };
+        wrapper.querySelectorAll('input').forEach(inp => inp.addEventListener('input', onInput));
+
+        // Bullet editor initialization
         const bulletContainer = wrapper.querySelector('.exp-bullets');
         const be = BulletEditor.create(bulletContainer, {
-            placeholder: 'Designed REST APIs that reduced latency by 40%…'
+            placeholder: 'Designed REST APIs that reduced latency by 40%…',
+            onChange: () => flush()
         });
         be.setBullets(exp.description || []);
-        bulletEditorInstances[id] = be;
+        bulletInstances[id] = be;
 
         return wrapper;
     }
 
-    function renumberEntries(listId) {
-        document.querySelectorAll(`#${listId} .entry-card`).forEach((el, idx) => {
+    function renumberEntries() {
+        document.querySelectorAll(`#${LIST_ID} .entry-card`).forEach((el, idx) => {
             const num = el.querySelector('.entry-card__num');
             if (num) num.textContent = idx + 1;
         });
     }
 
     function render(panelEl) {
-        // Clear old bullet instances
-        Object.keys(bulletEditorInstances).forEach(k => delete bulletEditorInstances[k]);
+        Object.keys(bulletInstances).forEach(k => delete bulletInstances[k]);
 
         const list = document.createElement('div');
         list.className = 'entry-list';
-        list.id = EXP_LIST_ID;
+        list.id = LIST_ID;
 
-        const expList = BuilderState.get().experience;
+        const expList = BuilderState.get().experience || [];
         (expList.length > 0 ? expList : [{}]).forEach((exp, i) => {
-            list.appendChild(createEntryEl(exp, i));
+            list.appendChild(createEntryEl(exp, i, i > 0));
         });
 
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'btn-add-entry';
         addBtn.id = 'exp-add-btn';
-        addBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M12 5v14M5 12h14"/>
-            </svg>
-            Add Experience
-        `;
+        addBtn.innerHTML = `${PANEL_ICONS.plus} Add Work Experience`;
         addBtn.addEventListener('click', () => {
             const count = list.querySelectorAll('[data-entry="exp"]').length;
-            list.appendChild(createEntryEl({}, count));
+            const newEl = createEntryEl({}, count, false);
+            list.appendChild(newEl);
+            newEl.querySelector('input')?.focus();
+            flush();
         });
 
         panelEl.innerHTML = '';
-        panelEl.appendChild(
-            (() => {
-                const card = document.createElement('div');
-                card.className = 'wiz-card';
-                card.innerHTML = `
-                    <div class="wiz-card__head">
-                        <div class="wiz-card__icon">💼</div>
-                        <div>
-                            <div class="wiz-card__title">Work Experience</div>
-                            <div class="wiz-card__subtitle">Internships, jobs, and freelance work</div>
-                        </div>
-                    </div>
-                `;
-                const body = document.createElement('div');
-                body.className = 'wiz-card__body';
-                body.appendChild(list);
-                body.appendChild(addBtn);
-                card.appendChild(body);
-                return card;
-            })()
-        );
+        const card = document.createElement('div');
+        card.className = 'wiz-card';
+        card.innerHTML = `
+            <div class="wiz-card__head">
+                <div class="wiz-card__icon">${PANEL_ICONS.experience}</div>
+                <div>
+                    <div class="wiz-card__title">Work Experience</div>
+                    <div class="wiz-card__subtitle">Internships, jobs, and freelance work</div>
+                </div>
+            </div>
+        `;
+        const body = document.createElement('div');
+        body.className = 'wiz-card__body';
+        body.appendChild(list);
+        body.appendChild(addBtn);
+        card.appendChild(body);
+        panelEl.appendChild(card);
     }
 
     function flush() {
         const entries = [];
-        document.querySelectorAll(`#${EXP_LIST_ID} [data-entry="exp"]`).forEach(el => {
+        document.querySelectorAll(`#${LIST_ID} [data-entry="exp"]`).forEach(el => {
             const id = el.dataset.uid;
-            const be = bulletEditorInstances[id];
+            const be = bulletInstances[id];
             entries.push({
                 company:   el.querySelector('.exp-company')?.value.trim()   || '',
                 role:      el.querySelector('.exp-role')?.value.trim()      || '',
@@ -420,42 +485,44 @@ const StepExperience = (() => {
 })();
 
 /* ─────────────────────────────────────────────────────────────────────────
-   STEP 4 — Projects
+   STEP 4 — Projects (Dynamic Repeatable + Tech Stack Tags + Bullet Editor)
 ───────────────────────────────────────────────────────────────────────── */
 
 const StepProjects = (() => {
-
-    const PROJ_LIST_ID = 'proj-entry-list';
+    const LIST_ID = 'proj-entry-list';
     const bulletInstances = {};
     const tagInstances    = {};
 
-    function createEntryEl(proj = {}, idx = 0) {
+    function createEntryEl(proj = {}, idx = 0, isCollapsed = false) {
         const id = uid();
         const wrapper = document.createElement('div');
-        wrapper.className = 'entry-card';
+        wrapper.className = `entry-card ${isCollapsed ? 'is-collapsed' : ''}`;
         wrapper.dataset.entry = 'proj';
         wrapper.dataset.uid = id;
 
         wrapper.innerHTML = `
-            <div class="entry-card__header">
+            <div class="entry-card__header" role="button" tabindex="0">
                 <div class="entry-card__header-left">
                     <div class="entry-card__num">${idx + 1}</div>
                     <div>
-                        <div class="entry-card__label">${esc(proj.title) || 'New Project'}</div>
-                        <div class="entry-card__label-sub">${(proj.techStack || []).slice(0, 3).join(', ') || 'Tech Stack'}</div>
+                        <div class="entry-card__label proj-label-title">${esc(proj.title) || 'New Project'}</div>
+                        <div class="entry-card__label-sub proj-label-sub">${(proj.techStack || []).slice(0, 3).join(', ') || 'Tech Stack'}</div>
                     </div>
                 </div>
-                <button type="button" class="btn-entry-remove" aria-label="Remove project">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </button>
+                <div class="entry-card__header-right">
+                    <button type="button" class="btn-entry-toggle" aria-label="Toggle section">
+                        ${PANEL_ICONS.chevron}
+                    </button>
+                    <button type="button" class="btn-entry-remove" aria-label="Remove project">
+                        ${PANEL_ICONS.trash}
+                    </button>
+                </div>
             </div>
             <div class="entry-card__body">
                 <div class="form-grid" style="margin-bottom:var(--space-5);">
                     <div class="form-group form-group--full">
                         <label class="form-label">Project Title</label>
-                        <input type="text" class="form-input proj-title" placeholder="ElevateCV AI — AI-powered Resume Builder" value="${esc(proj.title)}">
+                        <input type="text" class="form-input proj-title" placeholder="ElevateCV AI — AI Resume Builder" value="${esc(proj.title)}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">GitHub Repository</label>
@@ -477,29 +544,56 @@ const StepProjects = (() => {
             </div>
         `;
 
+        const header = wrapper.querySelector('.entry-card__header');
+        const removeBtn = wrapper.querySelector('.btn-entry-remove');
+        const titleInp = wrapper.querySelector('.proj-title');
+        const labelTitle = wrapper.querySelector('.proj-label-title');
+        const labelSub = wrapper.querySelector('.proj-label-sub');
+
+        // Toggle collapse
+        const toggleCollapse = (e) => {
+            if (e.target.closest('.btn-entry-remove')) return;
+            wrapper.classList.toggle('is-collapsed');
+        };
+        header.addEventListener('click', toggleCollapse);
+
         // Remove button
-        wrapper.querySelector('.btn-entry-remove').addEventListener('click', () => {
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             delete bulletInstances[id];
             delete tagInstances[id];
-            wrapper.style.opacity = '0';
-            wrapper.style.transform = 'translateY(-8px)';
-            wrapper.style.transition = 'opacity 0.2s, transform 0.2s';
+            wrapper.classList.add('entry-card--anim-out');
             setTimeout(() => {
                 wrapper.remove();
-                renumberEntries(PROJ_LIST_ID);
-            }, 200);
+                renumberEntries();
+                flush();
+            }, 230);
         });
+
+        // Live title header update
+        const onInput = () => {
+            labelTitle.textContent = titleInp.value.trim() || 'New Project';
+            flush();
+        };
+        wrapper.querySelectorAll('input').forEach(inp => inp.addEventListener('input', onInput));
 
         // Tech stack tag input
         const techContainer = wrapper.querySelector('.proj-techstack');
-        const ti = TagInput.create(techContainer, { placeholder: 'e.g. React — press Enter' });
+        const ti = TagInput.create(techContainer, {
+            placeholder: 'e.g. React, Node.js — press Enter',
+            onChange: (tags) => {
+                labelSub.textContent = tags.slice(0, 3).join(', ') || 'Tech Stack';
+                flush();
+            }
+        });
         ti.setTags(proj.techStack || []);
         tagInstances[id] = ti;
 
         // Description bullet editor
         const bulletContainer = wrapper.querySelector('.proj-bullets');
         const be = BulletEditor.create(bulletContainer, {
-            placeholder: 'Built authentication system using JWT and bcrypt…'
+            placeholder: 'Built authentication system using JWT and bcrypt…',
+            onChange: () => flush()
         });
         be.setBullets(proj.description || []);
         bulletInstances[id] = be;
@@ -507,8 +601,8 @@ const StepProjects = (() => {
         return wrapper;
     }
 
-    function renumberEntries(listId) {
-        document.querySelectorAll(`#${listId} .entry-card`).forEach((el, idx) => {
+    function renumberEntries() {
+        document.querySelectorAll(`#${LIST_ID} .entry-card`).forEach((el, idx) => {
             const num = el.querySelector('.entry-card__num');
             if (num) num.textContent = idx + 1;
         });
@@ -520,23 +614,21 @@ const StepProjects = (() => {
 
         const list = document.createElement('div');
         list.className = 'entry-list';
-        list.id = PROJ_LIST_ID;
+        list.id = LIST_ID;
 
-        const projList = BuilderState.get().projects;
-        (projList.length > 0 ? projList : [{}]).forEach((p, i) => list.appendChild(createEntryEl(p, i)));
+        const projList = BuilderState.get().projects || [];
+        (projList.length > 0 ? projList : [{}]).forEach((p, i) => list.appendChild(createEntryEl(p, i, i > 0)));
 
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'btn-add-entry';
-        addBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M12 5v14M5 12h14"/>
-            </svg>
-            Add Project
-        `;
+        addBtn.innerHTML = `${PANEL_ICONS.plus} Add Project`;
         addBtn.addEventListener('click', () => {
             const count = list.querySelectorAll('[data-entry="proj"]').length;
-            list.appendChild(createEntryEl({}, count));
+            const newEl = createEntryEl({}, count, false);
+            list.appendChild(newEl);
+            newEl.querySelector('input')?.focus();
+            flush();
         });
 
         panelEl.innerHTML = '';
@@ -544,7 +636,7 @@ const StepProjects = (() => {
         card.className = 'wiz-card';
         card.innerHTML = `
             <div class="wiz-card__head">
-                <div class="wiz-card__icon">🚀</div>
+                <div class="wiz-card__icon">${PANEL_ICONS.projects}</div>
                 <div>
                     <div class="wiz-card__title">Projects</div>
                     <div class="wiz-card__subtitle">Personal, academic, and professional projects</div>
@@ -561,7 +653,7 @@ const StepProjects = (() => {
 
     function flush() {
         const entries = [];
-        document.querySelectorAll(`#${PROJ_LIST_ID} [data-entry="proj"]`).forEach(el => {
+        document.querySelectorAll(`#${LIST_ID} [data-entry="proj"]`).forEach(el => {
             const id = el.dataset.uid;
             entries.push({
                 title:       el.querySelector('.proj-title')?.value.trim()    || '',
@@ -578,7 +670,7 @@ const StepProjects = (() => {
 })();
 
 /* ─────────────────────────────────────────────────────────────────────────
-   STEP 5 — Skills
+   STEP 5 — Skills (Modern Tag Inputs across 4 Categories)
 ───────────────────────────────────────────────────────────────────────── */
 
 const StepSkills = (() => {
@@ -589,40 +681,16 @@ const StepSkills = (() => {
     let tiLangs     = null;
 
     const CATEGORIES = [
-        {
-            key: 'technical',
-            label: 'Technical Skills',
-            dot: 'dot--technical',
-            placeholder: 'React, Node.js, MongoDB — press Enter',
-            example: 'e.g. React, Express, PostgreSQL, Docker'
-        },
-        {
-            key: 'soft',
-            label: 'Soft Skills',
-            dot: 'dot--soft',
-            placeholder: 'Leadership, Communication — press Enter',
-            example: 'e.g. Leadership, Problem Solving, Teamwork'
-        },
-        {
-            key: 'tools',
-            label: 'Tools & Technologies',
-            dot: 'dot--tools',
-            placeholder: 'Git, Figma, VS Code — press Enter',
-            example: 'e.g. Git, Docker, Jira, Figma, Postman'
-        },
-        {
-            key: 'languages',
-            label: 'Programming Languages',
-            dot: 'dot--languages',
-            placeholder: 'JavaScript, Python, C++ — press Enter',
-            example: 'e.g. JavaScript, Python, Java, C++'
-        }
+        { key: 'technical', label: 'Technical Skills', dot: 'dot--technical', placeholder: 'React, Node.js, Express, MongoDB — press Enter' },
+        { key: 'soft',      label: 'Soft Skills',      dot: 'dot--soft',      placeholder: 'Leadership, Problem Solving, Teamwork — press Enter' },
+        { key: 'tools',     label: 'Tools & Tech',     dot: 'dot--tools',     placeholder: 'Git, Docker, VS Code, Figma, Postman — press Enter' },
+        { key: 'languages', label: 'Programming Langs',dot: 'dot--languages', placeholder: 'JavaScript, Python, Java, C++, TypeScript — press Enter' }
     ];
 
     function render(panelEl) {
-        const skills = BuilderState.get().skills;
+        const skills = BuilderState.get().skills || {};
 
-        panelEl.innerHTML = wrapCard('⚡', 'Skills', 'Technical skills, tools, and soft skills', `
+        panelEl.innerHTML = wrapCard(PANEL_ICONS.skills, 'Skills', 'Technical skills, tools, and soft skills', `
             <div class="skills-categories">
                 ${CATEGORIES.map(cat => `
                     <div class="skills-category">
@@ -631,23 +699,23 @@ const StepSkills = (() => {
                             ${cat.label}
                         </div>
                         <div id="skill-cat-${cat.key}"></div>
-                        <span class="form-hint">${cat.example}</span>
                     </div>
                 `).join('')}
             </div>
         `);
 
-        // Create tag inputs for each category
-        const s = skills || {};
-        tiTechnical = TagInput.create(document.getElementById('skill-cat-technical'), { placeholder: CATEGORIES[0].placeholder });
-        tiSoft      = TagInput.create(document.getElementById('skill-cat-soft'),      { placeholder: CATEGORIES[1].placeholder });
-        tiTools     = TagInput.create(document.getElementById('skill-cat-tools'),     { placeholder: CATEGORIES[2].placeholder });
-        tiLangs     = TagInput.create(document.getElementById('skill-cat-languages'), { placeholder: CATEGORIES[3].placeholder });
+        // Real-time state sync on tag change
+        const onChange = () => flush();
 
-        tiTechnical.setTags(s.technical || []);
-        tiSoft.setTags(s.soft      || []);
-        tiTools.setTags(s.tools    || []);
-        tiLangs.setTags(s.languages || []);
+        tiTechnical = TagInput.create(document.getElementById('skill-cat-technical'), { placeholder: CATEGORIES[0].placeholder, onChange });
+        tiSoft      = TagInput.create(document.getElementById('skill-cat-soft'),      { placeholder: CATEGORIES[1].placeholder, onChange });
+        tiTools     = TagInput.create(document.getElementById('skill-cat-tools'),     { placeholder: CATEGORIES[2].placeholder, onChange });
+        tiLangs     = TagInput.create(document.getElementById('skill-cat-languages'), { placeholder: CATEGORIES[3].placeholder, onChange });
+
+        tiTechnical.setTags(skills.technical || []);
+        tiSoft.setTags(skills.soft      || []);
+        tiTools.setTags(skills.tools    || []);
+        tiLangs.setTags(skills.languages || []);
     }
 
     function flush() {
@@ -655,7 +723,7 @@ const StepSkills = (() => {
             technical: tiTechnical ? tiTechnical.getTags() : [],
             soft:      tiSoft      ? tiSoft.getTags()      : [],
             tools:     tiTools     ? tiTools.getTags()     : [],
-            languages: tiLangs    ? tiLangs.getTags()     : []
+            languages: tiLangs     ? tiLangs.getTags()     : []
         });
     }
 
@@ -663,29 +731,32 @@ const StepSkills = (() => {
 })();
 
 /* ─────────────────────────────────────────────────────────────────────────
-   STEP 6 — Certifications
+   STEP 6 — Certifications (Dynamic Repeatable)
 ───────────────────────────────────────────────────────────────────────── */
 
 const StepCertifications = (() => {
+    const LIST_ID = 'cert-entry-list';
 
-    const CERT_LIST_ID = 'cert-entry-list';
-
-    function createEntryHTML(cert = {}, idx = 0) {
+    function createEntryHTML(cert = {}, idx = 0, isCollapsed = false) {
+        const id = uid();
         return `
-            <div class="entry-card" data-entry="cert">
-                <div class="entry-card__header">
+            <div class="entry-card ${isCollapsed ? 'is-collapsed' : ''}" data-entry="cert" data-uid="${id}">
+                <div class="entry-card__header" role="button" tabindex="0">
                     <div class="entry-card__header-left">
                         <div class="entry-card__num">${idx + 1}</div>
                         <div>
-                            <div class="entry-card__label">${esc(cert.name) || 'New Certification'}</div>
-                            <div class="entry-card__label-sub">${esc(cert.issuer) || 'Issuing Organization'}</div>
+                            <div class="entry-card__label cert-label-title">${esc(cert.name) || 'New Certification'}</div>
+                            <div class="entry-card__label-sub cert-label-sub">${esc(cert.issuer) || 'Issuing Organization'}</div>
                         </div>
                     </div>
-                    <button type="button" class="btn-entry-remove" aria-label="Remove certification">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                    </button>
+                    <div class="entry-card__header-right">
+                        <button type="button" class="btn-entry-toggle" aria-label="Toggle section">
+                            ${PANEL_ICONS.chevron}
+                        </button>
+                        <button type="button" class="btn-entry-remove" aria-label="Remove certification">
+                            ${PANEL_ICONS.trash}
+                        </button>
+                    </div>
                 </div>
                 <div class="entry-card__body">
                     <div class="form-grid">
@@ -711,65 +782,79 @@ const StepCertifications = (() => {
         `;
     }
 
-    function bindRemoveButtons(panelEl) {
-        panelEl.querySelectorAll(`#${CERT_LIST_ID} .btn-entry-remove`).forEach(btn => {
-            btn.addEventListener('click', () => {
-                const entry = btn.closest('[data-entry="cert"]');
-                if (entry) {
-                    entry.style.opacity = '0';
-                    entry.style.transform = 'translateY(-8px)';
-                    entry.style.transition = 'opacity 0.2s, transform 0.2s';
-                    setTimeout(() => { entry.remove(); renumberEntries(); }, 200);
-                }
-            });
+    function bindEntryEvents(entryEl) {
+        const header = entryEl.querySelector('.entry-card__header');
+        const removeBtn = entryEl.querySelector('.btn-entry-remove');
+        const nameInp = entryEl.querySelector('.cert-name');
+        const issuerInp = entryEl.querySelector('.cert-issuer');
+        const labelTitle = entryEl.querySelector('.cert-label-title');
+        const labelSub = entryEl.querySelector('.cert-label-sub');
+
+        // Toggle collapse
+        header.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-entry-remove')) return;
+            entryEl.classList.toggle('is-collapsed');
         });
+
+        // Remove
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            entryEl.classList.add('entry-card--anim-out');
+            setTimeout(() => {
+                entryEl.remove();
+                renumberEntries();
+                flush();
+            }, 230);
+        });
+
+        // Live header text & sync
+        const onInput = () => {
+            labelTitle.textContent = nameInp.value.trim() || 'New Certification';
+            labelSub.textContent   = issuerInp.value.trim() || 'Issuing Organization';
+            flush();
+        };
+        entryEl.querySelectorAll('input').forEach(inp => inp.addEventListener('input', onInput));
     }
 
     function renumberEntries() {
-        document.querySelectorAll(`#${CERT_LIST_ID} .entry-card`).forEach((el, idx) => {
+        document.querySelectorAll(`#${LIST_ID} .entry-card`).forEach((el, idx) => {
             const num = el.querySelector('.entry-card__num');
             if (num) num.textContent = idx + 1;
         });
     }
 
     function render(panelEl) {
-        const certs = BuilderState.get().certifications;
+        const certs = BuilderState.get().certifications || [];
 
-        panelEl.innerHTML = wrapCard('🏆', 'Certifications', 'Professional certifications and credentials', `
-            <div class="entry-list" id="${CERT_LIST_ID}">
+        panelEl.innerHTML = wrapCard(PANEL_ICONS.certs, 'Certifications', 'Professional certifications and credentials', `
+            <div class="entry-list" id="${LIST_ID}">
                 ${certs.length > 0
-                    ? certs.map((c, i) => createEntryHTML(c, i)).join('')
-                    : createEntryHTML({}, 0)}
+                    ? certs.map((c, i) => createEntryHTML(c, i, i > 0)).join('')
+                    : createEntryHTML({}, 0, false)}
             </div>
             <button type="button" class="btn-add-entry" id="cert-add-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M12 5v14M5 12h14"/>
-                </svg>
-                Add Certification
+                ${PANEL_ICONS.plus} Add Certification
             </button>
         `);
 
-        bindRemoveButtons(panelEl);
+        panelEl.querySelectorAll('[data-entry="cert"]').forEach(bindEntryEvents);
 
         panelEl.querySelector('#cert-add-btn').addEventListener('click', () => {
-            const list = document.getElementById(CERT_LIST_ID);
+            const list = document.getElementById(LIST_ID);
             const count = list.querySelectorAll('[data-entry="cert"]').length;
             const tmp = document.createElement('div');
-            tmp.innerHTML = createEntryHTML({}, count);
-            const entry = tmp.firstElementChild;
-            entry.querySelector('.btn-entry-remove').addEventListener('click', () => {
-                entry.style.opacity = '0';
-                entry.style.transform = 'translateY(-8px)';
-                entry.style.transition = 'opacity 0.2s, transform 0.2s';
-                setTimeout(() => { entry.remove(); renumberEntries(); }, 200);
-            });
-            list.appendChild(entry);
+            tmp.innerHTML = createEntryHTML({}, count, false);
+            const entryEl = tmp.firstElementChild;
+            bindEntryEvents(entryEl);
+            list.appendChild(entryEl);
+            entryEl.querySelector('input')?.focus();
+            flush();
         });
     }
 
     function flush() {
         const entries = [];
-        document.querySelectorAll(`#${CERT_LIST_ID} [data-entry="cert"]`).forEach(el => {
+        document.querySelectorAll(`#${LIST_ID} [data-entry="cert"]`).forEach(el => {
             entries.push({
                 name:          el.querySelector('.cert-name')?.value.trim()   || '',
                 issuer:        el.querySelector('.cert-issuer')?.value.trim() || '',
@@ -784,43 +869,46 @@ const StepCertifications = (() => {
 })();
 
 /* ─────────────────────────────────────────────────────────────────────────
-   STEP 7 — Languages (Spoken)
+   STEP 7 — Spoken Languages (Dynamic Repeatable)
 ───────────────────────────────────────────────────────────────────────── */
 
 const StepLanguages = (() => {
-
-    const LANG_LIST_ID = 'lang-entry-list';
+    const LIST_ID = 'lang-entry-list';
 
     const PROFICIENCY_LEVELS = [
         '', 'Beginner', 'Elementary', 'Intermediate',
         'Upper-Intermediate', 'Advanced', 'Native'
     ];
 
-    function createEntryHTML(lang = {}, idx = 0) {
+    function createEntryHTML(lang = {}, idx = 0, isCollapsed = false) {
+        const id = uid();
         return `
-            <div class="entry-card" data-entry="lang">
-                <div class="entry-card__header">
+            <div class="entry-card ${isCollapsed ? 'is-collapsed' : ''}" data-entry="lang" data-uid="${id}">
+                <div class="entry-card__header" role="button" tabindex="0">
                     <div class="entry-card__header-left">
                         <div class="entry-card__num">${idx + 1}</div>
                         <div>
-                            <div class="entry-card__label">${esc(lang.language) || 'New Language'}</div>
-                            <div class="entry-card__label-sub">${esc(lang.proficiency) || 'Select proficiency'}</div>
+                            <div class="entry-card__label lang-label-title">${esc(lang.language) || 'New Language'}</div>
+                            <div class="entry-card__label-sub lang-label-sub">${esc(lang.proficiency) || 'Select proficiency'}</div>
                         </div>
                     </div>
-                    <button type="button" class="btn-entry-remove" aria-label="Remove language">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                    </button>
+                    <div class="entry-card__header-right">
+                        <button type="button" class="btn-entry-toggle" aria-label="Toggle section">
+                            ${PANEL_ICONS.chevron}
+                        </button>
+                        <button type="button" class="btn-entry-remove" aria-label="Remove language">
+                            ${PANEL_ICONS.trash}
+                        </button>
+                    </div>
                 </div>
                 <div class="entry-card__body">
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Language</label>
-                            <input type="text" class="form-input lang-language" placeholder="English" value="${esc(lang.language)}">
+                            <input type="text" class="form-input lang-language" placeholder="English / Hindi" value="${esc(lang.language)}">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Proficiency</label>
+                            <label class="form-label">Proficiency Level</label>
                             <select class="form-select lang-proficiency">
                                 ${PROFICIENCY_LEVELS.map(l =>
                                     `<option value="${l}" ${lang.proficiency === l ? 'selected' : ''}>${l || '-- Select level --'}</option>`
@@ -833,63 +921,81 @@ const StepLanguages = (() => {
         `;
     }
 
-    function bindRemoveButtons(panelEl) {
-        panelEl.querySelectorAll(`#${LANG_LIST_ID} .btn-entry-remove`).forEach(btn => {
-            btn.addEventListener('click', () => {
-                const entry = btn.closest('[data-entry="lang"]');
-                if (entry) {
-                    entry.style.opacity = '0'; entry.style.transform = 'translateY(-8px)';
-                    entry.style.transition = 'opacity 0.2s, transform 0.2s';
-                    setTimeout(() => { entry.remove(); renumberEntries(); }, 200);
-                }
-            });
+    function bindEntryEvents(entryEl) {
+        const header = entryEl.querySelector('.entry-card__header');
+        const removeBtn = entryEl.querySelector('.btn-entry-remove');
+        const langInp = entryEl.querySelector('.lang-language');
+        const profSel = entryEl.querySelector('.lang-proficiency');
+        const labelTitle = entryEl.querySelector('.lang-label-title');
+        const labelSub = entryEl.querySelector('.lang-label-sub');
+
+        // Toggle collapse
+        header.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-entry-remove')) return;
+            entryEl.classList.toggle('is-collapsed');
         });
+
+        // Remove
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            entryEl.classList.add('entry-card--anim-out');
+            setTimeout(() => {
+                entryEl.remove();
+                renumberEntries();
+                flush();
+            }, 230);
+        });
+
+        // Live header text & sync
+        const onInput = () => {
+            labelTitle.textContent = langInp.value.trim() || 'New Language';
+            labelSub.textContent   = profSel.value || 'Select proficiency';
+            flush();
+        };
+
+        langInp.addEventListener('input', onInput);
+        profSel.addEventListener('change', onInput);
     }
 
     function renumberEntries() {
-        document.querySelectorAll(`#${LANG_LIST_ID} .entry-card`).forEach((el, idx) => {
+        document.querySelectorAll(`#${LIST_ID} .entry-card`).forEach((el, idx) => {
             const num = el.querySelector('.entry-card__num');
             if (num) num.textContent = idx + 1;
         });
     }
 
     function render(panelEl) {
-        const langs = BuilderState.get().languages;
+        const langs = BuilderState.get().languages || [];
 
-        panelEl.innerHTML = wrapCard('🌐', 'Languages', 'Spoken and written language proficiency', `
-            <div class="entry-list" id="${LANG_LIST_ID}">
+        panelEl.innerHTML = wrapCard(PANEL_ICONS.languages, 'Spoken Languages', 'Spoken and written language proficiency', `
+            <div class="entry-list" id="${LIST_ID}">
                 ${langs.length > 0
-                    ? langs.map((l, i) => createEntryHTML(l, i)).join('')
-                    : createEntryHTML({ language: 'English', proficiency: 'Native' }, 0)}
+                    ? langs.map((l, i) => createEntryHTML(l, i, i > 0)).join('')
+                    : createEntryHTML({ language: 'English', proficiency: 'Native' }, 0, false)}
             </div>
             <button type="button" class="btn-add-entry" id="lang-add-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M12 5v14M5 12h14"/>
-                </svg>
-                Add Language
+                ${PANEL_ICONS.plus} Add Language
             </button>
         `);
 
-        bindRemoveButtons(panelEl);
+        panelEl.querySelectorAll('[data-entry="lang"]').forEach(bindEntryEvents);
 
         panelEl.querySelector('#lang-add-btn').addEventListener('click', () => {
-            const list = document.getElementById(LANG_LIST_ID);
+            const list = document.getElementById(LIST_ID);
             const count = list.querySelectorAll('[data-entry="lang"]').length;
             const tmp = document.createElement('div');
-            tmp.innerHTML = createEntryHTML({}, count);
-            const entry = tmp.firstElementChild;
-            entry.querySelector('.btn-entry-remove').addEventListener('click', () => {
-                entry.style.opacity = '0'; entry.style.transform = 'translateY(-8px)';
-                entry.style.transition = 'opacity 0.2s, transform 0.2s';
-                setTimeout(() => { entry.remove(); renumberEntries(); }, 200);
-            });
-            list.appendChild(entry);
+            tmp.innerHTML = createEntryHTML({}, count, false);
+            const entryEl = tmp.firstElementChild;
+            bindEntryEvents(entryEl);
+            list.appendChild(entryEl);
+            entryEl.querySelector('input')?.focus();
+            flush();
         });
     }
 
     function flush() {
         const entries = [];
-        document.querySelectorAll(`#${LANG_LIST_ID} [data-entry="lang"]`).forEach(el => {
+        document.querySelectorAll(`#${LIST_ID} [data-entry="lang"]`).forEach(el => {
             entries.push({
                 language:    el.querySelector('.lang-language')?.value.trim()    || '',
                 proficiency: el.querySelector('.lang-proficiency')?.value        || ''
@@ -902,7 +1008,7 @@ const StepLanguages = (() => {
 })();
 
 /* ─────────────────────────────────────────────────────────────────────────
-   STEP 8 — Review
+   STEP 8 — Review Panel
 ───────────────────────────────────────────────────────────────────────── */
 
 const StepReview = (() => {
@@ -927,16 +1033,16 @@ const StepReview = (() => {
 
     function render(panelEl) {
         const d = BuilderState.get();
-        const pi = d.personalInformation;
+        const pi = d.personalInformation || {};
         const skills = d.skills || {};
 
         panelEl.innerHTML = `
             <div class="wiz-card" style="margin-bottom:var(--space-5);">
                 <div class="wiz-card__head">
-                    <div class="wiz-card__icon">✅</div>
+                    <div class="wiz-card__icon">${PANEL_ICONS.review}</div>
                     <div>
                         <div class="wiz-card__title">Review Your Resume</div>
-                        <div class="wiz-card__subtitle">Check everything before saving. Click Edit to go back.</div>
+                        <div class="wiz-card__subtitle">Check everything before saving. Click Edit to adjust any section.</div>
                     </div>
                 </div>
                 <div class="wiz-card__body">
@@ -945,7 +1051,7 @@ const StepReview = (() => {
                         <!-- Personal -->
                         <div class="review-section">
                             <div class="review-section__head">
-                                <div class="review-section__title">👤 Personal</div>
+                                <div class="review-section__title">${PANEL_ICONS.personal} Personal Details</div>
                                 ${editBtn(1)}
                             </div>
                             ${field('Full Name', pi.fullName)}
@@ -959,7 +1065,7 @@ const StepReview = (() => {
                         <!-- Summary -->
                         <div class="review-section">
                             <div class="review-section__head">
-                                <div class="review-section__title">📝 Summary</div>
+                                <div class="review-section__title">${PANEL_ICONS.summary} Summary</div>
                                 ${editBtn(1)}
                             </div>
                             ${val(d.professionalSummary)}
@@ -968,15 +1074,15 @@ const StepReview = (() => {
                         <!-- Education -->
                         <div class="review-section review-section--full">
                             <div class="review-section__head">
-                                <div class="review-section__title">🎓 Education (${d.education.length})</div>
+                                <div class="review-section__title">${PANEL_ICONS.education} Education (${(d.education || []).length})</div>
                                 ${editBtn(2)}
                             </div>
-                            ${d.education.length === 0
+                            ${(!d.education || d.education.length === 0)
                                 ? '<span class="review-field__val review-field__val--empty">No entries added</span>'
                                 : d.education.map(e => `
                                     <div class="review-field" style="margin-bottom:var(--space-3);padding:var(--space-3);background:rgba(255,255,255,0.02);border-radius:var(--radius-lg);">
                                         <div style="font-weight:600;color:var(--text-primary);font-size:var(--font-size-sm);">${esc(e.college) || '—'}</div>
-                                        <div style="font-size:12px;color:var(--text-muted);">${esc(e.degree)} ${esc(e.branch) ? '· ' + esc(e.branch) : ''} ${e.cgpa ? '· ' + esc(e.cgpa) : ''}</div>
+                                        <div style="font-size:12px;color:var(--text-muted);">${esc(e.degree)} ${esc(e.branch) ? '· ' + esc(e.branch) : ''} ${e.cgpa ? '· CGPA: ' + esc(e.cgpa) : ''}</div>
                                         <div style="font-size:12px;color:var(--text-faint);">${esc(e.startDate)} ${e.endDate ? '– ' + esc(e.endDate) : ''}</div>
                                     </div>
                                 `).join('')}
@@ -985,10 +1091,10 @@ const StepReview = (() => {
                         <!-- Experience -->
                         <div class="review-section review-section--full">
                             <div class="review-section__head">
-                                <div class="review-section__title">💼 Experience (${d.experience.length})</div>
+                                <div class="review-section__title">${PANEL_ICONS.experience} Experience (${(d.experience || []).length})</div>
                                 ${editBtn(3)}
                             </div>
-                            ${d.experience.length === 0
+                            ${(!d.experience || d.experience.length === 0)
                                 ? '<span class="review-field__val review-field__val--empty">No entries added</span>'
                                 : d.experience.map(e => `
                                     <div class="review-field" style="margin-bottom:var(--space-3);padding:var(--space-3);background:rgba(255,255,255,0.02);border-radius:var(--radius-lg);">
@@ -1001,10 +1107,10 @@ const StepReview = (() => {
                         <!-- Projects -->
                         <div class="review-section review-section--full">
                             <div class="review-section__head">
-                                <div class="review-section__title">🚀 Projects (${d.projects.length})</div>
+                                <div class="review-section__title">${PANEL_ICONS.projects} Projects (${(d.projects || []).length})</div>
                                 ${editBtn(4)}
                             </div>
-                            ${d.projects.length === 0
+                            ${(!d.projects || d.projects.length === 0)
                                 ? '<span class="review-field__val review-field__val--empty">No entries added</span>'
                                 : d.projects.map(p => `
                                     <div class="review-field" style="margin-bottom:var(--space-3);padding:var(--space-3);background:rgba(255,255,255,0.02);border-radius:var(--radius-lg);">
@@ -1017,7 +1123,7 @@ const StepReview = (() => {
                         <!-- Skills -->
                         <div class="review-section review-section--full">
                             <div class="review-section__head">
-                                <div class="review-section__title">⚡ Skills</div>
+                                <div class="review-section__title">${PANEL_ICONS.skills} Skills</div>
                                 ${editBtn(5)}
                             </div>
                             <div class="form-grid">
@@ -1040,13 +1146,13 @@ const StepReview = (() => {
                             </div>
                         </div>
 
-                        <!-- Certifications + Languages -->
+                        <!-- Certifications & Languages -->
                         <div class="review-section">
                             <div class="review-section__head">
-                                <div class="review-section__title">🏆 Certifications (${d.certifications.length})</div>
+                                <div class="review-section__title">${PANEL_ICONS.certs} Certifications (${(d.certifications || []).length})</div>
                                 ${editBtn(6)}
                             </div>
-                            ${d.certifications.length === 0
+                            ${(!d.certifications || d.certifications.length === 0)
                                 ? '<span class="review-field__val review-field__val--empty">None added</span>'
                                 : d.certifications.map(c => `
                                     <div class="review-field">
@@ -1058,10 +1164,10 @@ const StepReview = (() => {
 
                         <div class="review-section">
                             <div class="review-section__head">
-                                <div class="review-section__title">🌐 Languages (${d.languages.length})</div>
+                                <div class="review-section__title">${PANEL_ICONS.languages} Languages (${(d.languages || []).length})</div>
                                 ${editBtn(7)}
                             </div>
-                            ${d.languages.length === 0
+                            ${(!d.languages || d.languages.length === 0)
                                 ? '<span class="review-field__val review-field__val--empty">None added</span>'
                                 : d.languages.map(l => `
                                     <div class="review-field">
@@ -1075,7 +1181,6 @@ const StepReview = (() => {
             </div>
         `;
 
-        // Bind "Edit" buttons — navigate back to the correct step
         panelEl.querySelectorAll('.btn-review-edit').forEach(btn => {
             btn.addEventListener('click', () => {
                 const step = parseInt(btn.dataset.goto, 10);
@@ -1084,7 +1189,79 @@ const StepReview = (() => {
         });
     }
 
-    function flush() { /* Review step has no form inputs */ }
+    function flush() {}
 
     return { render, flush };
+})();
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Validation Module
+───────────────────────────────────────────────────────────────────────── */
+
+const StepValidation = (() => {
+
+    /**
+     * Validate required fields across the resume.
+     * Required:
+     *   - personalInformation.fullName
+     *   - personalInformation.email (valid email format)
+     *
+     * @returns {{ isValid: boolean, errorMsg: string|null, stepId: number|null, firstInvalidEl: HTMLElement|null }}
+     */
+    function validate() {
+        // Ensure latest form values are flushed into BuilderState
+        StepPersonal.flush();
+        const data = BuilderState.get().personalInformation || {};
+
+        const nameInp = document.getElementById('pi-fullName');
+        const emailInp = document.getElementById('pi-email');
+
+        let isValid = true;
+        let errorMsg = null;
+        let firstInvalidEl = null;
+
+        // Reset previous validation errors
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        document.querySelectorAll('.form-error-text').forEach(el => el.remove());
+
+        // Validate Full Name
+        if (!data.fullName || data.fullName.trim() === '') {
+            isValid = false;
+            errorMsg = 'Full Name is required';
+            if (nameInp) {
+                nameInp.classList.add('is-invalid');
+                firstInvalidEl = firstInvalidEl || nameInp;
+                showErrorHint(nameInp, 'Full Name is required');
+            }
+        }
+
+        // Validate Email
+        const emailPattern = /^\S+@\S+\.\S+$/;
+        if (!data.email || !emailPattern.test(data.email.trim())) {
+            isValid = false;
+            errorMsg = errorMsg || 'A valid email address is required';
+            if (emailInp) {
+                emailInp.classList.add('is-invalid');
+                firstInvalidEl = firstInvalidEl || emailInp;
+                showErrorHint(emailInp, 'Please enter a valid email address');
+            }
+        }
+
+        return {
+            isValid,
+            errorMsg: isValid ? null : (errorMsg || 'Please complete all required fields.'),
+            stepId: isValid ? null : 1,
+            firstInvalidEl
+        };
+    }
+
+    function showErrorHint(inputEl, msg) {
+        if (!inputEl || !inputEl.parentNode) return;
+        const hint = document.createElement('span');
+        hint.className = 'form-error-text';
+        hint.textContent = msg;
+        inputEl.parentNode.appendChild(hint);
+    }
+
+    return { validate };
 })();

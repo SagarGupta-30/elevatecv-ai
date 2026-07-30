@@ -265,6 +265,21 @@ const ResumeBuilderV2 = (() => {
                 const currentStep = BuilderState.getStep();
                 flushStep(currentStep);
 
+                // Validation check
+                if (typeof StepValidation !== 'undefined') {
+                    const valResult = StepValidation.validate();
+                    if (!valResult.isValid) {
+                        if (valResult.stepId) {
+                            BuilderState.setStep(valResult.stepId);
+                        }
+                        if (valResult.firstInvalidEl) {
+                            setTimeout(() => valResult.firstInvalidEl.focus(), 150);
+                        }
+                        showToast(valResult.errorMsg || 'Please complete all required fields.', 'error');
+                        return;
+                    }
+                }
+
                 const data = BuilderState.get();
                 const existingId = BuilderState.getId();
                 let savedResume;
@@ -321,17 +336,17 @@ const ResumeBuilderV2 = (() => {
         toast.id = 'wiz-toast';
 
         let bg = 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)';
-        let icon = '✅';
+        let icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
 
         if (type === 'error') {
             bg = 'rgba(239, 68, 68, 0.95)';
-            icon = '❌';
+            icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
         } else if (type === 'info') {
             bg = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)';
-            icon = 'ℹ️';
+            icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
         }
 
-        toast.innerHTML = `<span style="margin-right: 8px;">${icon}</span> ${message}`;
+        toast.innerHTML = `<span style="display:inline-flex;align-items:center;margin-right:10px;">${icon}</span> <span>${message}</span>`;
 
         Object.assign(toast.style, {
             position: 'fixed',
