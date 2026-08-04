@@ -1,0 +1,256 @@
+/*
+ * ElevateCV AI — ATS Professional Template CSS (Sprint 3)
+ * Scope: All rules scoped to .tpl-ats
+ * Design: Classic, clean, zero decoration — maximum ATS readability.
+ * Font:   Inter / Arial / Helvetica
+ */
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+.tpl-ats {
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: #1a1a1a;
+    background: #ffffff;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+.tpl-ats .ats-header {
+    text-align: center;
+    padding-bottom: 12pt;
+    margin-bottom: 14pt;
+    border-bottom: 2pt solid #1a1a1a;
+}
+
+.tpl-ats .ats-name {
+    font-size: 22pt;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #0d0d0d;
+    margin: 0 0 5pt;
+    line-height: 1.1;
+}
+
+/* Contact row */
+.tpl-ats .ats-contact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    font-size: 9.5pt;
+    color: #374151;
+    margin-top: 4pt;
+}
+
+.tpl-ats .ats-contact a {
+    color: #1d4ed8;
+    text-decoration: none;
+}
+
+.tpl-ats .ats-contact a:hover {
+    text-decoration: underline;
+}
+
+.tpl-ats .ats-sep {
+    display: inline-block;
+    width: 3pt;
+    height: 3pt;
+    background: #9ca3af;
+    border-radius: 50%;
+    margin: 0 7pt;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* ── Sections ───────────────────────────────────────────────────────────── */
+.tpl-ats .ats-section {
+    margin-bottom: 12pt;
+}
+
+.tpl-ats .ats-section-title {
+    font-size: 9.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #0d0d0d;
+    margin: 0 0 6pt;
+    padding-bottom: 3pt;
+    border-bottom: 1pt solid #1a1a1a;
+}
+
+/* ── Items ──────────────────────────────────────────────────────────────── */
+.tpl-ats .ats-item {
+    margin-bottom: 9pt;
+    page-break-inside: avoid;
+}
+
+.tpl-ats .ats-item:last-child {
+    margin-bottom: 0;
+}
+
+.tpl-ats .ats-item--compact {
+    margin-bottom: 5pt;
+}
+
+.tpl-ats .ats-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8pt;
+    margin-bottom: 2pt;
+}
+
+.tpl-ats .ats-item-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.tpl-ats .ats-item-title {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #0d0d0d;
+    line-height: 1.3;
+}
+
+.tpl-ats .ats-item-sub {
+    font-size: 10pt;
+    color: #374151;
+    font-style: italic;
+    margin-top: 1pt;
+}
+
+.tpl-ats .ats-item-meta {
+    font-size: 9pt;
+    color: #6b7280;
+    margin-top: 1pt;
+}
+
+.tpl-ats .ats-item-date {
+    font-size: 9.5pt;
+    color: #374151;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 1pt;
+}
+
+/* ── Bullet lists ────────────────────────────────────────────────────────── */
+.tpl-ats .ats-bullets {
+    margin: 4pt 0 0;
+    padding-left: 14pt;
+    list-style: disc;
+}
+
+.tpl-ats .ats-bullets li {
+    font-size: 10pt;
+    color: #374151;
+    margin-bottom: 2pt;
+    line-height: 1.5;
+    padding-left: 2pt;
+}
+
+.tpl-ats .ats-bullets li:last-child {
+    margin-bottom: 0;
+}
+
+/* ── Skills ──────────────────────────────────────────────────────────────── */
+.tpl-ats .ats-skill-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4pt;
+    gap: 6pt;
+    font-size: 10pt;
+}
+
+.tpl-ats .ats-skill-row:last-child {
+    margin-bottom: 0;
+}
+
+.tpl-ats .ats-skill-label {
+    font-weight: 600;
+    color: #0d0d0d;
+    white-space: nowrap;
+    min-width: 88pt;
+    flex-shrink: 0;
+}
+
+.tpl-ats .ats-skill-items {
+    color: #374151;
+}
+
+/* ── Chips (tech stack) ──────────────────────────────────────────────────── */
+.tpl-ats .ats-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3pt;
+    margin-top: 3pt;
+}
+
+.tpl-ats .ats-chip {
+    font-size: 9pt;
+    color: #374151;
+    background: #f1f5f9;
+    border: 0.5pt solid #d1d5db;
+    padding: 1.5pt 6pt;
+    border-radius: 2pt;
+}
+
+/* ── Links ───────────────────────────────────────────────────────────────── */
+.tpl-ats .ats-proj-links {
+    font-size: 9pt;
+    font-weight: 400;
+    margin-left: 7pt;
+}
+
+.tpl-ats .ats-link {
+    color: #1d4ed8;
+    text-decoration: none;
+    font-size: 9pt;
+}
+
+.tpl-ats .ats-link:hover {
+    text-decoration: underline;
+}
+
+.tpl-ats .ats-link--inherit {
+    color: inherit;
+    font-weight: 600;
+}
+
+.tpl-ats .ats-link-sep {
+    display: inline-block;
+    margin: 0 4pt;
+    color: #9ca3af;
+}
+
+/* ── Languages ───────────────────────────────────────────────────────────── */
+.tpl-ats .ats-languages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6pt 18pt;
+}
+
+.tpl-ats .ats-lang-item {
+    display: flex;
+    align-items: baseline;
+    gap: 5pt;
+}
+
+.tpl-ats .ats-lang-name {
+    font-size: 10pt;
+    font-weight: 600;
+    color: #0d0d0d;
+}
+
+.tpl-ats .ats-lang-prof {
+    font-size: 9pt;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* ── Print overrides ─────────────────────────────────────────────────────── */
+@media print {
+    .tpl-ats {
+        font-size: 10pt !important;
+    }
+}

@@ -31,6 +31,7 @@ const ResumePreview = (() => {
     const resumeSelector  = Helpers.$('#resume-selector');
     const previewCanvas   = Helpers.$('#preview-canvas');
     const btnPrint        = Helpers.$('#btn-print');
+    const btnExportPdf    = Helpers.$('#btn-export-pdf');
 
     /* ──────────────────────────────────────────────────────────────────
        API fetch wrapper — attaches JWT, handles 401
@@ -145,6 +146,27 @@ const ResumePreview = (() => {
     }
 
     /* ──────────────────────────────────────────────────────────────────
+       Export PDF handler
+    ────────────────────────────────────────────────────────────────── */
+    async function handleExportPdf() {
+        if (!currentResume) {
+            Helpers.showToast('Please select a resume before exporting.', 'warning');
+            return;
+        }
+
+        const backendVal = currentResume.template || 'default';
+        const activeSlug = typeof TemplateRegistry !== 'undefined'
+            ? TemplateRegistry.fromBackendValue(backendVal)
+            : 'ats-professional';
+
+        if (typeof PdfExport !== 'undefined') {
+            await PdfExport.exportToPdf(currentResume, activeSlug, btnExportPdf);
+        } else {
+            Helpers.showToast('PDF Export module is loading. Please try again.', 'error');
+        }
+    }
+
+    /* ──────────────────────────────────────────────────────────────────
        Print handler
     ────────────────────────────────────────────────────────────────── */
     function handlePrint() {
@@ -167,8 +189,17 @@ const ResumePreview = (() => {
        Init
     ────────────────────────────────────────────────────────────────── */
     function init() {
+        // Sprint 3: Init TemplateRegistry so templates render correctly
+        if (typeof TemplateRegistry !== 'undefined') {
+            TemplateRegistry.init();
+        }
+
         if (resumeSelector) {
             resumeSelector.addEventListener('change', loadResume);
+        }
+
+        if (btnExportPdf) {
+            btnExportPdf.addEventListener('click', handleExportPdf);
         }
 
         if (btnPrint) {

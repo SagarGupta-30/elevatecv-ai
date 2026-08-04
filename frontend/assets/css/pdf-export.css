@@ -1,0 +1,81 @@
+/*
+ * ElevateCV AI — PDF Export Styles (Sprint 3.5)
+ * Button state animations and spinner styles for PDF generation.
+ */
+
+/* Spin keyframes for export loading indicator */
+@keyframes pdfSpinner {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.pdf-spin {
+    animation: pdfSpinner 0.8s linear infinite;
+    transform-origin: center center;
+}
+
+/* Button loading modifier */
+.btn--loading {
+    opacity: 0.8;
+    cursor: wait !important;
+    pointer-events: none;
+}
+
+/* Export primary action button variant */
+.btn--export {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    transition: all 150ms ease;
+}
+
+.btn--export:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn--export:active {
+    transform: translateY(0);
+}
+
+/* Live Preview Topbar Export Button */
+.preview-export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 150ms ease;
+    white-space: nowrap;
+    margin-left: 8px;
+}
+
+.preview-export-btn:hover {
+    background: rgba(16, 185, 129, 0.22);
+    border-color: #10B981;
+    color: #34D399;
+    transform: translateY(-1px);
+}
+
+.preview-export-btn:active {
+    transform: translateY(0);
+}
+
+/* Ensure offscreen target is never visible or causing scrollbars */
+#pdf-export-offscreen-target {
+    pointer-events: none !important;
+    user-select: none !important;
+}

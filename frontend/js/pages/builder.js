@@ -230,6 +230,14 @@ const ResumeBuilderV2 = (() => {
                 BuilderState.hydrate(serverResume);
                 showPanel(BuilderState.getStep());
                 updateCompletionRing();
+
+                // Sprint 3: sync TemplateSelector to the loaded resume's template
+                if (typeof TemplateSelector !== 'undefined' && typeof TemplateRegistry !== 'undefined') {
+                    const backendVal = BuilderState.get().template || 'default';
+                    const uiSlug    = TemplateRegistry.fromBackendValue(backendVal);
+                    TemplateSelector.setActive(uiSlug);
+                }
+
                 showToast('Resume loaded successfully', 'success');
             }
         } catch (err) {
@@ -284,10 +292,16 @@ const ResumeBuilderV2 = (() => {
                 const existingId = BuilderState.getId();
                 let savedResume;
 
+                // Sprint 3: convert UI template slug → backend enum value before save
+                const savePayload = Object.assign({}, data);
+                if (typeof TemplateRegistry !== 'undefined' && savePayload.template) {
+                    savePayload.template = TemplateRegistry.toBackendValue(savePayload.template);
+                }
+
                 if (existingId) {
-                    savedResume = await ResumeService.update(existingId, data);
+                    savedResume = await ResumeService.update(existingId, savePayload);
                 } else {
-                    savedResume = await ResumeService.createResume(data);
+                    savedResume = await ResumeService.createResume(savePayload);
                 }
 
                 if (savedResume && savedResume._id) {
@@ -368,10 +382,38 @@ const ResumeBuilderV2 = (() => {
         // Initial ring state
         updateCompletionRing();
 
+        // ── Sprint 3: Init Template Registry + Selector ─────────────────
+        if (typeof TemplateRegistry !== 'undefined') {
+            TemplateRegistry.init();
+        }
+
         // ── Live Preview: attach PreviewRenderer to the right-side panel ──
         const liveCanvas = document.getElementById('live-preview-canvas');
         if (liveCanvas && typeof PreviewRenderer !== 'undefined') {
             PreviewRenderer.attach(liveCanvas);
+        }
+
+        // ── Sprint 3: Mount TemplateSelector in the preview topbar ────────
+        const previewTopbar = document.getElementById('live-preview-topbar');
+        if (previewTopbar && typeof TemplateSelector !== 'undefined') {
+            TemplateSelector.init(previewTopbar);
+        }
+
+        // ── Sprint 3.5: Wire Export PDF button in preview topbar ─────────
+        const btnBuilderExport = document.getElementById('btn-builder-export');
+        if (btnBuilderExport) {
+            btnBuilderExport.addEventListener('click', async () => {
+                const data = BuilderState.get();
+                const activeSlug = typeof TemplateSelector !== 'undefined'
+                    ? TemplateSelector.getActive()
+                    : (typeof TemplateRegistry !== 'undefined' ? TemplateRegistry.DEFAULT_SLUG : 'ats-professional');
+
+                if (typeof PdfExport !== 'undefined') {
+                    await PdfExport.exportToPdf(data, activeSlug, btnBuilderExport);
+                } else {
+                    showToast('PDF Export module is loading. Please try again.', 'error');
+                }
+            });
         }
     }
 

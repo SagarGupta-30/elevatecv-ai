@@ -1,210 +1,189 @@
 /*
- * ElevateCV AI - Multi-Template Engine
- * Defines CSS for Professional, Modern, Minimal, and Executive templates.
- * All rely on the same semantic HTML structure.
+ * ElevateCV AI — Template Selector UI Styles (Sprint 3)
+ *
+ * Previously: placeholder theme classes (cv-* / theme-*) — none were wired to HTML.
+ * Now: styles for the TemplateSelector component in the builder live-preview topbar.
+ *
+ * Scope: .tpl-selector and .tpl-card — lives inside the dark dashboard chrome.
  */
 
-/* =========================================
-   Base Shared Resume Elements
-   ========================================= */
-.cv-header { margin-bottom: 24px; }
-.cv-name { margin-bottom: 4px; }
-.cv-contact { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
-.cv-contact-item { display: flex; align-items: center; gap: 4px; }
-.cv-summary { margin-bottom: 24px; }
-.cv-section { margin-bottom: 24px; }
-.cv-section-title { margin-bottom: 12px; }
-.cv-item { margin-bottom: 16px; }
-.cv-item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
-.cv-item-title { font-weight: bold; }
-.cv-item-subtitle { font-style: italic; }
-.cv-item-date { font-size: 0.9em; white-space: nowrap; }
-.cv-item-desc { margin-top: 4px; }
-.cv-skills-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.cv-skill-tag { padding: 4px 8px; border-radius: 4px; font-size: 0.9em; }
+/* ═══════════════════════════════════════════════════════════════════
+   TEMPLATE SELECTOR STRIP
+   Mounted inside .live-preview-panel__topbar
+═══════════════════════════════════════════════════════════════════ */
 
-/* =========================================
-   1. Professional Theme
-   Classic serif fonts, dark blue headers, clean lines
-   ========================================= */
-.theme-professional {
-    font-family: 'Merriweather', serif;
-    color: #333;
-    line-height: 1.6;
-}
-.theme-professional .cv-header {
-    text-align: center;
-    border-bottom: 2px solid #1e3a8a;
-    padding-bottom: 16px;
-}
-.theme-professional .cv-name {
-    font-size: 2.2rem;
-    color: #1e3a8a;
-    text-transform: uppercase;
-}
-.theme-professional .cv-contact {
-    justify-content: center;
-    font-size: 0.9rem;
-    color: #555;
-}
-.theme-professional .cv-section-title {
-    font-size: 1.3rem;
-    color: #1e3a8a;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 4px;
-    text-transform: uppercase;
-}
-.theme-professional .cv-item-title {
-    font-size: 1.1rem;
-    color: #000;
-}
-.theme-professional .cv-skill-tag {
-    background: #f0f4f8;
-    border: 1px solid #d1d5db;
-    color: #1e3a8a;
+.tpl-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    overflow: hidden;
 }
 
-/* =========================================
-   2. Modern Theme
-   Sans-serif (Inter), colored accents, grid layout
-   ========================================= */
-.theme-modern {
-    font-family: 'Inter', sans-serif;
-    color: #1f2937;
-    line-height: 1.5;
-}
-.theme-modern .cv-header {
-    background: #2563eb;
-    color: white;
-    padding: 32px;
-    margin: -15mm -15mm 24px -15mm; /* bleed to edge */
-}
-.theme-modern .cv-name {
-    font-size: 2.5rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-}
-.theme-modern .cv-contact {
-    color: rgba(255, 255, 255, 0.9);
-}
-.theme-modern .cv-section-title {
-    font-size: 1.2rem;
+.tpl-selector__label {
+    font-size: 10px;
     font-weight: 700;
-    color: #2563eb;
-    margin-bottom: 16px;
-}
-.theme-modern .cv-item-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-.theme-modern .cv-item-subtitle {
-    color: #4b5563;
-    font-style: normal;
-}
-.theme-modern .cv-item-date {
-    color: #2563eb;
-    font-weight: 500;
-}
-.theme-modern .cv-skill-tag {
-    background: #eff6ff;
-    color: #1d4ed8;
-    font-weight: 500;
-}
-
-/* =========================================
-   3. Minimal Theme
-   Whitespace heavy, monochrome, no borders
-   ========================================= */
-.theme-minimal {
-    font-family: 'Inter', sans-serif;
-    color: #000;
-    line-height: 1.5;
-}
-.theme-minimal .cv-header {
-    margin-bottom: 32px;
-}
-.theme-minimal .cv-name {
-    font-size: 2rem;
-    font-weight: 300;
+    text-transform: uppercase;
     letter-spacing: 0.1em;
-    text-transform: lowercase;
-}
-.theme-minimal .cv-contact {
-    font-size: 0.85rem;
-    color: #666;
-}
-.theme-minimal .cv-section {
-    margin-bottom: 32px;
-}
-.theme-minimal .cv-section-title {
-    font-size: 1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #999;
-}
-.theme-minimal .cv-item-title {
-    font-size: 1rem;
-    font-weight: 500;
-}
-.theme-minimal .cv-item-subtitle {
-    font-style: normal;
-    color: #666;
-}
-.theme-minimal .cv-item-date {
-    color: #999;
-}
-.theme-minimal .cv-skill-tag {
-    padding: 0;
-    background: none;
-    border-right: 1px solid #ccc;
-    border-radius: 0;
-    padding-right: 8px;
-}
-.theme-minimal .cv-skill-tag:last-child {
-    border: none;
+    color: #64748b;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* =========================================
-   4. Executive Theme
-   Roboto font, elegant two-tone, slate accents
-   ========================================= */
-.theme-executive {
-    font-family: 'Roboto', sans-serif;
-    color: #2d3748;
-    line-height: 1.6;
+/* Horizontal scroll container */
+.tpl-selector__scroll {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;          /* Firefox */
+    flex: 1;
+    padding: 2px 0 4px;             /* bottom pad for scroll gutter */
 }
-.theme-executive .cv-header {
-    border-left: 4px solid #2c5282;
-    padding-left: 16px;
-    margin-bottom: 32px;
+
+.tpl-selector__scroll::-webkit-scrollbar {
+    display: none;                  /* Chrome / Safari */
 }
-.theme-executive .cv-name {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #1a202c;
+
+/* ═══════════════════════════════════════════════════════════════════
+   TEMPLATE CARD BUTTON
+═══════════════════════════════════════════════════════════════════ */
+
+.tpl-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1.5px solid transparent;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        transform 120ms ease,
+        box-shadow 150ms ease;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    outline: none;
+    min-width: 62px;
 }
-.theme-executive .cv-contact {
-    font-size: 0.9rem;
-    color: #4a5568;
+
+.tpl-card:hover {
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.35);
+    transform: translateY(-1px);
 }
-.theme-executive .cv-section-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #1a202c;
-    background: #edf2f7;
-    padding: 8px 12px;
-    border-radius: 4px;
+
+.tpl-card:focus-visible {
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.4);
 }
-.theme-executive .cv-item-title {
-    font-size: 1.1rem;
-    font-weight: 500;
+
+.tpl-card:active {
+    transform: translateY(0);
 }
-.theme-executive .cv-item-subtitle {
-    color: #2c5282;
-    font-style: normal;
+
+/* Active (selected) state */
+.tpl-card--active {
+    background: rgba(139, 92, 246, 0.18);
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.3);
 }
-.theme-executive .cv-skill-tag {
-    background: #e2e8f0;
-    color: #2d3748;
+
+.tpl-card--active .tpl-card__label {
+    color: #c4b5fd;
+}
+
+/* ── Card inner elements ───────────────────────────────────────── */
+
+.tpl-card__preview {
+    display: block;
+    width: 32px;
+    height: 36px;
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: transform 150ms ease;
+}
+
+.tpl-card:hover .tpl-card__preview {
+    transform: scale(1.05);
+}
+
+.tpl-card__preview svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.tpl-card__label {
+    font-size: 9px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    transition: color 150ms ease;
+    line-height: 1.2;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LIVE PREVIEW TOPBAR OVERRIDES
+   Expand topbar to accommodate the selector strip
+═══════════════════════════════════════════════════════════════════ */
+
+.live-preview-panel__topbar {
+    /* Override the existing padding to give selector more room */
+    padding: 8px 16px;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 52px;
+    align-items: center;
+}
+
+/* Keep the original left label + badge as a tight group */
+.live-preview-panel__topbar > .live-preview-panel__label,
+.live-preview-panel__topbar > .live-preview-panel__badge {
+    flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE ADJUSTMENTS
+═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1099px) {
+    /* On tablet the preview panel is shown below the form — give more height */
+    .live-preview-panel__topbar {
+        padding: 8px 12px;
+    }
+
+    .tpl-card {
+        min-width: 56px;
+        padding: 5px 6px;
+    }
+
+    .tpl-card__preview {
+        width: 28px;
+        height: 32px;
+    }
+
+    .tpl-card__label {
+        font-size: 8px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PRINT — hide selector entirely
+═══════════════════════════════════════════════════════════════════ */
+
+@media print {
+    .tpl-selector,
+    .live-preview-panel__topbar {
+        display: none !important;
+    }
 }

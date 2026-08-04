@@ -1,0 +1,264 @@
+/*
+ * ElevateCV AI — Modern Template CSS (Sprint 3)
+ * Scope: All rules scoped to .tpl-modern
+ * Design: Bold indigo header band, colored accents, clean sans-serif.
+ */
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+.tpl-modern {
+    font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: #1f2937;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+/* ── Header band ─────────────────────────────────────────────────────────── */
+.tpl-modern .mod-header {
+    background: linear-gradient(135deg, #4338ca 0%, #4f46e5 60%, #6366f1 100%);
+    color: #ffffff;
+    padding: 26pt 26pt 22pt;
+    margin: -28pt -26pt 20pt; /* bleed to paper edge */
+}
+
+.tpl-modern .mod-header-inner {
+    /* nothing extra needed */
+}
+
+.tpl-modern .mod-name {
+    font-size: 26pt;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin: 0 0 4pt;
+    line-height: 1.05;
+}
+
+.tpl-modern .mod-title {
+    font-size: 11pt;
+    font-weight: 400;
+    color: rgba(255,255,255,0.82);
+    margin-bottom: 8pt;
+    letter-spacing: 0.01em;
+}
+
+/* Contact row */
+.tpl-modern .mod-contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+    font-size: 9pt;
+    color: rgba(255,255,255,0.9);
+}
+
+.tpl-modern .mod-contact a {
+    color: rgba(255,255,255,0.95);
+    text-decoration: none;
+}
+
+.tpl-modern .mod-contact a:hover {
+    text-decoration: underline;
+}
+
+.tpl-modern .mod-sep {
+    display: inline-block;
+    margin: 0 6pt;
+    opacity: 0.6;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+.tpl-modern .mod-body {
+    padding: 0;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+.tpl-modern .mod-section {
+    margin-bottom: 14pt;
+}
+
+.tpl-modern .mod-section-title {
+    font-size: 9.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #4338ca;
+    margin: 0 0 7pt;
+    padding-bottom: 4pt;
+    border-bottom: 2pt solid #4338ca;
+}
+
+/* ── Items ───────────────────────────────────────────────────────────────── */
+.tpl-modern .mod-item {
+    margin-bottom: 10pt;
+    page-break-inside: avoid;
+}
+
+.tpl-modern .mod-item:last-child { margin-bottom: 0; }
+
+.tpl-modern .mod-item--compact { margin-bottom: 5pt; }
+
+.tpl-modern .mod-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8pt;
+    margin-bottom: 2pt;
+}
+
+.tpl-modern .mod-item-left { flex: 1; min-width: 0; }
+
+.tpl-modern .mod-item-title {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.3;
+}
+
+.tpl-modern .mod-item-sub {
+    font-size: 9.5pt;
+    color: #4b5563;
+    margin-top: 1pt;
+}
+
+.tpl-modern .mod-item-meta {
+    font-size: 9pt;
+    color: #6b7280;
+    margin-top: 1pt;
+}
+
+.tpl-modern .mod-item-date {
+    font-size: 9pt;
+    font-weight: 500;
+    color: #4338ca;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 1pt;
+}
+
+/* ── Summary ─────────────────────────────────────────────────────────────── */
+.tpl-modern .mod-summary {
+    margin: 0;
+    font-size: 10pt;
+    color: #374151;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+/* ── Bullets ─────────────────────────────────────────────────────────────── */
+.tpl-modern .mod-bullets {
+    margin: 4pt 0 0;
+    padding-left: 14pt;
+    list-style: disc;
+}
+
+.tpl-modern .mod-bullets li {
+    font-size: 10pt;
+    color: #374151;
+    margin-bottom: 2pt;
+    line-height: 1.5;
+    padding-left: 2pt;
+}
+
+.tpl-modern .mod-bullets li:last-child { margin-bottom: 0; }
+
+/* ── Chips ───────────────────────────────────────────────────────────────── */
+.tpl-modern .mod-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3pt;
+    margin-top: 4pt;
+}
+
+.tpl-modern .mod-chip {
+    display: inline-block;
+    padding: 2pt 7pt;
+    background: #eef2ff;
+    border: 0.5pt solid #c7d2fe;
+    border-radius: 3pt;
+    font-size: 8.5pt;
+    font-weight: 500;
+    color: #4338ca;
+    white-space: nowrap;
+}
+
+/* ── Skills ──────────────────────────────────────────────────────────────── */
+.tpl-modern .mod-skill-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6pt;
+    margin-bottom: 5pt;
+}
+
+.tpl-modern .mod-skill-row:last-child { margin-bottom: 0; }
+
+.tpl-modern .mod-skill-label {
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: #374151;
+    white-space: nowrap;
+    min-width: 90pt;
+    flex-shrink: 0;
+    padding-top: 3pt;
+}
+
+/* ── Links ───────────────────────────────────────────────────────────────── */
+.tpl-modern .mod-proj-links {
+    font-size: 8.5pt;
+    font-weight: 400;
+    margin-left: 7pt;
+}
+
+.tpl-modern .mod-link {
+    color: #4338ca;
+    text-decoration: none;
+    font-size: 8.5pt;
+}
+
+.tpl-modern .mod-link:hover { text-decoration: underline; }
+
+.tpl-modern .mod-link--inherit { color: inherit; font-weight: 600; }
+
+.tpl-modern .mod-link-sep {
+    display: inline-block;
+    margin: 0 4pt;
+    color: #9ca3af;
+}
+
+/* ── Languages ───────────────────────────────────────────────────────────── */
+.tpl-modern .mod-languages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6pt 18pt;
+}
+
+.tpl-modern .mod-lang-item {
+    display: flex;
+    align-items: baseline;
+    gap: 5pt;
+}
+
+.tpl-modern .mod-lang-name {
+    font-size: 10pt;
+    font-weight: 600;
+    color: #111827;
+}
+
+.tpl-modern .mod-lang-prof {
+    font-size: 9pt;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* ── Print ───────────────────────────────────────────────────────────────── */
+@media print {
+    .tpl-modern .mod-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .tpl-modern {
+        font-size: 10pt !important;
+    }
+}

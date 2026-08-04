@@ -1,0 +1,275 @@
+/*
+ * ElevateCV AI — Creative Template CSS (Sprint 3)
+ * Scope: All rules scoped to .tpl-creative
+ * Design: Left teal accent strip, bold name, teal section dots, emerald chips.
+ * Font:   Plus Jakarta Sans / Inter
+ */
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+.tpl-creative {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: #1f2937;
+    background: #ffffff;
+    border-left: 4pt solid #0d9488;
+    padding-left: 20pt !important;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.tpl-creative .crt-header {
+    margin-bottom: 18pt;
+    padding-bottom: 14pt;
+    border-bottom: 1pt solid #e5e7eb;
+}
+
+.tpl-creative .crt-name {
+    font-size: 24pt;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0d9488;
+    margin: 0 0 6pt;
+    line-height: 1.05;
+}
+
+.tpl-creative .crt-contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+    font-size: 9.5pt;
+    color: #4b5563;
+}
+
+.tpl-creative .crt-contact a {
+    color: #0d9488;
+    text-decoration: none;
+}
+
+.tpl-creative .crt-contact a:hover {
+    text-decoration: underline;
+}
+
+.tpl-creative .crt-sep {
+    display: inline-block;
+    width: 3pt;
+    height: 3pt;
+    background: #0d9488;
+    border-radius: 50%;
+    margin: 0 7pt;
+    vertical-align: middle;
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+.tpl-creative .crt-section {
+    margin-bottom: 14pt;
+}
+
+.tpl-creative .crt-section-title {
+    display: flex;
+    align-items: center;
+    gap: 6pt;
+    font-size: 9.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #0d9488;
+    margin: 0 0 7pt;
+    padding-bottom: 4pt;
+    border-bottom: 1.5pt solid #99f6e4;
+}
+
+.tpl-creative .crt-section-dot {
+    display: inline-block;
+    width: 6pt;
+    height: 6pt;
+    background: #0d9488;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ── Items ───────────────────────────────────────────────────────────────── */
+.tpl-creative .crt-item {
+    margin-bottom: 10pt;
+    page-break-inside: avoid;
+}
+
+.tpl-creative .crt-item:last-child { margin-bottom: 0; }
+.tpl-creative .crt-item--compact { margin-bottom: 5pt; }
+
+.tpl-creative .crt-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8pt;
+    margin-bottom: 2pt;
+}
+
+.tpl-creative .crt-item-left { flex: 1; min-width: 0; }
+
+.tpl-creative .crt-item-title {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.3;
+}
+
+.tpl-creative .crt-item-sub {
+    font-size: 9.5pt;
+    color: #4b5563;
+    margin-top: 1pt;
+}
+
+.tpl-creative .crt-item-meta {
+    font-size: 9pt;
+    color: #6b7280;
+    margin-top: 1pt;
+}
+
+.tpl-creative .crt-item-date {
+    font-size: 9pt;
+    font-weight: 600;
+    color: #0d9488;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 1pt;
+}
+
+/* ── Summary ─────────────────────────────────────────────────────────────── */
+.tpl-creative .crt-summary {
+    margin: 0;
+    font-size: 10pt;
+    color: #374151;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+/* ── Bullets ─────────────────────────────────────────────────────────────── */
+.tpl-creative .crt-bullets {
+    margin: 4pt 0 0;
+    padding-left: 14pt;
+    list-style: none;
+}
+
+.tpl-creative .crt-bullets li {
+    font-size: 10pt;
+    color: #374151;
+    margin-bottom: 2pt;
+    line-height: 1.5;
+    padding-left: 10pt;
+    position: relative;
+}
+
+.tpl-creative .crt-bullets li::before {
+    content: '▸';
+    color: #0d9488;
+    font-size: 7pt;
+    position: absolute;
+    left: 0;
+    top: 2pt;
+}
+
+.tpl-creative .crt-bullets li:last-child { margin-bottom: 0; }
+
+/* ── Chips ───────────────────────────────────────────────────────────────── */
+.tpl-creative .crt-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3pt;
+    margin-top: 4pt;
+}
+
+.tpl-creative .crt-chip {
+    display: inline-block;
+    padding: 2pt 7pt;
+    background: #f0fdfa;
+    border: 0.5pt solid #99f6e4;
+    border-radius: 12pt;
+    font-size: 8.5pt;
+    font-weight: 500;
+    color: #0d9488;
+    white-space: nowrap;
+}
+
+/* ── Skills ──────────────────────────────────────────────────────────────── */
+.tpl-creative .crt-skill-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6pt;
+    margin-bottom: 5pt;
+}
+
+.tpl-creative .crt-skill-row:last-child { margin-bottom: 0; }
+
+.tpl-creative .crt-skill-label {
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: #374151;
+    white-space: nowrap;
+    min-width: 90pt;
+    flex-shrink: 0;
+    padding-top: 3pt;
+}
+
+/* ── Links ───────────────────────────────────────────────────────────────── */
+.tpl-creative .crt-proj-links {
+    font-size: 8.5pt;
+    font-weight: 400;
+    margin-left: 7pt;
+}
+
+.tpl-creative .crt-link {
+    color: #0d9488;
+    text-decoration: none;
+    font-size: 8.5pt;
+}
+
+.tpl-creative .crt-link:hover { text-decoration: underline; }
+
+.tpl-creative .crt-link--inherit {
+    color: inherit;
+    font-weight: 700;
+}
+
+.tpl-creative .crt-link-sep {
+    display: inline-block;
+    margin: 0 4pt;
+    color: #9ca3af;
+}
+
+/* ── Languages ───────────────────────────────────────────────────────────── */
+.tpl-creative .crt-languages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6pt 18pt;
+}
+
+.tpl-creative .crt-lang-item {
+    display: flex;
+    align-items: baseline;
+    gap: 5pt;
+}
+
+.tpl-creative .crt-lang-name {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #111827;
+}
+
+.tpl-creative .crt-lang-prof {
+    font-size: 9pt;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* ── Print ───────────────────────────────────────────────────────────────── */
+@media print {
+    .tpl-creative {
+        border-left-color: #0d9488;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-size: 10pt !important;
+    }
+}

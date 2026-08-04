@@ -1,0 +1,199 @@
+/*
+ * ElevateCV AI — Minimal Template CSS (Sprint 3)
+ * Scope: All rules scoped to .tpl-minimal
+ * Design: Whitespace-heavy, monochrome, lowercase name, hairline dividers.
+ */
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+.tpl-minimal {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: #111111;
+    background: #ffffff;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.tpl-minimal .min-header {
+    margin-bottom: 24pt;
+    padding-bottom: 14pt;
+    border-bottom: 0.5pt solid #cccccc;
+}
+
+.tpl-minimal .min-name {
+    font-size: 28pt;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: #000000;
+    text-transform: lowercase;
+    margin: 0 0 6pt;
+    line-height: 1.0;
+}
+
+.tpl-minimal .min-contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+    font-size: 9pt;
+    color: #555555;
+}
+
+.tpl-minimal .min-contact a {
+    color: #333333;
+    text-decoration: none;
+}
+
+.tpl-minimal .min-contact a:hover {
+    text-decoration: underline;
+}
+
+.tpl-minimal .min-sep {
+    display: inline-block;
+    margin: 0 6pt;
+    color: #aaaaaa;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+.tpl-minimal .min-section {
+    margin-bottom: 18pt;
+}
+
+.tpl-minimal .min-section-title {
+    font-size: 8.5pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #888888;
+    margin: 0 0 10pt;
+    padding-bottom: 5pt;
+    border-bottom: 0.5pt solid #e0e0e0;
+}
+
+/* ── Items ───────────────────────────────────────────────────────────────── */
+.tpl-minimal .min-item {
+    margin-bottom: 10pt;
+    page-break-inside: avoid;
+}
+
+.tpl-minimal .min-item:last-child { margin-bottom: 0; }
+.tpl-minimal .min-item--compact { margin-bottom: 5pt; }
+
+.tpl-minimal .min-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8pt;
+    margin-bottom: 2pt;
+}
+
+.tpl-minimal .min-item-left { flex: 1; min-width: 0; }
+
+.tpl-minimal .min-item-title {
+    font-size: 10.5pt;
+    font-weight: 500;
+    color: #000000;
+    line-height: 1.3;
+}
+
+.tpl-minimal .min-item-sub {
+    font-size: 9.5pt;
+    color: #555555;
+    margin-top: 1pt;
+}
+
+.tpl-minimal .min-item-meta {
+    font-size: 9pt;
+    color: #888888;
+    margin-top: 1pt;
+}
+
+.tpl-minimal .min-item-date {
+    font-size: 9pt;
+    color: #888888;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 1pt;
+}
+
+/* ── Summary ─────────────────────────────────────────────────────────────── */
+.tpl-minimal .min-summary {
+    margin: 0;
+    font-size: 10pt;
+    color: #333333;
+    line-height: 1.65;
+}
+
+/* ── Bullets ─────────────────────────────────────────────────────────────── */
+.tpl-minimal .min-bullets {
+    margin: 4pt 0 0;
+    padding-left: 14pt;
+    list-style: disc;
+}
+
+.tpl-minimal .min-bullets li {
+    font-size: 10pt;
+    color: #333333;
+    margin-bottom: 2pt;
+    line-height: 1.55;
+    padding-left: 2pt;
+}
+
+.tpl-minimal .min-bullets li:last-child { margin-bottom: 0; }
+
+/* ── Tech stack — plain text ──────────────────────────────────────────────── */
+.tpl-minimal .min-stack {
+    font-size: 9pt;
+    color: #777777;
+    margin-top: 3pt;
+    font-style: italic;
+}
+
+/* ── Skills ──────────────────────────────────────────────────────────────── */
+.tpl-minimal .min-skill-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4pt;
+    gap: 6pt;
+    font-size: 10pt;
+}
+
+.tpl-minimal .min-skill-row:last-child { margin-bottom: 0; }
+
+.tpl-minimal .min-skill-label {
+    font-weight: 500;
+    color: #000000;
+    white-space: nowrap;
+    min-width: 88pt;
+    flex-shrink: 0;
+}
+
+.tpl-minimal .min-skill-items {
+    color: #444444;
+}
+
+/* ── Links ───────────────────────────────────────────────────────────────── */
+.tpl-minimal .min-proj-links {
+    font-size: 8.5pt;
+    font-weight: 400;
+    margin-left: 7pt;
+    color: #555555;
+}
+
+.tpl-minimal .min-link {
+    color: #333333;
+    text-decoration: underline;
+    font-size: 8.5pt;
+}
+
+.tpl-minimal .min-link:hover { color: #000000; }
+
+.tpl-minimal .min-link--inherit {
+    color: inherit;
+    font-weight: 500;
+}
+
+/* ── Print ───────────────────────────────────────────────────────────────── */
+@media print {
+    .tpl-minimal { font-size: 10pt !important; }
+}

@@ -35,6 +35,12 @@
 
     <!-- Resume paper renderer styles -->
     <link rel="stylesheet" href="../assets/css/resume.css">
+
+    <!-- Sprint 3: Template Selector UI styles -->
+    <link rel="stylesheet" href="../assets/css/templates.css">
+
+    <!-- Sprint 3.5: PDF Export styles -->
+    <link rel="stylesheet" href="../assets/css/pdf-export.css">
 </head>
 <body>
     <div class="dashboard-layout hide-on-print">
@@ -192,13 +198,21 @@
                             <select id="resume-selector" class="form-input" style="width: 240px;" aria-label="Select resume">
                                 <option value="">-- Load Resume --</option>
                             </select>
-                            <button id="btn-print" class="btn btn--primary" aria-label="Print or save as PDF">
+                            <button id="btn-export-pdf" class="btn btn--export" aria-label="Export resume as PDF">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Export PDF
+                            </button>
+                            <button id="btn-print" class="btn btn--secondary" aria-label="Print resume">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
                                     <polyline points="6 9 6 2 18 2 18 9"/>
                                     <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
                                     <rect x="6" y="14" width="12" height="8"/>
                                 </svg>
-                                Print / Save PDF
+                                Print
                             </button>
                         </div>
                     </div>
@@ -220,6 +234,21 @@
     <script src="../js/utils/helpers.js"></script>
     <script src="../js/utils/config.js"></script>
     <script src="../js/utils/toast.js"></script>
+
+    <!-- Sprint 3.5: PDF Export Libraries (CDN) & Utility -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="../js/utils/pdfExport.js"></script>
+
+    <!-- Sprint 3: Template Engine -->
+    <script src="../js/templates/templateHelpers.js"></script>
+    <script src="../js/templates/ats-professional/template.js"></script>
+    <script src="../js/templates/modern/template.js"></script>
+    <script src="../js/templates/minimal/template.js"></script>
+    <script src="../js/templates/executive/template.js"></script>
+    <script src="../js/templates/harvard/template.js"></script>
+    <script src="../js/templates/creative/template.js"></script>
+    <script src="../js/templates/templateRegistry.js"></script>
 
     <!-- PreviewRenderer (shared component) -->
     <script src="../js/components/previewRenderer.js"></script>
