@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ElevateCV AI — Preview and print your professional resume.">
+    <meta name="description" content="ElevateCV AI — AI Resume Review Studio & ATS Workspace.">
     <meta name="author" content="ElevateCV AI">
     <meta name="theme-color" content="#080A14">
 
@@ -11,11 +11,11 @@
     <link rel="canonical" href="https://elevatecv-ai.netlify.app/pages/preview.html">
 
     <!-- Open Graph Metadata -->
-    <meta property="og:title" content="Preview Resume — ElevateCV AI">
-    <meta property="og:description" content="Preview and print your recruiter-ready resume on ElevateCV AI.">
+    <meta property="og:title" content="AI Resume Review Studio — ElevateCV AI">
+    <meta property="og:description" content="Review, analyze ATS compatibility, match job descriptions, prep for interviews, and export your resume.">
     <meta property="og:type" content="website">
 
-    <title>Preview Resume — ElevateCV AI</title>
+    <title>AI Resume Review Studio — ElevateCV AI</title>
 
     <!-- Google Fonts: Plus Jakarta Sans & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +30,7 @@
     <!-- Dashboard layout (sidebar, topbar, profile dropdown) -->
     <link rel="stylesheet" href="../assets/css/dashboard.css">
 
-    <!-- Preview page chrome (controls, wrapper) -->
+    <!-- Preview page chrome & AI Workspace styles -->
     <link rel="stylesheet" href="../assets/css/preview.css">
 
     <!-- Resume paper renderer styles -->
@@ -42,7 +42,7 @@
     <!-- Sprint 3.5: PDF Export styles -->
     <link rel="stylesheet" href="../assets/css/pdf-export.css">
 
-    <!-- Sprint 3.5: AI Feature styles -->
+    <!-- AI Feature & Component styles -->
     <link rel="stylesheet" href="../assets/css/analyzer.css">
     <link rel="stylesheet" href="../assets/css/improver.css">
     <link rel="stylesheet" href="../assets/css/cover-letter.css">
@@ -54,7 +54,7 @@
 </head>
 <body>
     <div class="dashboard-layout hide-on-print">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar__header">
                 <a href="dashboard.html" class="sidebar__logo">
@@ -101,7 +101,7 @@
                                     <circle cx="12" cy="12" r="3"/>
                                 </svg>
                             </span>
-                            Preview Resume
+                            Review Studio
                         </a>
                     </li>
                     <li class="sidebar__item">
@@ -191,9 +191,9 @@
             </nav>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main Workspace Shell -->
         <div class="main-wrapper">
-            <!-- Top Navigation -->
+            <!-- Topbar (User Profile Header) -->
             <header class="topbar hide-on-print">
                 <div class="topbar__left">
                     <button class="topbar__toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
@@ -228,63 +228,236 @@
                 </div>
             </header>
 
-            <!-- Preview Content -->
-            <main class="dashboard-content preview-dashboard">
-
-                <!-- Controls Bar -->
-                <div class="preview-controls hide-on-print">
-                    <div class="preview-controls__header">
-                        <div>
-                            <h1 class="section-title" style="margin-bottom: var(--space-1)">Resume Preview</h1>
-                            <p class="section-subtitle">Select a saved resume to preview and print.</p>
-                        </div>
-                        <div class="preview-controls__actions">
-                            <select id="resume-selector" class="form-input" style="width: 240px;" aria-label="Select resume">
+            <!-- Studio Top Navbar -->
+            <div class="workspace-topbar hide-on-print">
+                <div class="workspace-topbar__left">
+                    <div class="workspace-title-group">
+                        <div class="workspace-title-row">
+                            <select id="resume-selector" class="workspace-resume-select" aria-label="Select resume">
                                 <option value="">-- Load Resume --</option>
                             </select>
-                            <button id="btn-export-pdf" class="btn btn--export" aria-label="Export resume as PDF">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                Export PDF
-                            </button>
-                            <button id="btn-print" class="btn btn--secondary" aria-label="Print resume">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
-                                    <polyline points="6 9 6 2 18 2 18 9"/>
-                                    <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
-                                    <rect x="6" y="14" width="12" height="8"/>
-                                </svg>
-                                Print
-                            </button>
+                        </div>
+                        <div class="workspace-saved-badge">
+                            <span class="workspace-saved-dot"></span>
+                            <span id="last-saved-time">Saved just now</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Resume Paper Render Target -->
-                <div class="preview-paper-wrapper" id="preview-paper-wrapper">
-                    <div id="preview-canvas" class="resume-paper">
-                        <!-- PreviewRenderer injects resume HTML here -->
-                        <p class="rv-empty">Select a resume above to preview it here.</p>
-                    </div>
+                <div class="workspace-topbar__actions">
+                    <button id="btn-share" class="btn-workspace btn-workspace-ghost" aria-label="Share resume">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        Share
+                    </button>
+                    <button id="btn-print" class="btn-workspace btn-workspace-secondary" aria-label="Print resume">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        Print
+                    </button>
+                    <button id="btn-export-pdf" class="btn-workspace btn-workspace-primary" aria-label="Export resume as PDF">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export PDF
+                    </button>
                 </div>
+            </div>
 
+            <!-- Main Content Area: 65% / 35% Grid -->
+            <main class="dashboard-content preview-dashboard">
+                <div class="workspace-grid">
+
+                    <!-- Left Panel: Sticky Resume Preview Canvas (65%) -->
+                    <div class="workspace-preview-panel">
+                        <div class="zoom-toolbar hide-on-print">
+                            <div class="zoom-toolbar__left">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                A4 Document Canvas
+                            </div>
+                            <div class="zoom-toolbar__controls">
+                                <button class="zoom-btn" id="btn-zoom-out" title="Zoom Out" aria-label="Zoom Out">-</button>
+                                <span class="zoom-scale-text" id="zoom-scale-display">100%</span>
+                                <button class="zoom-btn" id="btn-zoom-in" title="Zoom In" aria-label="Zoom In">+</button>
+                                <button class="zoom-btn" id="btn-zoom-reset" title="Reset Zoom" style="font-size:0.7rem;width:auto;padding:0 6px;">Reset</button>
+                            </div>
+                        </div>
+
+                        <div class="canvas-scroll-area">
+                            <div class="canvas-paper-viewport" id="canvas-viewport">
+                                <div id="preview-canvas" class="resume-paper">
+                                    <p class="rv-empty">Select a resume above to preview it here.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel: Scrollable AI Workspace (35%) -->
+                    <div class="workspace-ai-panel hide-on-print">
+
+                        <!-- SECTION 1: ATS SCORE -->
+                        <div class="ai-section-card" id="sec-ats-score">
+                            <div class="ai-section-header">
+                                <div class="ai-section-title">
+                                    <div class="ai-section-title-icon purple">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                    </div>
+                                    ATS Score & Quality
+                                </div>
+                                <button class="btn-workspace btn-workspace-secondary" id="btn-run-ats" style="padding:4px 10px;font-size:0.75rem;">Analyze ATS</button>
+                            </div>
+
+                            <div id="ats-hero-container">
+                                <!-- Empty state before analysis -->
+                                <div class="ai-empty-state">
+                                    <div class="ai-empty-icon">🎯</div>
+                                    <div class="ai-empty-text">Run ATS Analysis to receive AI-powered resume insights and score.</div>
+                                    <button class="btn-workspace btn-workspace-primary" id="btn-run-ats-empty" style="margin-top:6px;">Analyze Resume</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: ATS BREAKDOWN -->
+                        <div class="ai-section-card" id="sec-ats-breakdown">
+                            <div class="ai-section-header">
+                                <div class="ai-section-title">
+                                    <div class="ai-section-title-icon cyan">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                    </div>
+                                    ATS Breakdown
+                                </div>
+                            </div>
+                            <div id="ats-breakdown-container">
+                                <div class="ai-empty-state" style="padding:12px;">
+                                    <div class="ai-empty-text">Detailed category scores will appear after running ATS Analysis.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3: AI SUGGESTIONS -->
+                        <div class="ai-section-card" id="sec-ai-suggestions">
+                            <div class="ai-section-header">
+                                <div class="ai-section-title">
+                                    <div class="ai-section-title-icon orange">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    </div>
+                                    AI Suggestions
+                                </div>
+                            </div>
+                            <div id="suggestions-container">
+                                <div class="ai-empty-state" style="padding:12px;">
+                                    <div class="ai-empty-text">Prioritized suggestions (Critical, Recommended, Optional) will render here.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 4: JOB MATCH -->
+                        <div class="ai-section-card" id="sec-job-match">
+                            <div class="ai-section-header">
+                                <div class="ai-section-title">
+                                    <div class="ai-section-title-icon green">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    </div>
+                                    Job Match Analysis
+                                </div>
+                            </div>
+                            <div class="job-match-input-wrap">
+                                <textarea id="job-desc-input" class="job-desc-textarea" placeholder="Paste a target Job Description here to calculate your compatibility score..."></textarea>
+                                <button class="btn-workspace btn-workspace-primary" id="btn-run-jobmatch" style="align-self:flex-end;">Analyze Match</button>
+                            </div>
+                            <div id="jobmatch-results-container">
+                                <div class="ai-empty-state" style="padding:14px 0 0;">
+                                    <div class="ai-empty-text">Paste a Job Description above to calculate your compatibility score.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 5: SKILL GAP -->
+                        <div class="ai-section-card" id="sec-skill-gap">
+                            <div class="ai-section-header">
+                                <div class="ai-section-title">
+                                    <div class="ai-section-title-icon purple">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                                    </div>
+                                    Skill Gap & Roadmap
+                                </div>
+                                <button class="btn-workspace btn-workspace-secondary" id="btn-run-skillgap" style="padding:4px 10px;font-size:0.75rem;">Check Skill Gap</button>
+                            </div>
+                            <div id="skillgap-container">
+                                <div class="ai-empty-state" style="padding:12px;">
+                                    <div class="ai-empty-text">Identify missing technologies, certifications, and a personalized learning roadmap.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 6: INTERVIEW PREPARATION -->
+                        <div class="ai-section-card" id="sec-interview-prep">
+                            <div class="ai-section-header">
+                                <div class="ai-section-title">
+                                    <div class="ai-section-title-icon cyan">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                                    </div>
+                                    Interview Preparation
+                                </div>
+                                <button class="btn-workspace btn-workspace-secondary" id="btn-run-interview" style="padding:4px 10px;font-size:0.75rem;">Generate Questions</button>
+                            </div>
+                            <div id="interview-container">
+                                <div class="ai-empty-state" style="padding:12px;">
+                                    <div class="ai-empty-text">Generate top Behavioral, Technical, and Project interview questions tailored to your resume.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 7: COVER LETTER -->
+                        <div class="ai-section-card" id="sec-cover-letter">
+                            <div class="ai-section-header">
+                                <div class="ai-section-title">
+                                    <div class="ai-section-title-icon orange">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    </div>
+                                    Cover Letter Generator
+                                </div>
+                                <button class="btn-workspace btn-workspace-secondary" id="btn-run-coverletter" style="padding:4px 10px;font-size:0.75rem;">Generate Letter</button>
+                            </div>
+                            <div id="coverletter-container">
+                                <div class="ai-empty-state" style="padding:12px;">
+                                    <div class="ai-empty-text">Generate a tailored cover letter for job applications in one click.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- /workspace-ai-panel -->
+                </div><!-- /workspace-grid -->
             </main>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Fixed Bottom Action Bar -->
+    <div class="workspace-bottombar hide-on-print">
+        <button class="btn-workspace btn-workspace-secondary" id="btn-bottom-improve">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Improve Resume
+        </button>
+        <button class="btn-workspace btn-workspace-secondary" id="btn-bottom-reanalyze">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 11-.57-8.38l5.67-5.67"/></svg>
+            Re-analyze ATS
+        </button>
+        <button class="btn-workspace btn-workspace-secondary" id="btn-bottom-export">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export PDF
+        </button>
+        <button class="btn-workspace btn-workspace-primary" id="btn-bottom-apply">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Apply to Job
+        </button>
+    </div>
+
+    <!-- Core Scripts -->
     <script src="../js/utils/helpers.js"></script>
     <script src="../js/utils/config.js"></script>
     <script src="../js/utils/toast.js"></script>
 
-    <!-- Sprint 3.5: PDF Export Libraries (CDN) & Utility -->
+    <!-- PDF Export Libraries & Utility -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../js/utils/pdfExport.js"></script>
 
-    <!-- Sprint 3: Template Engine -->
+    <!-- Template Engine -->
     <script src="../js/templates/templateHelpers.js"></script>
     <script src="../js/templates/ats-professional/template.js"></script>
     <script src="../js/templates/modern/template.js"></script>
@@ -294,7 +467,7 @@
     <script src="../js/templates/creative/template.js"></script>
     <script src="../js/templates/templateRegistry.js"></script>
 
-    <!-- PreviewRenderer (shared component) -->
+    <!-- PreviewRenderer Component -->
     <script src="../js/components/previewRenderer.js"></script>
 
     <!-- Dashboard.js handles auth guard, sidebar toggle, profile dropdown -->
@@ -310,7 +483,7 @@
     <script src="../js/components/settingsModal.js"></script>
     <script src="../js/components/profileModal.js"></script>
 
-    <!-- Preview page controller -->
+    <!-- Workspace Controller -->
     <script src="../js/pages/preview.js"></script>
 </body>
 </html>

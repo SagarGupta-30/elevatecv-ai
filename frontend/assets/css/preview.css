@@ -1,99 +1,859 @@
-/* ============================================
-   ElevateCV AI — Preview Page Chrome Styles
-   (Controls bar, wrapper spacing, responsive)
-   ============================================
-   NOTE: Resume paper rendering styles (rv-*,
-   resume-paper, etc.) are in resume.css.
-   ============================================ */
+/**
+ * ElevateCV AI — AI Resume Review Workspace (Preview Page Redesign)
+ * Dark SaaS Glassmorphic Workspace (Linear + Vercel + Cursor + Rezi + Resume.io inspired)
+ */
 
-/* ── Page Layout ──────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   WORKSPACE ROOT & LAYOUT (65% / 35% Split)
+═══════════════════════════════════════════════════════════════════ */
+:root {
+    --rv-space-bg:           #080a14;
+    --rv-glass-bg:           rgba(15, 17, 28, 0.75);
+    --rv-glass-hover:        rgba(255, 255, 255, 0.05);
+    --rv-border:             rgba(255, 255, 255, 0.08);
+    --rv-border-hover:       rgba(99, 102, 241, 0.35);
+    --rv-accent:             #6366f1;
+    --rv-accent-glow:        rgba(99, 102, 241, 0.25);
+    --rv-purple:             #8b5cf6;
+    --rv-cyan:               #06b6d4;
+    --rv-green:              #10b981;
+    --rv-orange:             #f59e0b;
+    --rv-red:                #ef4444;
+    --rv-text-main:          #f1f5f9;
+    --rv-text-muted:         #94a3b8;
+    --rv-text-dim:           #64748b;
+    --rv-radius-lg:          20px;
+    --rv-radius-md:          12px;
+    --rv-radius-sm:          8px;
+    --rv-gradient-purple:    linear-gradient(135deg, #6366f1, #8b5cf6);
+    --rv-gradient-cyan:      linear-gradient(135deg, #6366f1, #06b6d4);
+    --rv-gradient-green:     linear-gradient(135deg, #10b981, #06b6d4);
+}
 
 .preview-dashboard {
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    min-height: calc(100vh - 64px);
+    background: var(--rv-space-bg);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TOP NAVBAR (Studio Header)
+═══════════════════════════════════════════════════════════════════ */
+.workspace-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: var(--rv-glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--rv-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.workspace-topbar__left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.workspace-title-group {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
-    padding-bottom: var(--space-12);
 }
 
-/* ── Controls Bar ─────────────────────────── */
-
-.preview-controls {
-    background: var(--glass-bg-strong);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--glass-radius);
-    padding: var(--space-6);
-    box-shadow: var(--shadow-md);
-}
-
-.preview-controls__header {
+.workspace-title-row {
     display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.workspace-resume-select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--rv-border);
+    color: var(--rv-text-main);
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: var(--rv-radius-sm);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    max-width: 260px;
+}
+
+.workspace-resume-select:hover,
+.workspace-resume-select:focus {
+    border-color: var(--rv-accent);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.workspace-saved-badge {
+    font-size: 0.73rem;
+    color: var(--rv-text-dim);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.workspace-saved-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--rv-green);
+    box-shadow: 0 0 8px var(--rv-green);
+}
+
+.workspace-topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-workspace {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: var(--rv-radius-sm);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.btn-workspace-primary {
+    background: var(--rv-gradient-purple);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.btn-workspace-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    opacity: 0.95;
+}
+
+.btn-workspace-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--rv-border);
+    color: var(--rv-text-main);
+}
+
+.btn-workspace-secondary:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: var(--rv-border-hover);
+}
+
+.btn-workspace-ghost {
+    background: transparent;
+    color: var(--rv-text-muted);
+}
+
+.btn-workspace-ghost:hover {
+    color: var(--rv-text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MAIN 65/35 WORKSPACE GRID
+═══════════════════════════════════════════════════════════════════ */
+.workspace-grid {
+    display: grid;
+    grid-template-columns: 65% 35%;
+    min-height: calc(100vh - 120px);
+}
+
+/* ── LEFT PANEL: Sticky Resume Canvas (65%) ─────────────────────── */
+.workspace-preview-panel {
+    background: #05070e;
+    border-right: 1px solid var(--rv-border);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+}
+
+/* Zoom Toolbar */
+.zoom-toolbar {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-4);
+    padding: 10px 20px;
+    background: rgba(10, 12, 22, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rv-border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
 }
 
-.preview-controls__actions {
+.zoom-toolbar__left {
     display: flex;
-    gap: var(--space-3);
     align-items: center;
-    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: var(--rv-text-muted);
+    font-weight: 500;
 }
 
-/* ── Paper Wrapper ────────────────────────── */
+.zoom-toolbar__controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-sm);
+    padding: 3px;
+}
 
-.preview-paper-wrapper {
+.zoom-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--rv-text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--rv-accent);
+}
+
+.zoom-scale-text {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--rv-text-main);
+    min-width: 48px;
+    text-align: center;
+}
+
+/* Canvas Area */
+.canvas-scroll-area {
+    flex: 1;
     display: flex;
     justify-content: center;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-base);
-    border-radius: var(--glass-radius);
-    padding: var(--space-8);
-    overflow-x: auto;
+    align-items: flex-start;
+    padding: 36px 20px 80px;
+    overflow: auto;
 }
 
-.preview-paper-wrapper .resume-paper {
+.canvas-paper-viewport {
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform-origin: top center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+}
+
+.canvas-paper-viewport .resume-paper {
     width: 210mm;
     min-height: 297mm;
-    padding: 20mm 18mm;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    border-radius: 3px;
+    background: #ffffff;
+    border-radius: 4px;
 }
 
-/* ── Print Rules ──────────────────────────── */
+/* ── RIGHT PANEL: Scrollable AI Workspace (35%) ──────────────────── */
+.workspace-ai-panel {
+    background: var(--rv-glass-bg);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    padding: 24px 24px 90px;
+    gap: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+}
 
+.workspace-ai-panel::-webkit-scrollbar {
+    width: 6px;
+}
+.workspace-ai-panel::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 10px;
+}
+
+/* AI Workspace Section Wrapper */
+.ai-section-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-lg);
+    padding: 20px;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.ai-section-card:hover {
+    border-color: var(--rv-border-hover);
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.ai-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.ai-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--rv-text-main);
+    letter-spacing: -0.01em;
+}
+
+.ai-section-title-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--rv-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ai-section-title-icon.purple { background: rgba(99, 102, 241, 0.18); color: var(--rv-accent); }
+.ai-section-title-icon.cyan { background: rgba(6, 182, 212, 0.18); color: var(--rv-cyan); }
+.ai-section-title-icon.green { background: rgba(16, 185, 129, 0.18); color: var(--rv-green); }
+.ai-section-title-icon.orange { background: rgba(245, 158, 11, 0.18); color: var(--rv-orange); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 1: ATS SCORE CIRCULAR GAUGE
+═══════════════════════════════════════════════════════════════════ */
+.ats-score-hero {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.ats-circle-wrap {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+}
+
+.ats-circle-svg {
+    width: 100px;
+    height: 100px;
+    transform: rotate(-90deg);
+}
+
+.ats-circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.07);
+    stroke-width: 8;
+}
+
+.ats-circle-fill {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ats-circle-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.ats-circle-val {
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--rv-text-main);
+}
+
+.ats-circle-label {
+    font-size: 0.65rem;
+    color: var(--rv-text-dim);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+}
+
+.ats-meta-box {
+    flex: 1;
+}
+
+.ats-grade-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    border: 1px solid transparent;
+}
+
+.ats-grade-pill.green { background: rgba(16,185,129,0.15); color: var(--rv-green); border-color: rgba(16,185,129,0.3); }
+.ats-grade-pill.purple { background: rgba(139,92,246,0.15); color: var(--rv-purple); border-color: rgba(139,92,246,0.3); }
+.ats-grade-pill.orange { background: rgba(245,158,11,0.15); color: var(--rv-orange); border-color: rgba(245,158,11,0.3); }
+.ats-grade-pill.red { background: rgba(239,68,68,0.15); color: var(--rv-red); border-color: rgba(239,68,68,0.3); }
+
+.ats-meta-desc {
+    font-size: 0.8rem;
+    color: var(--rv-text-muted);
+    line-height: 1.45;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 2: ATS BREAKDOWN CARDS
+═══════════════════════════════════════════════════════════════════ */
+.ats-breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.ats-metric-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-md);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ats-metric-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ats-metric-name {
+    font-size: 0.76rem;
+    color: var(--rv-text-muted);
+    font-weight: 500;
+}
+
+.ats-metric-score {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--rv-text-main);
+}
+
+.ats-metric-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.ats-metric-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 3: AI SUGGESTIONS (Critical, Recommended, Optional)
+═══════════════════════════════════════════════════════════════════ */
+.suggestion-group-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--rv-border);
+    padding-bottom: 8px;
+}
+
+.sugg-tab {
+    padding: 5px 12px;
+    border-radius: var(--rv-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: transparent;
+    color: var(--rv-text-dim);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sugg-tab.active {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--rv-accent);
+}
+
+.suggestion-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-md);
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.suggestion-card.critical { border-left: 3px solid var(--rv-red); }
+.suggestion-card.recommended { border-left: 3px solid var(--rv-orange); }
+.suggestion-card.optional { border-left: 3px solid var(--rv-accent); }
+
+.sugg-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+}
+
+.sugg-icon.red { background: rgba(239,68,68,0.15); color: var(--rv-red); }
+.sugg-icon.orange { background: rgba(245,158,11,0.15); color: var(--rv-orange); }
+.sugg-icon.purple { background: rgba(99,102,241,0.15); color: var(--rv-accent); }
+
+.sugg-content {
+    flex: 1;
+}
+
+.sugg-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--rv-text-main);
+    margin-bottom: 3px;
+}
+
+.sugg-reason {
+    font-size: 0.78rem;
+    color: var(--rv-text-muted);
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 4: JOB MATCH
+═══════════════════════════════════════════════════════════════════ */
+.job-match-input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.job-desc-textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-md);
+    color: var(--rv-text-main);
+    font-size: 0.82rem;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.job-desc-textarea:focus {
+    border-color: var(--rv-accent);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.job-match-results {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.skill-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.74rem;
+    font-weight: 500;
+}
+
+.skill-chip.matched {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--rv-green);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.skill-chip.missing {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--rv-red);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 5: SKILL GAP & ROADMAP
+═══════════════════════════════════════════════════════════════════ */
+.roadmap-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.roadmap-timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.roadmap-item {
+    position: relative;
+}
+
+.roadmap-dot {
+    position: absolute;
+    left: -20px;
+    top: 3px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--rv-accent);
+    border: 3px solid var(--rv-space-bg);
+}
+
+.roadmap-title {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--rv-text-main);
+}
+
+.roadmap-desc {
+    font-size: 0.76rem;
+    color: var(--rv-text-muted);
+    line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 6: INTERVIEW PREPARATION (Accordions)
+═══════════════════════════════════════════════════════════════════ */
+.qa-accordion {
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-md);
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+}
+
+.qa-accordion-header {
+    width: 100%;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    color: var(--rv-text-main);
+    font-size: 0.83rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.qa-accordion-header:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.qa-accordion-body {
+    padding: 0 14px 14px;
+    font-size: 0.79rem;
+    color: var(--rv-text-muted);
+    line-height: 1.5;
+    border-top: 1px solid var(--rv-border);
+    display: none;
+}
+
+.qa-accordion.open .qa-accordion-body {
+    display: block;
+    padding-top: 10px;
+}
+
+.qa-accordion.open .qa-chevron {
+    transform: rotate(180deg);
+}
+
+.qa-chevron {
+    transition: transform 0.2s;
+    color: var(--rv-text-dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION 7: COVER LETTER GENERATOR & PREVIEW
+═══════════════════════════════════════════════════════════════════ */
+.cover-letter-box {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-md);
+    padding: 14px;
+    font-size: 0.81rem;
+    color: var(--rv-text-main);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    max-height: 260px;
+    overflow-y: auto;
+    font-family: inherit;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FIXED BOTTOM ACTION BAR
+═══════════════════════════════════════════════════════════════════ */
+.workspace-bottombar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 90;
+    background: rgba(10, 12, 22, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--rv-border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EMPTY & LOADING STATES
+═══════════════════════════════════════════════════════════════════ */
+.ai-empty-state {
+    text-align: center;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-empty-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--rv-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.ai-empty-text {
+    font-size: 0.8rem;
+    color: var(--rv-text-muted);
+    max-width: 280px;
+    line-height: 1.4;
+}
+
+.ai-skeleton {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    animation: rv-pulse 1.4s infinite ease-in-out;
+}
+
+@keyframes rv-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
+.ai-error-card {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--rv-radius-md);
+    padding: 14px;
+    color: var(--rv-red);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MEDIA PRINT RULES (EXPORTS ONLY THE RESUME PAPER)
+═══════════════════════════════════════════════════════════════════ */
 @media print {
-    /* Hide all dashboard chrome */
     .sidebar,
     .topbar,
-    .preview-controls,
+    .workspace-topbar,
+    .workspace-ai-panel,
+    .workspace-bottombar,
+    .zoom-toolbar,
     .hide-on-print {
         display: none !important;
     }
 
-    /* Remove layout wrappers */
-    .dashboard-layout,
-    .main-wrapper,
-    .dashboard-content,
-    .preview-dashboard,
-    .preview-paper-wrapper {
-        display: block !important;
+    body, html {
+        background: #ffffff !important;
         margin: 0 !important;
         padding: 0 !important;
-        width: 100% !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+        overflow: visible !important;
     }
 
-    /* Full-page resume paper */
+    .preview-dashboard,
+    .workspace-grid,
+    .workspace-preview-panel,
+    .canvas-scroll-area,
+    .canvas-paper-viewport {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        position: static !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: none !important;
+        transform: none !important;
+    }
+
     .resume-paper {
         width: 100% !important;
-        min-height: 100vh !important;
-        padding: 15mm 14mm !important;
         box-shadow: none !important;
-        border-radius: 0 !important;
+        padding: 15mm 14mm !important;
     }
 
     @page {
@@ -102,30 +862,21 @@
     }
 }
 
-/* ── Responsive ───────────────────────────── */
-
-@media (max-width: 900px) {
-    .preview-paper-wrapper {
-        padding: var(--space-4) var(--space-3);
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE LAYOUT (< 1024px)
+═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .workspace-grid {
+        grid-template-columns: 1fr;
     }
 
-    .preview-paper-wrapper .resume-paper {
-        width: 100%;
-        min-height: auto;
-        padding: 20px 16px;
+    .workspace-preview-panel {
+        max-height: 60vh;
+        border-right: none;
+        border-bottom: 1px solid var(--rv-border);
     }
 
-    .preview-controls__header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .preview-controls__actions {
-        width: 100%;
-    }
-
-    .preview-controls__actions .form-input {
-        flex: 1;
-        width: auto !important;
+    .workspace-ai-panel {
+        max-height: none;
     }
 }
