@@ -572,6 +572,18 @@ const ResumeBuilderV2 = (() => {
 
         if (navProfile) navProfile.addEventListener('click', openProfile);
         if (dropProfile) dropProfile.addEventListener('click', openProfile);
+
+        const navPreview = document.getElementById('sidebar-nav-preview');
+        if (navPreview) {
+            navPreview.addEventListener('click', (e) => {
+                const id = BuilderState.getId();
+                if (id) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = `preview.html?resumeId=${id}`;
+                }
+            });
+        }
     }
 
     return { init };

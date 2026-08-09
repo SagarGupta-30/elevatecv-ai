@@ -1288,7 +1288,7 @@ const ProfileModal = (() => {
                 pageLogout.click();
             } else {
                 localStorage.clear();
-                window.location.href = '../pages/login.html';
+                window.location.href = 'login.html';
             }
         });
     }

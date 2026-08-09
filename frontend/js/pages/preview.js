@@ -816,6 +816,17 @@ const ResumePreview = (() => {
             });
         }
 
+        const navBuilder = Helpers.$('#sidebar-nav-builder');
+        if (navBuilder) {
+            navBuilder.addEventListener('click', (e) => {
+                if (currentResume && currentResume._id) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = `builder.html?resumeId=${currentResume._id}`;
+                }
+            });
+        }
+
         // Fetch candidate resumes
         fetchResumes();
     }
