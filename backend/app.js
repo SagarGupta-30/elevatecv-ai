@@ -62,6 +62,35 @@ app.use(morgan('dev'));
 
 /* ── Routes ───────────────────────────────────────────────────────────── */
 app.use('/', healthRoute);
+
+/* ── Production Diagnostic Route ────────────────────────────────────────── */
+app.get('/api/debug/routes', (req, res) => {
+    res.status(200).json({
+        success: true,
+        environment: process.env.NODE_ENV || 'development',
+        commit: process.env.RENDER_GIT_COMMIT || 'latest',
+        timestamp: new Date().toISOString(),
+        mountedRoutes: [
+            'GET /',
+            'GET /api/debug/routes',
+            'POST /api/auth/register',
+            'POST /api/auth/login',
+            'GET /api/auth/me',
+            'POST /api/resumes',
+            'GET /api/resumes',
+            'GET /api/resumes/:id',
+            'PUT /api/resumes/:id',
+            'DELETE /api/resumes/:id',
+            'POST /api/ai/analyze',
+            'POST /api/ai/improve',
+            'POST /api/ai/cover-letter',
+            'POST /api/ai/interview',
+            'POST /api/ai/job-match',
+            'POST /api/ai/skill-gap'
+        ]
+    });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/ai/improve', improveRoutes);
