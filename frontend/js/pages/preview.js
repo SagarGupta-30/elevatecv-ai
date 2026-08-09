@@ -735,20 +735,21 @@ const ResumePreview = (() => {
         // AI Workspace Section Triggers
         const btnAts = Helpers.$('#btn-run-ats');
         const btnAtsEmpty = Helpers.$('#btn-run-ats-empty');
-        if (btnAts) btnAts.addEventListener('click', runAtsAnalysis);
-        if (btnAtsEmpty) btnAtsEmpty.addEventListener('click', runAtsAnalysis);
+        const openAtsModal = () => { if (typeof ResumeAnalyzer !== 'undefined') ResumeAnalyzer.open(currentResume || {}); };
+        if (btnAts) btnAts.addEventListener('click', openAtsModal);
+        if (btnAtsEmpty) btnAtsEmpty.addEventListener('click', openAtsModal);
 
         const btnJobMatch = Helpers.$('#btn-run-jobmatch');
-        if (btnJobMatch) btnJobMatch.addEventListener('click', runJobMatch);
+        if (btnJobMatch) btnJobMatch.addEventListener('click', () => { if (typeof JobMatchAnalyzer !== 'undefined') JobMatchAnalyzer.open(currentResume || {}); });
 
         const btnSkillGap = Helpers.$('#btn-run-skillgap');
-        if (btnSkillGap) btnSkillGap.addEventListener('click', runSkillGap);
+        if (btnSkillGap) btnSkillGap.addEventListener('click', () => { if (typeof SkillGapAnalyzer !== 'undefined') SkillGapAnalyzer.open(currentResume || {}); });
 
         const btnInterview = Helpers.$('#btn-run-interview');
-        if (btnInterview) btnInterview.addEventListener('click', runInterviewPrep);
+        if (btnInterview) btnInterview.addEventListener('click', () => { if (typeof InterviewPrep !== 'undefined') InterviewPrep.open(currentResume || {}); });
 
         const btnCoverLetter = Helpers.$('#btn-run-coverletter');
-        if (btnCoverLetter) btnCoverLetter.addEventListener('click', runCoverLetter);
+        if (btnCoverLetter) btnCoverLetter.addEventListener('click', () => { if (typeof CoverLetterGenerator !== 'undefined') CoverLetterGenerator.open(currentResume || {}); });
 
         // Bottom Action Bar Triggers
         const btnBtmImprove  = Helpers.$('#btn-bottom-improve');
@@ -762,18 +763,18 @@ const ResumePreview = (() => {
                 if (improver) improver.open(currentResume);
             });
         }
-        if (btnBtmReanalyze) btnBtmReanalyze.addEventListener('click', runAtsAnalysis);
+        if (btnBtmReanalyze) btnBtmReanalyze.addEventListener('click', openAtsModal);
         if (btnBtmExport)    btnBtmExport.addEventListener('click', handleExportPdf);
         if (btnBtmApply)     btnBtmApply.addEventListener('click', handleApplyToJob);
 
-        // Sidebar AI Workspace Navigation (Scroll to section & trigger AI)
+        // Sidebar AI Workspace Navigation (Open independent component modals)
         const navAts = Helpers.$('#sidebar-nav-ats');
         if (navAts) {
             navAts.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const sec = Helpers.$('#sec-ats-score');
-                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
-                if (!atsData) runAtsAnalysis();
+                if (typeof ResumeAnalyzer !== 'undefined') {
+                    ResumeAnalyzer.open(currentResume || {});
+                }
             });
         }
 
@@ -781,8 +782,9 @@ const ResumePreview = (() => {
         if (navJobMatch) {
             navJobMatch.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const sec = Helpers.$('#sec-job-match');
-                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+                if (typeof JobMatchAnalyzer !== 'undefined') {
+                    JobMatchAnalyzer.open(currentResume || {});
+                }
             });
         }
 
@@ -790,9 +792,9 @@ const ResumePreview = (() => {
         if (navSkillGap) {
             navSkillGap.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const sec = Helpers.$('#sec-skill-gap');
-                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
-                if (!skillGapData) runSkillGap();
+                if (typeof SkillGapAnalyzer !== 'undefined') {
+                    SkillGapAnalyzer.open(currentResume || {});
+                }
             });
         }
 
@@ -800,9 +802,9 @@ const ResumePreview = (() => {
         if (navInterview) {
             navInterview.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const sec = Helpers.$('#sec-interview-prep');
-                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
-                if (!interviewData) runInterviewPrep();
+                if (typeof InterviewPrep !== 'undefined') {
+                    InterviewPrep.open(currentResume || {});
+                }
             });
         }
 
@@ -810,9 +812,9 @@ const ResumePreview = (() => {
         if (navCoverLetter) {
             navCoverLetter.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const sec = Helpers.$('#sec-cover-letter');
-                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
-                if (!coverLetterText) runCoverLetter();
+                if (typeof CoverLetterGenerator !== 'undefined') {
+                    CoverLetterGenerator.open(currentResume || {});
+                }
             });
         }
 
