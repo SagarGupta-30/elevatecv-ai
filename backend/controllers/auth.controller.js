@@ -94,4 +94,53 @@ async function getMe(req, res, next) {
     }
 }
 
-module.exports = { register, login, getMe };
+/**
+ * PUT /api/auth/profile
+ * Update authenticated user's profile info (name, phone).
+ */
+async function updateProfile(req, res, next) {
+    try {
+        const { name, phone } = req.body || {};
+        const user = await authService.updateUserProfile(req.userId, { name, phone });
+
+        res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully',
+            data: { user },
+            error: null
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * PUT /api/auth/password
+ * Update authenticated user's password.
+ */
+async function updatePassword(req, res, next) {
+    try {
+        const { currentPassword, newPassword } = req.body || {};
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Current password and new password are required',
+                data: null,
+                error: 'ValidationError'
+            });
+        }
+
+        const user = await authService.updateUserPassword(req.userId, { currentPassword, newPassword });
+
+        res.status(200).json({
+            success: true,
+            message: 'Password updated successfully',
+            data: { user },
+            error: null
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+module.exports = { register, login, getMe, updateProfile, updatePassword };

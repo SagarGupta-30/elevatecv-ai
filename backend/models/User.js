@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema(
             minlength: [6, 'Password must be at least 6 characters'],
             select: false,
         },
+        phone: {
+            type: String,
+            default: '',
+            trim: true,
+        },
     },
     {
         timestamps: true,

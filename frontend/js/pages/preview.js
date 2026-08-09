@@ -259,6 +259,18 @@ const ResumePreview = (() => {
             });
         }
 
+        const navSettings = document.getElementById('sidebar-nav-settings');
+        const dropSettings = document.getElementById('dropdown-nav-settings');
+        const openSettings = (e) => {
+            if (e) e.preventDefault();
+            if (typeof SettingsModal !== 'undefined') {
+                SettingsModal.open();
+            }
+        };
+
+        if (navSettings) navSettings.addEventListener('click', openSettings);
+        if (dropSettings) dropSettings.addEventListener('click', openSettings);
+
         // Fetch resume list on page load
         fetchResumes();
     }

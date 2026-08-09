@@ -946,6 +946,26 @@ const Dashboard = (() => {
     }
 
     /**
+     * Bind Settings Center navigation links
+     */
+    function initSettingsNav() {
+        const sideSettings = Helpers.$('#sidebar-nav-settings');
+        const dropSettings = Helpers.$('#dropdown-nav-settings');
+
+        const openSettings = (e) => {
+            if (e) e.preventDefault();
+            closeSidebar();
+            closeDropdown();
+            if (typeof SettingsModal !== 'undefined') {
+                SettingsModal.open();
+            }
+        };
+
+        if (sideSettings) sideSettings.addEventListener('click', openSettings);
+        if (dropSettings) dropSettings.addEventListener('click', openSettings);
+    }
+
+    /**
      * Initialize Dashboard
      */
     function init() {
@@ -965,6 +985,7 @@ const Dashboard = (() => {
         // Initialize Controls & Resumes & AI Sidebar Navigation
         initControls();
         initSidebarAiNav();
+        initSettingsNav();
         loadResumes();
     }
 

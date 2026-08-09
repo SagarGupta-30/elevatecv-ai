@@ -76,4 +76,57 @@ async function getUserById(userId) {
     return user;
 }
 
-module.exports = { generateToken, registerUser, loginUser, getUserById };
+/**
+ * Update user profile details (name, phone).
+ */
+async function updateUserProfile(userId, { name, phone }) {
+    const user = await User.findById(userId);
+    if (!user) {
+        const error = new Error('User not found');
+        error.status = 404;
+        throw error;
+    }
+
+    if (typeof name === 'string' && name.trim().length >= 2) {
+        user.name = name.trim();
+    }
+    if (typeof phone === 'string') {
+        user.phone = phone.trim();
+    }
+
+    await user.save();
+    return user;
+}
+
+/**
+ * Change user password after verifying current password.
+ */
+async function updateUserPassword(userId, { currentPassword, newPassword }) {
+    const user = await User.findById(userId).select('+password');
+    if (!user) {
+        const error = new Error('User not found');
+        error.status = 404;
+        throw error;
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+        const error = new Error('Current password is incorrect');
+        error.status = 400;
+        throw error;
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+        const error = new Error('New password must be at least 6 characters');
+        error.status = 400;
+        throw error;
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    const updatedUser = await User.findById(userId);
+    return updatedUser;
+}
+
+module.exports = { generateToken, registerUser, loginUser, getUserById, updateUserProfile, updateUserPassword };

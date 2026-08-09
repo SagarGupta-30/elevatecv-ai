@@ -76,6 +76,8 @@ app.get('/api/debug/routes', (req, res) => {
             'POST /api/auth/register',
             'POST /api/auth/login',
             'GET /api/auth/me',
+            'PUT /api/auth/profile',
+            'PUT /api/auth/password',
             'POST /api/resumes',
             'GET /api/resumes',
             'GET /api/resumes/:id',
