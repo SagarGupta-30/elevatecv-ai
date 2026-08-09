@@ -80,7 +80,7 @@ const ImportModal = (() => {
 
         body.innerHTML = `
             <div id="import-dropzone" style="border: 2px dashed rgba(99,102,241,0.4); border-radius: 12px; padding: 36px 20px; text-align: center; background: rgba(15,23,42,0.6); cursor: pointer; transition: all 0.2s ease;">
-                <input type="file" id="import-file-input" accept=".pdf,.docx,.doc" style="display: none;">
+                <input type="file" id="import-file-input" accept=".pdf,.docx,.doc,.txt" style="display: none;">
                 <div style="width: 56px; height: 56px; margin: 0 auto 16px; border-radius: 50%; background: rgba(99,102,241,0.1); display: flex; align-items: center; justify-content: center; color: #a78bfa;">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -89,7 +89,7 @@ const ImportModal = (() => {
                     </svg>
                 </div>
                 <h4 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0 0 6px;">Drag & Drop your resume here</h4>
-                <p style="font-size: 13px; color: #94a3b8; margin: 0 0 16px;">Supports <strong>PDF, DOCX, DOC</strong> up to 10 MB</p>
+                <p style="font-size: 13px; color: #94a3b8; margin: 0 0 16px;">Supports <strong>PDF, DOCX, DOC, TXT</strong> up to 10 MB</p>
                 <button type="button" class="btn btn--primary" id="btn-browse-file" style="font-size: 13px; padding: 8px 20px;">
                     Browse Files
                 </button>
@@ -291,9 +291,9 @@ const ImportModal = (() => {
     /* ── API Upload Dispatch ─────────────────────────────────────────── */
     async function _handleFileUpload(file) {
         const ext = file.name.split('.').pop().toLowerCase();
-        if (!['pdf', 'docx', 'doc'].includes(ext)) {
+        if (!['pdf', 'docx', 'doc', 'txt'].includes(ext)) {
             if (typeof Helpers !== 'undefined') {
-                Helpers.showToast('Please upload a PDF, DOCX, or DOC file.', 'error');
+                Helpers.showToast('Please upload a PDF, DOCX, DOC, or TXT file.', 'error');
             }
             return;
         }

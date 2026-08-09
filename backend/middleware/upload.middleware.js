@@ -25,20 +25,21 @@ const storage = multer.diskStorage({
     }
 });
 
-// File filter for Resume import (.pdf, .docx, .doc)
+// File filter for Resume import (.pdf, .docx, .doc, .txt)
 const resumeFileFilter = (req, file, cb) => {
-    const allowedExtensions = ['.pdf', '.docx', '.doc'];
+    const allowedExtensions = ['.pdf', '.docx', '.doc', '.txt'];
     const allowedMimeTypes = [
         'application/pdf',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/msword'
+        'application/msword',
+        'text/plain'
     ];
 
     const ext = path.extname(file.originalname).toLowerCase();
     if (allowedExtensions.includes(ext) || allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error('Invalid file format. Only PDF, DOCX, and DOC files are supported.'));
+        cb(new Error('Invalid file format. Only PDF, DOCX, DOC, and TXT files are supported.'));
     }
 };
 
