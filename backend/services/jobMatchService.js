@@ -5,10 +5,7 @@
  * against a target Job Description and produce a structured ATS compatibility report.
  */
 
-const { GoogleGenAI } = require('@google/genai');
-const { GeminiServiceError } = require('./geminiService');
-
-const GEMINI_TIMEOUT_MS = 28_000; // 28 seconds
+const { generateJSON } = require('./aiProvider');
 
 /**
  * Performs ATS Job Match Analysis comparing resume data against a Job Description.
@@ -18,19 +15,8 @@ const GEMINI_TIMEOUT_MS = 28_000; // 28 seconds
  * @param {string} [opts.company] - Optional target company name
  * @param {string} [opts.jobTitle] - Optional target job title
  * @returns {Promise<Object>} Job Match report JSON object
- * @throws {GeminiServiceError}
  */
 async function analyzeJobMatch({ resumeData, jobDescription, company = '', jobTitle = '' }) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-        throw new GeminiServiceError(
-            'GEMINI_API_KEY environment variable is not configured.',
-            'MISSING_API_KEY'
-        );
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
-
     const systemPrompt = `You are an expert ATS (Applicant Tracking System) Auditor, Senior Technical Recruiter, and Talent Acquisition Specialist.
 Your task is to thoroughly analyze the candidate's resume data against the provided target Job Description and compute an ATS compatibility report.
 
@@ -70,90 +56,23 @@ You MUST respond strictly in valid JSON format matching this exact schema:
   }
 }`;
 
-    const controller = new AbortController();
-    const timeoutId  = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+    const parsed = await generateJSON({ systemPrompt });
 
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: systemPrompt,
-            config: {
-                responseMimeType: 'application/json'
-            }
-        });
+    // Schema hardening
+    parsed.overallMatch     = typeof parsed.overallMatch === 'number' ? parsed.overallMatch : 75;
+    parsed.atsCompatibility = typeof parsed.atsCompatibility === 'number' ? parsed.atsCompatibility : 80;
+    parsed.keywordCoverage  = typeof parsed.keywordCoverage === 'number' ? parsed.keywordCoverage : 70;
+    parsed.missingKeywords  = Array.isArray(parsed.missingKeywords) ? parsed.missingKeywords : [];
+    parsed.matchedKeywords  = Array.isArray(parsed.matchedKeywords) ? parsed.matchedKeywords : [];
+    parsed.strengths        = Array.isArray(parsed.strengths) ? parsed.strengths : [];
+    parsed.weaknesses       = Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [];
+    parsed.recommendations  = Array.isArray(parsed.recommendations) ? parsed.recommendations : [];
 
-        clearTimeout(timeoutId);
-
-        const rawText = response.text;
-        if (!rawText) {
-            throw new GeminiServiceError(
-                'Empty response received from Gemini AI model.',
-                'EMPTY_RESPONSE'
-            );
-        }
-
-        let parsed;
-        try {
-            parsed = JSON.parse(rawText);
-        } catch {
-            throw new GeminiServiceError(
-                'Gemini returned invalid JSON. Please retry.',
-                'INVALID_JSON'
-            );
-        }
-
-        // Schema hardening
-        parsed.overallMatch     = typeof parsed.overallMatch === 'number' ? parsed.overallMatch : 75;
-        parsed.atsCompatibility = typeof parsed.atsCompatibility === 'number' ? parsed.atsCompatibility : 80;
-        parsed.keywordCoverage  = typeof parsed.keywordCoverage === 'number' ? parsed.keywordCoverage : 70;
-        parsed.missingKeywords  = Array.isArray(parsed.missingKeywords) ? parsed.missingKeywords : [];
-        parsed.matchedKeywords  = Array.isArray(parsed.matchedKeywords) ? parsed.matchedKeywords : [];
-        parsed.strengths        = Array.isArray(parsed.strengths) ? parsed.strengths : [];
-        parsed.weaknesses       = Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [];
-        parsed.recommendations  = Array.isArray(parsed.recommendations) ? parsed.recommendations : [];
-
-        if (!parsed.sectionScores || typeof parsed.sectionScores !== 'object') {
-            parsed.sectionScores = { summary: 80, experience: 80, projects: 80, skills: 80, education: 80 };
-        }
-
-        return parsed;
-
-    } catch (err) {
-        clearTimeout(timeoutId);
-
-        if (err instanceof GeminiServiceError) {
-            console.error('[JobMatchService]', err.code, err.message);
-            throw err;
-        }
-
-        if (err.name === 'AbortError' || err.message?.includes('aborted')) {
-            console.error('[JobMatchService] REQUEST_TIMEOUT: Gemini API did not respond within', GEMINI_TIMEOUT_MS, 'ms');
-            throw new GeminiServiceError(
-                'The ATS Job Match request timed out. Please try again.',
-                'REQUEST_TIMEOUT'
-            );
-        }
-
-        const msgLower = (err.message || '').toLowerCase();
-        if (
-            msgLower.includes('quota') ||
-            msgLower.includes('rate limit') ||
-            msgLower.includes('resource_exhausted') ||
-            err.status === 429
-        ) {
-            console.error('[JobMatchService] QUOTA_EXCEEDED:', err.message);
-            throw new GeminiServiceError(
-                'Gemini API quota exceeded. Please try again later.',
-                'QUOTA_EXCEEDED'
-            );
-        }
-
-        console.error('[JobMatchService] GEMINI_ERROR:', err.message);
-        throw new GeminiServiceError(
-            `ATS Job Match Analysis failed: ${err.message}`,
-            'GEMINI_ERROR'
-        );
+    if (!parsed.sectionScores || typeof parsed.sectionScores !== 'object') {
+        parsed.sectionScores = { summary: 80, experience: 80, projects: 80, skills: 80, education: 80 };
     }
+
+    return parsed;
 }
 
 module.exports = {

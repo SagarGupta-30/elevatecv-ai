@@ -7,10 +7,7 @@
  * Enforces strict non-hallucination rules: only uses facts present in the resume.
  */
 
-const { GoogleGenAI } = require('@google/genai');
-const { GeminiServiceError } = require('./geminiService');
-
-const GEMINI_TIMEOUT_MS = 28_000; // 28 seconds
+const { generateJSON } = require('./aiProvider');
 
 /**
  * Generates an AI cover letter tailored to a job description using resume data.
@@ -22,20 +19,8 @@ const GEMINI_TIMEOUT_MS = 28_000; // 28 seconds
  * @param {string} [opts.tone='professional'] - Tone (professional, formal, friendly, confident)
  * @param {string} [opts.length='medium'] - Target length (short, medium, long)
  * @returns {Promise<Object>} Object containing { title, coverLetter, wordCount, generatedAt, model }
- * @throws {GeminiServiceError}
  */
 async function generateCoverLetter({ resumeData, company, jobTitle, jobDescription, tone = 'professional', length = 'medium' }) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-        throw new GeminiServiceError(
-            'GEMINI_API_KEY environment variable is not configured.',
-            'MISSING_API_KEY'
-        );
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
-
-    // Target word count mapping based on length preference
     let wordCountTarget = 'approximately 300-350 words';
     if (length === 'short')   wordCountTarget = 'approximately 180-220 words';
     if (length === 'long')    wordCountTarget = 'approximately 450-500 words';
@@ -66,90 +51,20 @@ You MUST respond strictly in valid JSON format matching this exact schema:
 {
   "title": string (e.g. "Cover Letter - ${jobTitle} at ${company}"),
   "coverLetter": string (the full formatted cover letter text with proper paragraph spacing),
-  "wordCount": number (total word count of the cover letter text),
-  "generatedAt": string (ISO timestamp),
-  "model": "gemini-2.5-flash"
+  "wordCount": number (total word count of the cover letter text)
 }`;
 
-    const controller = new AbortController();
-    const timeoutId  = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+    const parsed = await generateJSON({ systemPrompt });
 
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: systemPrompt,
-            config: {
-                responseMimeType: 'application/json'
-            }
-        });
+    const letterText = parsed.coverLetter || '';
+    const calculatedWordCount = letterText.trim() ? letterText.trim().split(/\s+/).length : 0;
 
-        clearTimeout(timeoutId);
-
-        const rawText = response.text;
-        if (!rawText) {
-            throw new GeminiServiceError(
-                'Empty response received from Gemini AI model.',
-                'EMPTY_RESPONSE'
-            );
-        }
-
-        let parsed;
-        try {
-            parsed = JSON.parse(rawText);
-        } catch {
-            throw new GeminiServiceError(
-                'Gemini returned invalid JSON. Please retry.',
-                'INVALID_JSON'
-            );
-        }
-
-        const letterText = parsed.coverLetter || '';
-        const calculatedWordCount = letterText.trim() ? letterText.trim().split(/\s+/).length : 0;
-
-        return {
-            title:       parsed.title       || `Cover Letter - ${jobTitle} at ${company}`,
-            coverLetter: letterText,
-            wordCount:   parsed.wordCount   || calculatedWordCount,
-            generatedAt: parsed.generatedAt || new Date().toISOString(),
-            model:       'gemini-2.5-flash'
-        };
-
-    } catch (err) {
-        clearTimeout(timeoutId);
-
-        if (err instanceof GeminiServiceError) {
-            console.error('[CoverLetterService]', err.code, err.message);
-            throw err;
-        }
-
-        if (err.name === 'AbortError' || err.message?.includes('aborted')) {
-            console.error('[CoverLetterService] REQUEST_TIMEOUT: Gemini API did not respond within', GEMINI_TIMEOUT_MS, 'ms');
-            throw new GeminiServiceError(
-                'The cover letter generation request timed out. Please try again.',
-                'REQUEST_TIMEOUT'
-            );
-        }
-
-        const msgLower = (err.message || '').toLowerCase();
-        if (
-            msgLower.includes('quota') ||
-            msgLower.includes('rate limit') ||
-            msgLower.includes('resource_exhausted') ||
-            err.status === 429
-        ) {
-            console.error('[CoverLetterService] QUOTA_EXCEEDED:', err.message);
-            throw new GeminiServiceError(
-                'Gemini API quota exceeded. Please try again later.',
-                'QUOTA_EXCEEDED'
-            );
-        }
-
-        console.error('[CoverLetterService] GEMINI_ERROR:', err.message);
-        throw new GeminiServiceError(
-            `Cover Letter generation failed: ${err.message}`,
-            'GEMINI_ERROR'
-        );
-    }
+    return {
+        title:       parsed.title       || `Cover Letter - ${jobTitle} at ${company}`,
+        coverLetter: letterText,
+        wordCount:   parsed.wordCount   || calculatedWordCount,
+        generatedAt: parsed.generatedAt || new Date().toISOString()
+    };
 }
 
 module.exports = {
