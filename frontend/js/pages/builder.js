@@ -537,6 +537,17 @@ const ResumeBuilderV2 = (() => {
                 }
             });
         }
+
+        const navCoverLetter = document.getElementById('sidebar-nav-coverletter');
+        if (navCoverLetter) {
+            navCoverLetter.addEventListener('click', (e) => {
+                e.preventDefault();
+                const data = BuilderState.get();
+                if (typeof CoverLetterGenerator !== 'undefined') {
+                    CoverLetterGenerator.open(data);
+                }
+            });
+        }
     }
 
     return { init };

@@ -249,6 +249,16 @@ const ResumePreview = (() => {
             });
         }
 
+        const navCoverLetter = document.getElementById('sidebar-nav-coverletter');
+        if (navCoverLetter) {
+            navCoverLetter.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof CoverLetterGenerator !== 'undefined') {
+                    CoverLetterGenerator.open(getResume());
+                }
+            });
+        }
+
         // Fetch resume list on page load
         fetchResumes();
     }

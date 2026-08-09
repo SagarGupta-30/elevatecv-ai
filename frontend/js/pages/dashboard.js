@@ -932,6 +932,17 @@ const Dashboard = (() => {
                 }
             });
         }
+
+        const navCoverLetter = Helpers.$('#sidebar-nav-coverletter');
+        if (navCoverLetter) {
+            navCoverLetter.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeSidebar();
+                if (typeof CoverLetterGenerator !== 'undefined') {
+                    CoverLetterGenerator.open(getResumeData());
+                }
+            });
+        }
     }
 
     /**
