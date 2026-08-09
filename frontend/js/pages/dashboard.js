@@ -134,11 +134,18 @@ const Dashboard = (() => {
     }
 
     /**
+     * Close Profile Dropdown
+     */
+    function closeDropdown() {
+        if (profileDropdown) profileDropdown.classList.remove('is-active');
+    }
+
+    /**
      * Close Dropdown when clicking outside
      */
     function closeDropdownOnClickOutside(e) {
         if (profileDropdown && profileDropdownToggle && !profileDropdown.contains(e.target) && !profileDropdownToggle.contains(e.target)) {
-            profileDropdown.classList.remove('is-active');
+            closeDropdown();
         }
     }
 
@@ -727,8 +734,12 @@ const Dashboard = (() => {
         }
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && deleteModal && deleteModal.classList.contains('is-active')) {
-                closeDeleteModal();
+            if (e.key === 'Escape') {
+                if (deleteModal && deleteModal.classList.contains('is-active')) {
+                    closeDeleteModal();
+                }
+                closeDropdown();
+                closeSidebar();
             }
         });
     }
@@ -887,15 +898,23 @@ const Dashboard = (() => {
      * Bind AI feature sidebar navigation links
      */
     function initSidebarAiNav() {
-        const getResumeData = () => (resumesCache && resumesCache.length > 0) ? resumesCache[0] : {};
+        const getResumeData = () => {
+            if (!resumesCache || resumesCache.length === 0) {
+                showToast('Please create a resume first to use AI tools.', 'warning');
+                return null;
+            }
+            return resumesCache[0];
+        };
 
         const navAts = Helpers.$('#sidebar-nav-ats');
         if (navAts) {
             navAts.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
+                const resumeData = getResumeData();
+                if (!resumeData) return;
                 if (typeof ResumeAnalyzer !== 'undefined') {
-                    ResumeAnalyzer.open(getResumeData());
+                    ResumeAnalyzer.open(resumeData);
                 }
             });
         }
@@ -905,8 +924,10 @@ const Dashboard = (() => {
             navJobMatch.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
+                const resumeData = getResumeData();
+                if (!resumeData) return;
                 if (typeof JobMatchAnalyzer !== 'undefined') {
-                    JobMatchAnalyzer.open(getResumeData());
+                    JobMatchAnalyzer.open(resumeData);
                 }
             });
         }
@@ -916,8 +937,10 @@ const Dashboard = (() => {
             navSkillGap.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
+                const resumeData = getResumeData();
+                if (!resumeData) return;
                 if (typeof SkillGapAnalyzer !== 'undefined') {
-                    SkillGapAnalyzer.open(getResumeData());
+                    SkillGapAnalyzer.open(resumeData);
                 }
             });
         }
@@ -927,8 +950,10 @@ const Dashboard = (() => {
             navInterview.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
+                const resumeData = getResumeData();
+                if (!resumeData) return;
                 if (typeof InterviewPrep !== 'undefined') {
-                    InterviewPrep.open(getResumeData());
+                    InterviewPrep.open(resumeData);
                 }
             });
         }
@@ -938,8 +963,10 @@ const Dashboard = (() => {
             navCoverLetter.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
+                const resumeData = getResumeData();
+                if (!resumeData) return;
                 if (typeof CoverLetterGenerator !== 'undefined') {
-                    CoverLetterGenerator.open(getResumeData());
+                    CoverLetterGenerator.open(resumeData);
                 }
             });
         }
