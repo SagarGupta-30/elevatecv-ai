@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
         message: 'API is running',
         data: {
             project: 'ElevateCV AI',
-            version: '1.0.2',          // bumped — confirms new code is live on Render
+            version: '1.0.3',          // bumped — confirms new code is live on Render
             status: 'running',
             env: process.env.NODE_ENV || 'production'
         },
