@@ -1,0 +1,341 @@
+/* ============================================
+   ElevateCV AI — Cover Letter Generator Modal CSS
+   Design System: Dark SaaS Glassmorphism
+   ============================================ */
+
+/* ── Backdrop Overlay ──────────────────────── */
+.cl-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 10, 20, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease;
+}
+
+.cl-modal-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ── Modal Dialog Container ────────────────── */
+.cl-modal {
+    background: #0F172A;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75);
+    width: 780px;
+    max-width: 95vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    color: #ffffff;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    transform: scale(0.95) translateY(12px);
+    transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.cl-modal-overlay.is-open .cl-modal {
+    transform: scale(1) translateY(0);
+}
+
+/* ── Modal Header ──────────────────────────── */
+.cl-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 26px;
+    background: #111827;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.cl-modal__title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cl-modal__title-wrap svg {
+    color: #38bdf8;
+}
+
+.cl-modal__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.cl-modal__subtitle {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 2px 0 0;
+}
+
+.cl-modal__close {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 150ms ease;
+}
+
+.cl-modal__close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+/* ── Modal Body ────────────────────────────── */
+.cl-modal__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+/* ── Form Inputs Section ───────────────────── */
+.cl-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.cl-form-group--full {
+    grid-column: span 2;
+}
+
+.cl-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+}
+
+.cl-input, .cl-textarea, .cl-select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #ffffff;
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.cl-input:focus, .cl-textarea:focus, .cl-select:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.cl-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ── Option Chips (Tone & Length) ──────────── */
+.cl-chips-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.cl-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms ease;
+}
+
+.cl-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.cl-chip.is-active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(124, 58, 237, 0.2));
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+/* ── Cover Letter Preview Paper ────────────── */
+.cl-paper {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.cl-paper__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cl-paper__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+.cl-paper__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cl-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #7dd3fc;
+}
+
+.cl-paper__content {
+    font-size: 13.5px;
+    color: #e2e8f0;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ── Modal Footer Actions ──────────────────── */
+.cl-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 26px;
+    background: #111827;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cl-footer__left, .cl-footer__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn--cl-primary {
+    background: linear-gradient(135deg, #0284C7 0%, #7C3AED 100%);
+    color: #ffffff;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(2, 132, 199, 0.35);
+    transition: all 150ms ease;
+}
+
+.btn--cl-primary:hover {
+    box-shadow: 0 4px 18px rgba(2, 132, 199, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn--cl-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 150ms ease;
+}
+
+.btn--cl-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.btn--cl-primary:disabled, .btn--cl-secondary:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+
+/* ── Shimmer Skeleton ──────────────────────── */
+.cl-skeleton {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 37%, rgba(255, 255, 255, 0.04) 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+    border-radius: 8px;
+}
+
+.cl-skeleton--line { height: 16px; margin-bottom: 10px; }
+.cl-skeleton--line:last-child { width: 50%; }
+
+/* ── Responsive adjustments ────────────────── */
+@media (max-width: 640px) {
+    .cl-modal {
+        width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .cl-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cl-form-group--full {
+        grid-column: span 1;
+    }
+
+    .cl-modal__footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cl-footer__left, .cl-footer__right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

@@ -7,10 +7,15 @@ const express = require('express');
 const cors    = require('cors');
 const morgan  = require('morgan');
 
-const healthRoute  = require('./routes/health.route');
-const authRoutes   = require('./routes/auth.routes');
-const resumeRoutes = require('./routes/resume.routes');
-const aiRoutes     = require('./routes/aiRoutes');
+const healthRoute        = require('./routes/health.route');
+const authRoutes         = require('./routes/auth.routes');
+const resumeRoutes       = require('./routes/resume.routes');
+const aiRoutes           = require('./routes/aiRoutes');
+const improveRoutes      = require('./routes/improveRoutes');
+const coverLetterRoutes  = require('./routes/coverLetterRoutes');
+const interviewRoutes    = require('./routes/interviewRoutes');
+const jobMatchRoutes     = require('./routes/jobMatchRoutes');
+const skillGapRoutes     = require('./routes/skillGapRoutes');
 
 const app = express();
 
@@ -59,6 +64,11 @@ app.use(morgan('dev'));
 app.use('/', healthRoute);
 app.use('/api/auth', authRoutes);
 app.use('/api/resumes', resumeRoutes);
+app.use('/api/ai/improve', improveRoutes);
+app.use('/api/ai/cover-letter', coverLetterRoutes);
+app.use('/api/ai/interview', interviewRoutes);
+app.use('/api/ai/job-match', jobMatchRoutes);
+app.use('/api/ai/skill-gap', skillGapRoutes);
 app.use('/api/ai', aiRoutes);
 
 /* ── 404 Handler ──────────────────────────────────────────────────────── */

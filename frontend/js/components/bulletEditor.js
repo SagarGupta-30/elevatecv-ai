@@ -56,6 +56,11 @@ const BulletEditor = (() => {
                     value="${escapeHtml(value)}"
                     autocomplete="off"
                 >
+                <button type="button" class="btn-bullet-ai" aria-label="Improve bullet with AI" title="Improve with AI">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                    </svg>
+                </button>
                 <button type="button" class="btn-bullet-remove" aria-label="Remove bullet">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12"/>
@@ -63,10 +68,24 @@ const BulletEditor = (() => {
                 </button>
             `;
 
-            const input = row.querySelector('input');
+            const input     = row.querySelector('input');
+            const aiBtn     = row.querySelector('.btn-bullet-ai');
             const removeBtn = row.querySelector('.btn-bullet-remove');
 
             input.addEventListener('input', notify);
+
+            // AI Improve click handler
+            if (aiBtn) {
+                aiBtn.addEventListener('click', () => {
+                    if (typeof AIImprover !== 'undefined') {
+                        AIImprover.open({
+                            section: 'experience',
+                            text: input.value,
+                            targetInput: input
+                        });
+                    }
+                });
+            }
 
             // Press Enter → add new row below
             input.addEventListener('keydown', e => {

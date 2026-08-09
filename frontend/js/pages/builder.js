@@ -69,6 +69,25 @@ const ResumeBuilderV2 = (() => {
                             </svg>
                             <span>AI Analyze</span>
                         </button>
+                        <button id="btn-ai-interview" class="btn btn--ai-analyze" type="button" aria-label="AI Interview Preparation" style="background:linear-gradient(135deg, #F59E0B 0%, #EC4899 100%);box-shadow:0 2px 10px rgba(245,158,11,0.3);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            <span>Interview Prep</span>
+                        </button>
+                        <button id="btn-ai-jobmatch" class="btn btn--ai-analyze" type="button" aria-label="ATS Job Match Analysis" style="background:linear-gradient(135deg, #10B981 0%, #3B82F6 100%);box-shadow:0 2px 10px rgba(16,185,129,0.3);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <span>ATS Job Match</span>
+                        </button>
+                        <button id="btn-ai-skillgap" class="btn btn--ai-analyze" type="button" aria-label="Skill Gap Analysis" style="background:linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%);box-shadow:0 2px 10px rgba(236,72,153,0.3);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            <span>Skill Gap</span>
+                        </button>
                         <div class="completion-ring-wrap" id="completion-ring-wrap">
                             <div class="completion-ring" id="completion-ring">
                                 <svg width="48" height="48" viewBox="0 0 48 48">
@@ -431,6 +450,45 @@ const ResumeBuilderV2 = (() => {
                     ResumeAnalyzer.analyze(data, btnAiAnalyze);
                 } else {
                     showToast('AI Resume Analyzer module is loading...', 'info');
+                }
+            });
+        }
+
+        // ── Sprint 3.5: Wire AI Interview Prep button ─────────────────────
+        const btnAiInterview = document.getElementById('btn-ai-interview');
+        if (btnAiInterview) {
+            btnAiInterview.addEventListener('click', () => {
+                const data = BuilderState.get();
+                if (typeof InterviewPrep !== 'undefined') {
+                    InterviewPrep.open(data);
+                } else {
+                    showToast('AI Interview Prep module is loading...', 'info');
+                }
+            });
+        }
+
+        // ── Sprint 3.5: Wire ATS Job Match button ─────────────────────────
+        const btnAiJobMatch = document.getElementById('btn-ai-jobmatch');
+        if (btnAiJobMatch) {
+            btnAiJobMatch.addEventListener('click', () => {
+                const data = BuilderState.get();
+                if (typeof JobMatchAnalyzer !== 'undefined') {
+                    JobMatchAnalyzer.open(data);
+                } else {
+                    showToast('ATS Job Match Analyzer module is loading...', 'info');
+                }
+            });
+        }
+
+        // ── Sprint 3.5: Wire Skill Gap button ─────────────────────────────
+        const btnAiSkillGap = document.getElementById('btn-ai-skillgap');
+        if (btnAiSkillGap) {
+            btnAiSkillGap.addEventListener('click', () => {
+                const data = BuilderState.get();
+                if (typeof SkillGapAnalyzer !== 'undefined') {
+                    SkillGapAnalyzer.open(data);
+                } else {
+                    showToast('Skill Gap Analyzer module is loading...', 'info');
                 }
             });
         }

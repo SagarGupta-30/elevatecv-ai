@@ -95,6 +95,15 @@ const StepPersonal = (() => {
             <div style="margin-top:var(--space-6);">
                 ${wrapCard(PANEL_ICONS.summary, 'Professional Summary', 'A brief overview about yourself', `
                     <div class="form-group">
+                        <div class="form-label-row">
+                            <label class="form-label" for="pi-summary">Professional Summary</label>
+                            <button type="button" class="btn-field-ai" id="btn-ai-summary" title="Improve summary with AI">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                                </svg>
+                                <span>Improve with AI</span>
+                            </button>
+                        </div>
                         <textarea id="pi-summary" class="form-textarea" rows="5"
                             placeholder="Passionate software engineer with experience building scalable web applications…"
                         >${esc(BuilderState.get().professionalSummary)}</textarea>
@@ -117,6 +126,21 @@ const StepPersonal = (() => {
                 }
             });
         });
+
+        // AI Improve click handler for summary
+        const btnAiSummary = panelEl.querySelector('#btn-ai-summary');
+        if (btnAiSummary) {
+            btnAiSummary.addEventListener('click', () => {
+                const summaryArea = document.getElementById('pi-summary');
+                if (typeof AIImprover !== 'undefined') {
+                    AIImprover.open({
+                        section: 'summary',
+                        text: summaryArea ? summaryArea.value : '',
+                        targetInput: summaryArea
+                    });
+                }
+            });
+        }
     }
 
     function flush() {
