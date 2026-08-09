@@ -207,7 +207,7 @@ const JobMatchAnalyzer = (() => {
                         </div>
                     </div>
                 </div>
-            </div>`;
+            </div>
             ${!footerEl ? `
             <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
                 <button type="button" class="btn--jm-primary" id="jm-btn-run-match-inline">
