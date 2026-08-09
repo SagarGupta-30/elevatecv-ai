@@ -16,6 +16,7 @@ const coverLetterRoutes  = require('./routes/coverLetterRoutes');
 const interviewRoutes    = require('./routes/interviewRoutes');
 const jobMatchRoutes     = require('./routes/jobMatchRoutes');
 const skillGapRoutes     = require('./routes/skillGapRoutes');
+const userRoutes         = require('./routes/user.routes');
 
 const app = express();
 
@@ -78,6 +79,8 @@ app.get('/api/debug/routes', (req, res) => {
             'GET /api/auth/me',
             'PUT /api/auth/profile',
             'PUT /api/auth/password',
+            'GET /api/users/profile',
+            'PUT /api/users/profile',
             'POST /api/resumes',
             'GET /api/resumes',
             'GET /api/resumes/:id',
@@ -94,6 +97,7 @@ app.get('/api/debug/routes', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/ai/improve', improveRoutes);
 app.use('/api/ai/cover-letter', coverLetterRoutes);

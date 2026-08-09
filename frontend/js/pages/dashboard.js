@@ -946,6 +946,26 @@ const Dashboard = (() => {
     }
 
     /**
+     * Bind Profile Center navigation links
+     */
+    function initProfileNav() {
+        const sideProfile = Helpers.$('#sidebar-nav-profile');
+        const dropProfile = Helpers.$('#dropdown-nav-profile');
+
+        const openProfile = (e) => {
+            if (e) e.preventDefault();
+            closeSidebar();
+            closeDropdown();
+            if (typeof ProfileModal !== 'undefined') {
+                ProfileModal.open();
+            }
+        };
+
+        if (sideProfile) sideProfile.addEventListener('click', openProfile);
+        if (dropProfile) dropProfile.addEventListener('click', openProfile);
+    }
+
+    /**
      * Bind Settings Center navigation links
      */
     function initSettingsNav() {
@@ -985,6 +1005,7 @@ const Dashboard = (() => {
         // Initialize Controls & Resumes & AI Sidebar Navigation
         initControls();
         initSidebarAiNav();
+        initProfileNav();
         initSettingsNav();
         loadResumes();
     }

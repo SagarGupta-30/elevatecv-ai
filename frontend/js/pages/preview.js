@@ -271,6 +271,18 @@ const ResumePreview = (() => {
         if (navSettings) navSettings.addEventListener('click', openSettings);
         if (dropSettings) dropSettings.addEventListener('click', openSettings);
 
+        const navProfile = document.getElementById('sidebar-nav-profile');
+        const dropProfile = document.getElementById('dropdown-nav-profile');
+        const openProfile = (e) => {
+            if (e) e.preventDefault();
+            if (typeof ProfileModal !== 'undefined') {
+                ProfileModal.open();
+            }
+        };
+
+        if (navProfile) navProfile.addEventListener('click', openProfile);
+        if (dropProfile) dropProfile.addEventListener('click', openProfile);
+
         // Fetch resume list on page load
         fetchResumes();
     }

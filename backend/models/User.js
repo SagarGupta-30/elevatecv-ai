@@ -33,10 +33,88 @@ const userSchema = new mongoose.Schema(
             minlength: [6, 'Password must be at least 6 characters'],
             select: false,
         },
+
+        /* ── Extended Profile Fields ─────────────────── */
         phone: {
             type: String,
             default: '',
             trim: true,
+        },
+        bio: {
+            type: String,
+            default: '',
+            maxlength: [500, 'Bio cannot exceed 500 characters'],
+            trim: true,
+        },
+        location: {
+            type: String,
+            default: '',
+            maxlength: [100, 'Location cannot exceed 100 characters'],
+            trim: true,
+        },
+        linkedin: {
+            type: String,
+            default: '',
+            trim: true,
+        },
+        github: {
+            type: String,
+            default: '',
+            trim: true,
+        },
+        portfolio: {
+            type: String,
+            default: '',
+            trim: true,
+        },
+        twitter: {
+            type: String,
+            default: '',
+            trim: true,
+        },
+        website: {
+            type: String,
+            default: '',
+            trim: true,
+        },
+        college: {
+            type: String,
+            default: '',
+            trim: true,
+        },
+        degree: {
+            type: String,
+            default: '',
+            trim: true,
+        },
+        graduationYear: {
+            type: String,
+            default: '',
+        },
+        preferredRole: {
+            type: String,
+            default: '',
+            trim: true,
+        },
+        skills: {
+            type: [String],
+            default: [],
+        },
+        languages: {
+            type: [String],
+            default: [],
+        },
+        avatarUrl: {
+            type: String,
+            default: '',
+        },
+        lastLoginAt: {
+            type: Date,
+            default: null,
+        },
+        passwordChangedAt: {
+            type: Date,
+            default: null,
         },
     },
     {
