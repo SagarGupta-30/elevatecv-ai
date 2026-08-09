@@ -140,11 +140,11 @@ const LoginPage = (() => {
 
     /** Initialize */
     function init() {
-        form.addEventListener('submit', handleSubmit);
-        togglePass.addEventListener('click', handleTogglePassword);
+        if (form) form.addEventListener('submit', handleSubmit);
+        if (togglePass) togglePass.addEventListener('click', handleTogglePassword);
 
-        handleInputFocus(emailInput, Helpers.$('#login-email-error'));
-        handleInputFocus(passInput, Helpers.$('#login-password-error'));
+        if (emailInput) handleInputFocus(emailInput, Helpers.$('#login-email-error'));
+        if (passInput) handleInputFocus(passInput, Helpers.$('#login-password-error'));
     }
 
     return { init };

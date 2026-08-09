@@ -52,7 +52,7 @@ const ResumeService = (() => {
      * @returns {Object}
      */
     function _headers() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token') || localStorage.getItem('elevatecv_token');
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         return headers;

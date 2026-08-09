@@ -12,7 +12,8 @@ const User = require('../models/User');
  * @returns {string} Signed JWT token.
  */
 function generateToken(userId) {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    const secret = process.env.JWT_SECRET || 'elevatecv_default_jwt_secret_key_2026';
+    return jwt.sign({ id: userId }, secret, {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',
     });
 }

@@ -62,10 +62,12 @@ const Helpers = (() => {
      * @param {number} duration - Duration in milliseconds.
      */
     function animateCount(el, target, duration = 2000) {
+        if (!el) return;
         let start = 0;
         const startTime = performance.now();
 
         function update(currentTime) {
+            if (!el) return;
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);

@@ -412,5 +412,6 @@ const AIImprover = (() => {
 
 })();
 
-/* Expose to window scope for inline event handlers */
+/* Expose to window scope for inline event handlers and component callers */
 window.AIImprover = AIImprover;
+window.AiImprover = AIImprover;

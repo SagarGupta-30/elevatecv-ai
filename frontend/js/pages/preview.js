@@ -333,8 +333,9 @@ const ResumePreview = (() => {
     }
 
     function handleApplySuggestion(title) {
-        if (typeof AiImprover !== 'undefined') {
-            AiImprover.open(currentResume);
+        const improver = (typeof AIImprover !== 'undefined' ? AIImprover : (typeof AiImprover !== 'undefined' ? AiImprover : null));
+        if (improver) {
+            improver.open(currentResume);
         } else {
             Helpers.showToast(`Selected: "${title}". Use 'Improve Resume' to edit content.`, 'info');
         }
@@ -757,7 +758,8 @@ const ResumePreview = (() => {
 
         if (btnBtmImprove) {
             btnBtmImprove.addEventListener('click', () => {
-                if (typeof AiImprover !== 'undefined') AiImprover.open(currentResume);
+                const improver = (typeof AIImprover !== 'undefined' ? AIImprover : (typeof AiImprover !== 'undefined' ? AiImprover : null));
+                if (improver) improver.open(currentResume);
             });
         }
         if (btnBtmReanalyze) btnBtmReanalyze.addEventListener('click', runAtsAnalysis);
