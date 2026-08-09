@@ -5,7 +5,7 @@
  */
 
 const fs = require('fs');
-const pdfParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse'); // pdf-parse v2.x: exports PDFParse class, not a function
 const mammoth = require('mammoth');
 const { generateJSON, GeminiServiceError } = require('./aiProvider');
 
@@ -17,8 +17,12 @@ async function extractRawText(filePath, mimeType, originalName = '') {
 
     if (ext === 'pdf' || mimeType.includes('pdf')) {
         const dataBuffer = fs.readFileSync(filePath);
-        const parsed = await pdfParse(dataBuffer);
-        return parsed.text || '';
+        // pdf-parse v2.x API: class-based, no longer a direct function call
+        const parser = new PDFParse({ data: dataBuffer, verbosity: 0 });
+        await parser.load();
+        const result = await parser.getText(); // returns { text, pages, total }
+        await parser.destroy();
+        return (result && result.text) ? result.text : '';
     } else if (ext === 'docx' || ext === 'doc' || mimeType.includes('wordprocessingml') || mimeType.includes('msword')) {
         const result = await mammoth.extractRawText({ path: filePath });
         return result.value || '';
