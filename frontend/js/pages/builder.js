@@ -441,6 +441,45 @@ const ResumeBuilderV2 = (() => {
             });
         }
 
+        const btnBuilderExportDocx = document.getElementById('btn-builder-export-docx');
+        if (btnBuilderExportDocx) {
+            btnBuilderExportDocx.addEventListener('click', async () => {
+                const data = BuilderState.get();
+                const token = localStorage.getItem('token');
+                try {
+                    showToast('Generating DOCX document...', 'info');
+                    const apiBase = (typeof Config !== 'undefined' && Config.API_BASE) ? Config.API_BASE : 'http://localhost:5001/api';
+                    const response = await fetch(`${apiBase}/resumes/export-docx`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to generate DOCX file.');
+                    }
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${(data.title || 'Resume').replace(/[^a-z0-9_-]/gi, '_')}.docx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+
+                    showToast('DOCX downloaded successfully!', 'success');
+                } catch (err) {
+                    console.error('[Builder] Export DOCX error:', err);
+                    showToast(err.message || 'Failed to export DOCX.', 'error');
+                }
+            });
+        }
+
         // ── Sprint 3.5: Wire AI Analyze button ───────────────────────────
         const btnAiAnalyze = document.getElementById('btn-ai-analyze');
         if (btnAiAnalyze) {

@@ -1346,3 +1346,5 @@ const ProfileModal = (() => {
     return { open, close, _switchTab };
 
 })();
+
+window.ProfileModal = ProfileModal;
