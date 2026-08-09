@@ -1,7 +1,6 @@
 /**
  * ElevateCV AI — Server Entry Point
  * Connects to MongoDB and starts the Express server.
- * Deploy: 2026-07-25 — CORS fix (plain array origin + explicit OPTIONS handler)
  */
 
 require('dotenv').config();
@@ -13,7 +12,14 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
     await connectDB();
     app.listen(PORT, () => {
-        console.log(`⚡ ElevateCV AI server running on http://localhost:${PORT}`);
+        console.log(`⚡ ElevateCV AI server running on port ${PORT}`);
+        console.log('📌 Active AI API Endpoints:');
+        console.log('   - POST /api/ai/analyze');
+        console.log('   - POST /api/ai/improve');
+        console.log('   - POST /api/ai/cover-letter');
+        console.log('   - POST /api/ai/interview');
+        console.log('   - POST /api/ai/job-match');
+        console.log('   - POST /api/ai/skill-gap');
     });
 };
 
