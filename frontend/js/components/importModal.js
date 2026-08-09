@@ -368,7 +368,11 @@ const ImportModal = (() => {
     }
 
     async function _saveImportedResume(resumeData) {
-        if (typeof ResumeService === 'undefined') return null;
+        if (typeof ResumeService === 'undefined') {
+            console.error('[ImportModal] ResumeService is not defined');
+            if (typeof Helpers !== 'undefined') Helpers.showToast('Resume service unavailable. Please refresh the page.', 'error');
+            return null;
+        }
         try {
             if (typeof Helpers !== 'undefined') Helpers.showToast('Saving imported resume...', 'info');
             const saved = await ResumeService.createResume(resumeData);

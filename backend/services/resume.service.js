@@ -43,10 +43,6 @@ class ResumeService {
         if (!resumeData.personalInformation.email) {
             throw new Error('Email is required');
         }
-        // Guard: at least one education entry (mirrors Mongoose validator for early feedback)
-        if (!resumeData.education || resumeData.education.length === 0) {
-            throw new Error('At least one Education entry is required');
-        }
 
         const newResume = new Resume(resumeData);
         return await newResume.save();

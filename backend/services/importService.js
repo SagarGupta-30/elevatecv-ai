@@ -143,8 +143,13 @@ JSON Output Schema:
     parsedData.title = parsedData.title || (parsedData.personalInformation?.fullName ? `${parsedData.personalInformation.fullName}'s Resume` : 'Imported Resume');
     parsedData.personalInformation = parsedData.personalInformation || {};
     parsedData.personalInformation.fullName = parsedData.personalInformation.fullName || 'Candidate Name';
-    parsedData.personalInformation.email = parsedData.personalInformation.email || '';
-    parsedData.education = Array.isArray(parsedData.education) ? parsedData.education : [];
+    // Use a placeholder email that passes regex validation when the PDF doesn't contain one
+    parsedData.personalInformation.email = (parsedData.personalInformation.email && parsedData.personalInformation.email.includes('@'))
+        ? parsedData.personalInformation.email
+        : 'candidate@imported.resume';
+    parsedData.education = Array.isArray(parsedData.education) && parsedData.education.length > 0
+        ? parsedData.education
+        : [{ college: '', degree: '', branch: '', cgpa: '', startDate: '', endDate: '' }];
     parsedData.experience = Array.isArray(parsedData.experience) ? parsedData.experience : [];
     parsedData.projects = Array.isArray(parsedData.projects) ? parsedData.projects : [];
     parsedData.skills = parsedData.skills || { technical: [], soft: [], tools: [], languages: [] };
