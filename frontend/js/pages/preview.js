@@ -659,6 +659,45 @@ const ResumePreview = (() => {
         }
     }
 
+    async function handleExportDocx() {
+        if (!currentResume) {
+            Helpers.showToast('Please select a resume before exporting.', 'warning');
+            return;
+        }
+        const token = localStorage.getItem('token');
+        try {
+            Helpers.showToast('Generating DOCX document...', 'info');
+            const apiBase = (typeof Config !== 'undefined' && Config.API_BASE) ? Config.API_BASE : 'http://localhost:5001/api';
+            const response = await fetch(`${apiBase}/resumes/export-docx`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(currentResume)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate DOCX file.');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${(currentResume.title || 'Resume').replace(/[^a-z0-9_-]/gi, '_')}.docx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+
+            Helpers.showToast('DOCX downloaded successfully!', 'success');
+        } catch (err) {
+            console.error('[Preview] Export DOCX error:', err);
+            Helpers.showToast(err.message || 'Failed to export DOCX.', 'error');
+        }
+    }
+
     function handlePrint() {
         if (!currentResume) {
             Helpers.showToast('Please select a resume before printing.', 'warning');
@@ -728,6 +767,8 @@ const ResumePreview = (() => {
         if (btnReset) btnReset.addEventListener('click', () => setZoom(1.0));
 
         // Topbar Actions
+        const btnExportDocx = Helpers.$('#btn-export-docx');
+        if (btnExportDocx) btnExportDocx.addEventListener('click', handleExportDocx);
         if (btnExportPdf) btnExportPdf.addEventListener('click', handleExportPdf);
         if (btnPrint)     btnPrint.addEventListener('click', handlePrint);
         if (btnShare)     btnShare.addEventListener('click', handleShare);
@@ -755,6 +796,7 @@ const ResumePreview = (() => {
         const btnBtmImprove  = Helpers.$('#btn-bottom-improve');
         const btnBtmReanalyze = Helpers.$('#btn-bottom-reanalyze');
         const btnBtmExport   = Helpers.$('#btn-bottom-export');
+        const btnBtmExportDocx = Helpers.$('#btn-bottom-export-docx');
         const btnBtmApply    = Helpers.$('#btn-bottom-apply');
 
         if (btnBtmImprove) {
@@ -764,6 +806,7 @@ const ResumePreview = (() => {
             });
         }
         if (btnBtmReanalyze) btnBtmReanalyze.addEventListener('click', openAtsModal);
+        if (btnBtmExportDocx) btnBtmExportDocx.addEventListener('click', handleExportDocx);
         if (btnBtmExport)    btnBtmExport.addEventListener('click', handleExportPdf);
         if (btnBtmApply)     btnBtmApply.addEventListener('click', handleApplyToJob);
 

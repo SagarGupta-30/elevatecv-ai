@@ -26,8 +26,15 @@ const router  = express.Router();
 const resumeController = require('../controllers/resume.controller');
 const { protect }      = require('../middleware/auth.middleware');
 
+const { uploadResume } = require('../middleware/upload.middleware');
+
 /* All resume routes require authentication */
 router.use(protect);
+
+/* ── Import & Export Endpoints ────────────────────────────────────────── */
+router.post('/import', uploadResume.single('resumeFile'), resumeController.importResume);
+router.post('/export-docx', resumeController.exportDocx);
+router.post('/:id/export-docx', resumeController.exportDocx);
 
 /* ── CRUD (Sprint 1 — unchanged) ──────────────────────────────────────── */
 router.post('/',      resumeController.createResume);

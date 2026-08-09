@@ -8,7 +8,8 @@ const express   = require('express');
 const rateLimit = require('express-rate-limit');
 const router    = express.Router();
 const { protect }                   = require('../middleware/auth.middleware');
-const { analyzeJobMatchController } = require('../controllers/jobMatchController');
+const { analyzeJobMatchController, uploadJdController } = require('../controllers/jobMatchController');
+const { uploadJD } = require('../middleware/upload.middleware');
 
 /* ── Rate limiter: 5 job match requests per 2 minutes ───────────────────── */
 const jobMatchLimiter = rateLimit({
@@ -23,6 +24,13 @@ const jobMatchLimiter = rateLimit({
         error: 'Too Many Requests'
     }
 });
+
+/**
+ * @route   POST /api/ai/job-match/upload-jd
+ * @desc    Extract text from uploaded Job Description file (.pdf, .docx, .txt)
+ * @access  Private
+ */
+router.post('/upload-jd', protect, uploadJD.single('jdFile'), uploadJdController);
 
 /**
  * @route   POST /api/ai/job-match

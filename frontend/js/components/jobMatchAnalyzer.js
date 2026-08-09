@@ -186,8 +186,15 @@ const JobMatchAnalyzer = (() => {
                 <!-- Right: Job Details Input -->
                 <div style="display:flex;flex-direction:column;gap:12px;">
                     <div class="form-group">
-                        <label class="cl-label" for="jm-textarea-desc">Target Job Description <span style="color:#f87171;">*</span></label>
-                        <textarea id="jm-textarea-desc" class="cl-textarea" placeholder="Paste the complete job description text here…" rows="7">${_esc(_jobDesc)}</textarea>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                            <label class="cl-label" for="jm-textarea-desc" style="margin:0;">Target Job Description <span style="color:#f87171;">*</span></label>
+                            <label for="jm-file-input-jd" class="btn--jm-secondary" style="font-size:11px;padding:3px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                Upload JD File (.pdf, .docx, .txt)
+                            </label>
+                            <input type="file" id="jm-file-input-jd" accept=".pdf,.docx,.txt" style="display:none;">
+                        </div>
+                        <textarea id="jm-textarea-desc" class="cl-textarea" placeholder="Paste or upload the complete job description text here…" rows="7">${_esc(_jobDesc)}</textarea>
                     </div>
                     <div class="cl-form-grid" style="grid-template-columns:1fr 1fr;">
                         <div class="form-group">
@@ -200,7 +207,7 @@ const JobMatchAnalyzer = (() => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>`;
             ${!footerEl ? `
             <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
                 <button type="button" class="btn--jm-primary" id="jm-btn-run-match-inline">
@@ -213,6 +220,35 @@ const JobMatchAnalyzer = (() => {
             </div>
             ` : ''}
         `;
+
+        const jdFileInput = document.getElementById('jm-file-input-jd');
+        if (jdFileInput) {
+            jdFileInput.addEventListener('change', async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const token = localStorage.getItem('token');
+                const formData = new FormData();
+                formData.append('jdFile', file);
+                try {
+                    if (typeof Helpers !== 'undefined') Helpers.showToast('Extracting Job Description text...', 'info');
+                    const apiBase = (typeof Config !== 'undefined' && Config.API_BASE) ? Config.API_BASE : 'http://localhost:5001/api';
+                    const response = await fetch(`${apiBase}/job-description/upload`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+                    const resData = await response.json();
+                    if (!response.ok || !resData.success) throw new Error(resData.message || 'Failed to extract JD text.');
+                    const textarea = document.getElementById('jm-textarea-desc');
+                    if (textarea) textarea.value = resData.text;
+                    _jobDesc = resData.text;
+                    if (typeof Helpers !== 'undefined') Helpers.showToast('Job Description loaded from file!', 'success');
+                } catch (err) {
+                    console.error('[JobMatch] JD Upload error:', err);
+                    if (typeof Helpers !== 'undefined') Helpers.showToast(err.message || 'Failed to read JD file.', 'error');
+                }
+            });
+        }
 
         if (!footerEl) {
             const inlineBtn = document.getElementById('jm-btn-run-match-inline');

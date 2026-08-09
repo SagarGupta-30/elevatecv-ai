@@ -70,13 +70,55 @@ async function analyzeJobMatchController(req, res) {
 
         return res.status(500).json({
             success: false,
-            message: error.message || 'An unexpected error occurred while analyzing job match.',
+            message: error.message || 'ATS Job Match Analysis failed. Please try again.',
             data: null,
-            error: 'Internal Server Error'
+            error: error.code || error.name || 'ServerError'
         });
     }
 }
 
+/**
+ * Controller to handle POST /api/ai/job-match/upload-jd or POST /api/job-description/upload
+ */
+async function uploadJdController(req, res) {
+    const importService = require('../services/importService');
+    const { cleanupFile } = require('../middleware/upload.middleware');
+
+    if (!req.file) {
+        return res.status(400).json({
+            success: false,
+            message: 'No file uploaded. Please upload a PDF, DOCX, or TXT file.',
+            data: null,
+            error: 'Bad Request'
+        });
+    }
+
+    try {
+        const text = await importService.parseJobDescriptionFile(
+            req.file.path,
+            req.file.mimetype,
+            req.file.originalname
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: 'Job description text extracted successfully.',
+            text
+        });
+    } catch (error) {
+        console.error('[JobMatchController] Upload JD error:', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to extract text from job description file.',
+            data: null,
+            error: error.name || 'ServerError'
+        });
+    } finally {
+        cleanupFile(req.file?.path);
+    }
+}
+
 module.exports = {
-    analyzeJobMatchController
+    analyzeJobMatchController,
+    uploadJdController
 };

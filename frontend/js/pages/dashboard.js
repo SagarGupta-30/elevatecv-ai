@@ -362,9 +362,11 @@ const Dashboard = (() => {
         const id = resume._id;
         const title = esc(resume.title || 'Untitled Resume');
         const isDraft = (resume.status || 'draft') === 'draft';
-        const statusBadge = isDraft
+        const isImported = resume.metadata?.isImported;
+        const importedBadge = isImported ? `<span class="resume-card__badge" style="background:rgba(99,102,241,0.15);color:#a78bfa;border:1px solid rgba(99,102,241,0.3);margin-left:4px;">Imported</span>` : '';
+        const statusBadge = (isDraft
             ? `<span class="resume-card__badge badge--draft">Draft</span>`
-            : `<span class="resume-card__badge badge--completed">Completed</span>`;
+            : `<span class="resume-card__badge badge--completed">Completed</span>`) + importedBadge;
 
         const templateName = esc(resume.template || 'Professional');
         const completion = calculateCompletionPct(resume);
@@ -712,6 +714,27 @@ const Dashboard = (() => {
                 renderGrid();
             });
         });
+
+        // Quick Action Buttons
+        const btnImport = Helpers.$('#btn-import-resume-action');
+        if (btnImport) {
+            btnImport.addEventListener('click', () => {
+                if (typeof ImportModal !== 'undefined') {
+                    ImportModal.open();
+                }
+            });
+        }
+
+        const btnUploadJd = Helpers.$('#btn-upload-jd-action');
+        if (btnUploadJd) {
+            btnUploadJd.addEventListener('click', () => {
+                if (typeof SpaRouter !== 'undefined') {
+                    SpaRouter.navigate('job-match');
+                } else {
+                    window.location.href = 'dashboard.html#job-match';
+                }
+            });
+        }
 
         // Sort Select
         if (sortSelect) {

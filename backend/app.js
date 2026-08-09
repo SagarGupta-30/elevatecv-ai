@@ -96,9 +96,14 @@ app.get('/api/debug/routes', (req, res) => {
     });
 });
 
+const { protect } = require('./middleware/auth.middleware');
+const { uploadJD } = require('./middleware/upload.middleware');
+const { uploadJdController } = require('./controllers/jobMatchController');
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resumes', resumeRoutes);
+app.post('/api/job-description/upload', protect, uploadJD.single('jdFile'), uploadJdController);
 app.use('/api/ai/improve', improveRoutes);
 app.use('/api/ai/cover-letter', coverLetterRoutes);
 app.use('/api/ai/interview', interviewRoutes);
