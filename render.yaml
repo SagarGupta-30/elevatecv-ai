@@ -19,5 +19,9 @@ services:
         sync: false           # set manually in Render dashboard
       - key: JWT_EXPIRES_IN
         value: 7d
+      - key: GROQ_API_KEY
+        sync: false           # set manually in Render dashboard
+      - key: GEMINI_API_KEY
+        sync: false           # set manually in Render dashboard
     healthCheckPath: /
     autoDeploy: true
