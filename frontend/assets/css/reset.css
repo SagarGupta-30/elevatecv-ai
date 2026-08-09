@@ -26,9 +26,14 @@ body {
 img,
 picture,
 video,
-canvas,
-svg {
+canvas {
     display: block;
+    max-width: 100%;
+}
+
+svg {
+    display: inline-block;
+    vertical-align: middle;
     max-width: 100%;
 }
 
