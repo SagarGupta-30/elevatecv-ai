@@ -492,6 +492,51 @@ const ResumeBuilderV2 = (() => {
                 }
             });
         }
+
+        // ── Wire Sidebar AI Nav Links ───────────────────────────────────────
+        const navAts = document.getElementById('sidebar-nav-ats');
+        if (navAts) {
+            navAts.addEventListener('click', (e) => {
+                e.preventDefault();
+                const data = BuilderState.get();
+                if (typeof ResumeAnalyzer !== 'undefined') {
+                    ResumeAnalyzer.open(data);
+                }
+            });
+        }
+
+        const navJobMatch = document.getElementById('sidebar-nav-jobmatch');
+        if (navJobMatch) {
+            navJobMatch.addEventListener('click', (e) => {
+                e.preventDefault();
+                const data = BuilderState.get();
+                if (typeof JobMatchAnalyzer !== 'undefined') {
+                    JobMatchAnalyzer.open(data);
+                }
+            });
+        }
+
+        const navSkillGap = document.getElementById('sidebar-nav-skillgap');
+        if (navSkillGap) {
+            navSkillGap.addEventListener('click', (e) => {
+                e.preventDefault();
+                const data = BuilderState.get();
+                if (typeof SkillGapAnalyzer !== 'undefined') {
+                    SkillGapAnalyzer.open(data);
+                }
+            });
+        }
+
+        const navInterview = document.getElementById('sidebar-nav-interview');
+        if (navInterview) {
+            navInterview.addEventListener('click', (e) => {
+                e.preventDefault();
+                const data = BuilderState.get();
+                if (typeof InterviewPrep !== 'undefined') {
+                    InterviewPrep.open(data);
+                }
+            });
+        }
     }
 
     return { init };

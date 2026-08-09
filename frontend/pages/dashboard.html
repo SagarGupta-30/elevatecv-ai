@@ -27,10 +27,13 @@
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/animations.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-
-    <!-- Sprint 3.5: AI Cover Letter Generator styles -->
+    <!-- Sprint 3.5: AI Feature styles -->
+    <link rel="stylesheet" href="../assets/css/analyzer.css">
+    <link rel="stylesheet" href="../assets/css/improver.css">
     <link rel="stylesheet" href="../assets/css/cover-letter.css">
+    <link rel="stylesheet" href="../assets/css/interview-prep.css">
+    <link rel="stylesheet" href="../assets/css/job-match.css">
+    <link rel="stylesheet" href="../assets/css/skill-gap.css">
 </head>
 <body>
     <div class="dashboard-layout">
@@ -85,7 +88,7 @@
                         </a>
                     </li>
                     <li class="sidebar__item">
-                        <a href="#" class="sidebar__link">
+                        <a href="#" class="sidebar__link" id="sidebar-nav-ats">
                             <span class="sidebar__icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
@@ -96,7 +99,7 @@
                         </a>
                     </li>
                     <li class="sidebar__item">
-                        <a href="#" class="sidebar__link">
+                        <a href="#" class="sidebar__link" id="sidebar-nav-jobmatch">
                             <span class="sidebar__icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -104,6 +107,26 @@
                                 </svg>
                             </span>
                             Job Match
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link" id="sidebar-nav-skillgap">
+                            <span class="sidebar__icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            </span>
+                            Skill Gap
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="#" class="sidebar__link" id="sidebar-nav-interview">
+                            <span class="sidebar__icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </span>
+                            Interview Prep
                         </a>
                     </li>
                 </ul>
@@ -398,8 +421,13 @@
     <!-- jsPDF CDN for Cover Letter PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <!-- AI Cover Letter Generator component -->
+    <!-- AI Components -->
+    <script src="../js/components/resumeAnalyzer.js"></script>
+    <script src="../js/components/aiImprover.js"></script>
     <script src="../js/components/coverLetterGenerator.js"></script>
+    <script src="../js/components/interviewPrep.js"></script>
+    <script src="../js/components/jobMatchAnalyzer.js"></script>
+    <script src="../js/components/skillGapAnalyzer.js"></script>
 
     <script src="../js/pages/dashboard.js"></script>
 </body>

@@ -884,6 +884,57 @@ const Dashboard = (() => {
     }
 
     /**
+     * Bind AI feature sidebar navigation links
+     */
+    function initSidebarAiNav() {
+        const getResumeData = () => (resumesCache && resumesCache.length > 0) ? resumesCache[0] : {};
+
+        const navAts = Helpers.$('#sidebar-nav-ats');
+        if (navAts) {
+            navAts.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeSidebar();
+                if (typeof ResumeAnalyzer !== 'undefined') {
+                    ResumeAnalyzer.open(getResumeData());
+                }
+            });
+        }
+
+        const navJobMatch = Helpers.$('#sidebar-nav-jobmatch');
+        if (navJobMatch) {
+            navJobMatch.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeSidebar();
+                if (typeof JobMatchAnalyzer !== 'undefined') {
+                    JobMatchAnalyzer.open(getResumeData());
+                }
+            });
+        }
+
+        const navSkillGap = Helpers.$('#sidebar-nav-skillgap');
+        if (navSkillGap) {
+            navSkillGap.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeSidebar();
+                if (typeof SkillGapAnalyzer !== 'undefined') {
+                    SkillGapAnalyzer.open(getResumeData());
+                }
+            });
+        }
+
+        const navInterview = Helpers.$('#sidebar-nav-interview');
+        if (navInterview) {
+            navInterview.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeSidebar();
+                if (typeof InterviewPrep !== 'undefined') {
+                    InterviewPrep.open(getResumeData());
+                }
+            });
+        }
+    }
+
+    /**
      * Initialize Dashboard
      */
     function init() {
@@ -900,8 +951,9 @@ const Dashboard = (() => {
         if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
         if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
 
-        // Initialize Controls & Resumes
+        // Initialize Controls & Resumes & AI Sidebar Navigation
         initControls();
+        initSidebarAiNav();
         loadResumes();
     }
 

@@ -206,6 +206,49 @@ const ResumePreview = (() => {
             btnPrint.addEventListener('click', handlePrint);
         }
 
+        // Sidebar AI Modal Navigation
+        const getResume = () => currentResume || (resumesList && resumesList[0]) || {};
+
+        const navAts = document.getElementById('sidebar-nav-ats');
+        if (navAts) {
+            navAts.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof ResumeAnalyzer !== 'undefined') {
+                    ResumeAnalyzer.open(getResume());
+                }
+            });
+        }
+
+        const navJobMatch = document.getElementById('sidebar-nav-jobmatch');
+        if (navJobMatch) {
+            navJobMatch.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof JobMatchAnalyzer !== 'undefined') {
+                    JobMatchAnalyzer.open(getResume());
+                }
+            });
+        }
+
+        const navSkillGap = document.getElementById('sidebar-nav-skillgap');
+        if (navSkillGap) {
+            navSkillGap.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof SkillGapAnalyzer !== 'undefined') {
+                    SkillGapAnalyzer.open(getResume());
+                }
+            });
+        }
+
+        const navInterview = document.getElementById('sidebar-nav-interview');
+        if (navInterview) {
+            navInterview.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof InterviewPrep !== 'undefined') {
+                    InterviewPrep.open(getResume());
+                }
+            });
+        }
+
         // Fetch resume list on page load
         fetchResumes();
     }
