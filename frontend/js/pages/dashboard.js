@@ -767,24 +767,69 @@ const Dashboard = (() => {
             });
         });
 
-        // Quick Action Buttons
-        const btnImport = Helpers.$('#btn-import-resume-action');
+        // Quick Action Buttons — use canonical IDs (btn-import-resume, btn-upload-jd)
+        const btnImport = Helpers.$('#btn-import-resume');
         if (btnImport) {
-            btnImport.addEventListener('click', () => {
+            // Clone to avoid duplicate listeners on SPA restore
+            const freshImport = btnImport.cloneNode(true);
+            btnImport.parentNode.replaceChild(freshImport, btnImport);
+            freshImport.addEventListener('click', () => {
                 if (typeof ImportModal !== 'undefined') {
                     ImportModal.open();
+                } else {
+                    showToast('Import module is loading, please try again.', 'error');
                 }
             });
         }
 
-        const btnUploadJd = Helpers.$('#btn-upload-jd-action');
+        const btnUploadJd = Helpers.$('#btn-upload-jd');
         if (btnUploadJd) {
-            btnUploadJd.addEventListener('click', () => {
-                if (typeof SpaRouter !== 'undefined') {
-                    SpaRouter.navigate('job-match');
-                } else {
-                    window.location.href = 'dashboard.html#job-match';
+            // Clone to avoid duplicate listeners on SPA restore
+            const freshUploadJd = btnUploadJd.cloneNode(true);
+            btnUploadJd.parentNode.replaceChild(freshUploadJd, btnUploadJd);
+            freshUploadJd.addEventListener('click', () => {
+                // Inline hidden file input for JD upload
+                let jdInput = document.getElementById('_dashboard-jd-file-input');
+                if (!jdInput) {
+                    jdInput = document.createElement('input');
+                    jdInput.type = 'file';
+                    jdInput.id = '_dashboard-jd-file-input';
+                    jdInput.accept = '.pdf,.docx,.txt';
+                    jdInput.style.display = 'none';
+                    document.body.appendChild(jdInput);
+                    jdInput.addEventListener('change', async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        jdInput.value = ''; // reset for re-use
+                        const token = localStorage.getItem('token');
+                        const formData = new FormData();
+                        formData.append('jdFile', file);
+                        showToast('Uploading job description...', 'info');
+                        try {
+                            const apiBase = (typeof Config !== 'undefined' && Config.API_BASE) ? Config.API_BASE : 'http://localhost:5001/api';
+                            const res = await fetch(`${apiBase}/job-description/upload`, {
+                                method: 'POST',
+                                headers: { 'Authorization': `Bearer ${token}` },
+                                body: formData
+                            });
+                            const data = await res.json();
+                            if (!res.ok || !data.success) throw new Error(data.message || 'JD upload failed');
+                            localStorage.setItem('elevate_pending_jd', data.text || data.jdText || '');
+                            showToast('Job description extracted! Opening Job Match workspace...', 'success');
+                            setTimeout(() => {
+                                if (typeof SpaRouter !== 'undefined') {
+                                    SpaRouter.navigate('job-match');
+                                } else {
+                                    window.location.href = 'dashboard.html#job-match';
+                                }
+                            }, 800);
+                        } catch (err) {
+                            console.error('[Dashboard] JD upload error:', err);
+                            showToast(err.message || 'Failed to upload job description', 'error');
+                        }
+                    });
                 }
+                jdInput.click();
             });
         }
 
@@ -1118,7 +1163,7 @@ const Dashboard = (() => {
         loadResumes();
     }
 
-    return { init, loadResumes, showToast };
+    return { init, loadResumes, showToast, initControls };
 })();
 
 // Initialize on DOM load

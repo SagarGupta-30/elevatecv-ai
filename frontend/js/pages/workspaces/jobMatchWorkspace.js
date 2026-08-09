@@ -92,6 +92,20 @@ const JobMatchWorkspace = (() => {
         if (typeof JobMatchAnalyzer !== 'undefined' && typeof JobMatchAnalyzer.renderWorkspace === 'function') {
             JobMatchAnalyzer.renderWorkspace(contentEl, resumeData);
         }
+
+        // Auto-populate JD textarea if a file was uploaded from Dashboard
+        const pendingJd = localStorage.getItem('elevate_pending_jd');
+        if (pendingJd) {
+            localStorage.removeItem('elevate_pending_jd');
+            // Try to fill the textarea once rendered
+            setTimeout(() => {
+                const textarea = document.getElementById('jm-textarea-desc');
+                if (textarea) {
+                    textarea.value = pendingJd;
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }, 100);
+        }
     }
 
     function _esc(str) {

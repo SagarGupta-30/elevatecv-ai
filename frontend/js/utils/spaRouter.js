@@ -94,9 +94,10 @@ const SpaRouter = (() => {
             // Restore default Dashboard HTML
             _mainContainer.innerHTML = _dashboardViewHTML;
             document.title = 'Dashboard — ElevateCV AI';
-            // Re-render dashboard stats / resumes if Dashboard module available
-            if (typeof Dashboard !== 'undefined' && typeof Dashboard.loadResumes === 'function') {
-                Dashboard.loadResumes();
+            // Re-attach event listeners (innerHTML wipe destroys all listeners)
+            if (typeof Dashboard !== 'undefined') {
+                if (typeof Dashboard.loadResumes === 'function') Dashboard.loadResumes();
+                if (typeof Dashboard.initControls === 'function') Dashboard.initControls();
             }
             return;
         }
