@@ -153,6 +153,23 @@ JSON Output Schema:
     parsedData.experience = Array.isArray(parsedData.experience) ? parsedData.experience : [];
     parsedData.projects = Array.isArray(parsedData.projects) ? parsedData.projects : [];
     parsedData.skills = parsedData.skills || { technical: [], soft: [], tools: [], languages: [] };
+    parsedData.languages = Array.isArray(parsedData.languages)
+        ? parsedData.languages.map(l => ({
+            language: typeof l === 'string' ? l : (l.language || ''),
+            proficiency: typeof l === 'object' && l.proficiency ? String(l.proficiency) : ''
+        }))
+        : [];
+    parsedData.certifications = Array.isArray(parsedData.certifications) ? parsedData.certifications : [];
+    parsedData.achievements = Array.isArray(parsedData.achievements)
+        ? parsedData.achievements.map(a => typeof a === 'string' ? { description: a } : a)
+        : [];
+    parsedData.interests = Array.isArray(parsedData.interests) ? parsedData.interests : [];
+    parsedData.template = ['default', 'classic', 'modern', 'minimal', 'executive'].includes(parsedData.template)
+        ? parsedData.template
+        : 'default';
+    parsedData.status = ['draft', 'published'].includes(parsedData.status)
+        ? parsedData.status
+        : 'draft';
     parsedData.parseAnalysis = parsedData.parseAnalysis || { parsedFields: [], missingFields: [], qualityScore: 80 };
 
     return {

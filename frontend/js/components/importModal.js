@@ -255,35 +255,72 @@ const ImportModal = (() => {
         `;
 
         document.getElementById('btn-import-builder').addEventListener('click', async () => {
-            const saved = await _saveImportedResume(resume);
-            if (saved && saved._id) {
-                close();
-                window.location.href = `builder.html?resumeId=${saved._id}`;
+            console.log('[IMPORT_TRACE] STEP 1: Edit in Builder clicked. resume =', resume);
+            try {
+                console.log('[IMPORT_TRACE] STEP 2: Calling _saveImportedResume...');
+                const saved = await _saveImportedResume(resume);
+                console.log('[IMPORT_TRACE] STEP 3: _saveImportedResume returned:', saved);
+                console.log('[IMPORT_TRACE] STEP 4: saved?._id =', saved?._id);
+                if (saved && saved._id) {
+                    console.log('[IMPORT_TRACE] STEP 5: Closing modal and navigating to builder.html?resumeId=' + saved._id);
+                    close();
+                    window.location.href = `builder.html?resumeId=${saved._id}`;
+                } else {
+                    console.error('[IMPORT_TRACE] FAILED AT STEP 4: saved or saved._id is falsy!', saved);
+                }
+            } catch (err) {
+                console.error('[IMPORT_TRACE] EXCEPTION IN BUILDER CLICK LISTENER:', err);
             }
         });
 
         document.getElementById('btn-import-improve').addEventListener('click', async () => {
-            const saved = await _saveImportedResume(resume);
-            if (saved) {
-                close();
-                if (typeof AIImprover !== 'undefined' && typeof AIImprover.open === 'function') {
-                    AIImprover.open(saved);
-                } else if (typeof Helpers !== 'undefined') {
-                    Helpers.showToast('Resume saved! Opening Builder...', 'success');
-                    window.location.href = `builder.html?resumeId=${saved._id}`;
+            console.log('[IMPORT_TRACE] STEP 1: Improve with AI clicked. resume =', resume);
+            try {
+                console.log('[IMPORT_TRACE] STEP 2: Calling _saveImportedResume...');
+                const saved = await _saveImportedResume(resume);
+                console.log('[IMPORT_TRACE] STEP 3: _saveImportedResume returned:', saved);
+                console.log('[IMPORT_TRACE] STEP 4: saved?._id =', saved?._id);
+                if (saved) {
+                    console.log('[IMPORT_TRACE] STEP 5: Closing modal and opening AIImprover/navigating...');
+                    close();
+                    if (typeof AIImprover !== 'undefined' && typeof AIImprover.open === 'function') {
+                        console.log('[IMPORT_TRACE] STEP 6: Opening AIImprover.open(saved)...');
+                        AIImprover.open(saved);
+                    } else if (typeof Helpers !== 'undefined') {
+                        console.log('[IMPORT_TRACE] STEP 6: Navigating to builder.html?resumeId=' + saved._id);
+                        Helpers.showToast('Resume saved! Opening Builder...', 'success');
+                        window.location.href = `builder.html?resumeId=${saved._id}`;
+                    }
+                } else {
+                    console.error('[IMPORT_TRACE] FAILED AT STEP 4: saved is falsy!', saved);
                 }
+            } catch (err) {
+                console.error('[IMPORT_TRACE] EXCEPTION IN IMPROVE CLICK LISTENER:', err);
             }
         });
 
         document.getElementById('btn-import-ats').addEventListener('click', async () => {
-            const saved = await _saveImportedResume(resume);
-            if (saved) {
-                close();
-                if (typeof SpaRouter !== 'undefined') {
-                    SpaRouter.navigate('ats-analysis');
+            console.log('[IMPORT_TRACE] STEP 1: Save & Run ATS Analysis clicked. resume =', resume);
+            try {
+                console.log('[IMPORT_TRACE] STEP 2: Calling _saveImportedResume...');
+                const saved = await _saveImportedResume(resume);
+                console.log('[IMPORT_TRACE] STEP 3: _saveImportedResume returned:', saved);
+                console.log('[IMPORT_TRACE] STEP 4: saved?._id =', saved?._id);
+                if (saved) {
+                    console.log('[IMPORT_TRACE] STEP 5: Closing modal and navigating to ATS...');
+                    close();
+                    if (typeof SpaRouter !== 'undefined') {
+                        console.log('[IMPORT_TRACE] STEP 6: Calling SpaRouter.navigate("ats-analysis")...');
+                        SpaRouter.navigate('ats-analysis');
+                    } else {
+                        console.log('[IMPORT_TRACE] STEP 6: Navigating via window.location.href...');
+                        window.location.href = 'dashboard.html#ats-analysis';
+                    }
                 } else {
-                    window.location.href = 'dashboard.html#ats-analysis';
+                    console.error('[IMPORT_TRACE] FAILED AT STEP 4: saved is falsy!', saved);
                 }
+            } catch (err) {
+                console.error('[IMPORT_TRACE] EXCEPTION IN ATS CLICK LISTENER:', err);
             }
         });
     }
@@ -368,21 +405,26 @@ const ImportModal = (() => {
     }
 
     async function _saveImportedResume(resumeData) {
+        console.log('[IMPORT_TRACE] Inside _saveImportedResume. resumeData =', resumeData);
+        console.log('[IMPORT_TRACE] typeof ResumeService =', typeof ResumeService);
         if (typeof ResumeService === 'undefined') {
-            console.error('[ImportModal] ResumeService is not defined');
+            console.error('[IMPORT_TRACE] [ImportModal] ResumeService is not defined!');
             if (typeof Helpers !== 'undefined') Helpers.showToast('Resume service unavailable. Please refresh the page.', 'error');
             return null;
         }
         try {
+            console.log('[IMPORT_TRACE] About to call ResumeService.createResume...');
             if (typeof Helpers !== 'undefined') Helpers.showToast('Saving imported resume...', 'info');
             const saved = await ResumeService.createResume(resumeData);
+            console.log('[IMPORT_TRACE] ResumeService.createResume returned:', saved);
             if (typeof Helpers !== 'undefined') Helpers.showToast('Imported resume saved successfully!', 'success');
             if (typeof Dashboard !== 'undefined' && typeof Dashboard.loadResumes === 'function') {
+                console.log('[IMPORT_TRACE] Calling Dashboard.loadResumes(true)...');
                 Dashboard.loadResumes(true);
             }
             return saved;
         } catch (e) {
-            console.error('[ImportModal] Save error:', e);
+            console.error('[IMPORT_TRACE] [ImportModal] Save error in _saveImportedResume:', e);
             if (typeof Helpers !== 'undefined') Helpers.showToast(e.message || 'Failed to save imported resume', 'error');
             return null;
         }

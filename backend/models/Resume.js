@@ -258,7 +258,7 @@ const languageSchema = new mongoose.Schema(
          */
         proficiency: {
             type: String,
-            enum: ['', 'Beginner', 'Elementary', 'Intermediate', 'Upper-Intermediate', 'Advanced', 'Native'],
+            trim: true,
             default: ''
         }
     },
@@ -346,14 +346,7 @@ const ResumeSchema = new mongoose.Schema(
 
         education: {
             type: [educationSchema],
-            default: [],
-            validate: {
-                validator: function (val) {
-                    /* At least one education entry is required */
-                    return Array.isArray(val) && val.length > 0;
-                },
-                message: 'At least one education entry is required'
-            }
+            default: []
         },
 
         experience: {

@@ -6,8 +6,10 @@ class ResumeController {
      */
     async createResume(req, res) {
         try {
+            console.log('[BACKEND_TRACE] createResume called by userId =', req.userId, 'payload =', req.body);
             const resumeData = { ...req.body, owner: req.userId };
             const resume = await resumeService.createResume(resumeData);
+            console.log('[BACKEND_TRACE] createResume saved successfully. _id =', resume._id);
             
             return res.status(201).json({
                 success: true,
@@ -16,6 +18,7 @@ class ResumeController {
                 error: null
             });
         } catch (error) {
+            console.error('[BACKEND_TRACE] createResume error:', error);
             return res.status(400).json({
                 success: false,
                 message: error.message,

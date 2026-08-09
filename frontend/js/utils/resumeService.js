@@ -83,6 +83,7 @@ const ResumeService = (() => {
      */
     async function _request(path, options = {}) {
         const url = `${Config.API_BASE}${path}`;
+        console.log('[RESUME_SERVICE_TRACE] _request path =', path, 'url =', url, 'options =', options);
 
         let response;
         try {
@@ -90,8 +91,9 @@ const ResumeService = (() => {
                 ...options,
                 headers: { ..._headers(), ...(options.headers || {}) }
             });
+            console.log('[RESUME_SERVICE_TRACE] fetch response status =', response.status);
         } catch (networkErr) {
-            // fetch() itself threw — network down, DNS failure, etc.
+            console.error('[RESUME_SERVICE_TRACE] fetch threw network error:', networkErr);
             throw new ApiError(
                 'Network error — please check your connection and try again.',
                 0,
@@ -101,6 +103,7 @@ const ResumeService = (() => {
 
         /* ── Session expired or invalid token ─── */
         if (response.status === 401) {
+            console.error('[RESUME_SERVICE_TRACE] 401 Unauthorized!');
             _handleUnauthorized();
             throw new ApiError(
                 'Your session has expired. Redirecting to login…',
@@ -113,7 +116,9 @@ const ResumeService = (() => {
         let body;
         try {
             body = await response.json();
+            console.log('[RESUME_SERVICE_TRACE] response JSON body =', body);
         } catch (_) {
+            console.error('[RESUME_SERVICE_TRACE] Failed to parse JSON body');
             throw new ApiError(
                 `Server returned an unreadable response (HTTP ${response.status}).`,
                 response.status,
@@ -123,6 +128,7 @@ const ResumeService = (() => {
 
         /* ── Handle API-level failures ─── */
         if (!response.ok || body.success === false) {
+            console.error('[RESUME_SERVICE_TRACE] Response not OK or body.success === false:', body);
             throw new ApiError(
                 body.message || `Request failed with status ${response.status}.`,
                 response.status,
@@ -144,7 +150,9 @@ const ResumeService = (() => {
      * @throws {ApiError}
      */
     async function createResume(resumeData) {
+        console.log('[RESUME_SERVICE_TRACE] createResume called with resumeData =', resumeData);
         if (_creating) {
+            console.error('[RESUME_SERVICE_TRACE] Guard blocked createResume: _creating is true');
             throw new ApiError('A save is already in progress.', 0, 'DuplicateRequest');
         }
         _creating = true;
@@ -153,6 +161,7 @@ const ResumeService = (() => {
                 method: 'POST',
                 body: JSON.stringify(resumeData)
             });
+            console.log('[RESUME_SERVICE_TRACE] createResume returning created =', created);
             return created;
         } finally {
             _creating = false;
