@@ -772,9 +772,7 @@ const ResumePreview = (() => {
         if (navAts) {
             navAts.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                if (typeof ResumeAnalyzer !== 'undefined') {
-                    ResumeAnalyzer.open(currentResume || {});
-                }
+                window.location.href = 'dashboard.html#ats-analysis';
             });
         }
 
@@ -782,9 +780,7 @@ const ResumePreview = (() => {
         if (navJobMatch) {
             navJobMatch.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                if (typeof JobMatchAnalyzer !== 'undefined') {
-                    JobMatchAnalyzer.open(currentResume || {});
-                }
+                window.location.href = 'dashboard.html#job-match';
             });
         }
 
@@ -792,9 +788,7 @@ const ResumePreview = (() => {
         if (navSkillGap) {
             navSkillGap.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                if (typeof SkillGapAnalyzer !== 'undefined') {
-                    SkillGapAnalyzer.open(currentResume || {});
-                }
+                window.location.href = 'dashboard.html#skill-gap';
             });
         }
 
@@ -802,9 +796,7 @@ const ResumePreview = (() => {
         if (navInterview) {
             navInterview.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                if (typeof InterviewPrep !== 'undefined') {
-                    InterviewPrep.open(currentResume || {});
-                }
+                window.location.href = 'dashboard.html#interview-prep';
             });
         }
 
@@ -812,9 +804,7 @@ const ResumePreview = (() => {
         if (navCoverLetter) {
             navCoverLetter.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                if (typeof CoverLetterGenerator !== 'undefined') {
-                    CoverLetterGenerator.open(currentResume || {});
-                }
+                window.location.href = 'dashboard.html#cover-letter';
             });
         }
 

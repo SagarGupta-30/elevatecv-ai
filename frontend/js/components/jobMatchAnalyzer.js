@@ -201,7 +201,23 @@ const JobMatchAnalyzer = (() => {
                     </div>
                 </div>
             </div>
+            ${!footerEl ? `
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
+                <button type="button" class="btn--jm-primary" id="jm-btn-run-match-inline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Run Job Match Analysis
+                </button>
+            </div>
+            ` : ''}
         `;
+
+        if (!footerEl) {
+            const inlineBtn = document.getElementById('jm-btn-run-match-inline');
+            if (inlineBtn) inlineBtn.addEventListener('click', _handleAnalyze);
+        }
     }
 
     /* ──────────────────────────────────────────────────────────────────
@@ -584,7 +600,13 @@ ${(_lastReport.recommendations || []).map(r => '- ' + r).join('\n')}
     return {
         open,
         close,
-        retry: () => _fetchJobMatch(true)
+        retry: () => _fetchJobMatch(true),
+        renderWorkspace: function(targetEl, resumeData) {
+            _bodyEl = targetEl;
+            if (resumeData) _resumeData = resumeData;
+            else if (typeof BuilderState !== 'undefined') _resumeData = BuilderState.get();
+            _renderForm();
+        }
     };
 
 })();

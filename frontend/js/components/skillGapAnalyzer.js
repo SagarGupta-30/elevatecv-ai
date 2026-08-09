@@ -177,7 +177,22 @@ const SkillGapAnalyzer = (() => {
                     `).join('')}
                 </div>
             </div>
+            ${!footerEl ? `
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
+                <button type="button" class="btn--sg-primary" id="sg-btn-run-analysis-inline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    Generate Skill Gap Analysis
+                </button>
+            </div>
+            ` : ''}
         `;
+
+        if (!footerEl) {
+            const inlineBtn = document.getElementById('sg-btn-run-analysis-inline');
+            if (inlineBtn) inlineBtn.addEventListener('click', _handleAnalyze);
+        }
 
         // Preset chip listeners
         document.querySelectorAll('#sg-role-presets-container .sg-role-chip').forEach(btn => {
@@ -559,7 +574,13 @@ ${roadmapStr}
     return {
         open,
         close,
-        retry: () => _fetchSkillGap(true)
+        retry: () => _fetchSkillGap(true),
+        renderWorkspace: function(targetEl, resumeData) {
+            _bodyEl = targetEl;
+            if (resumeData) _resumeData = resumeData;
+            else if (typeof BuilderState !== 'undefined') _resumeData = BuilderState.get();
+            _renderForm();
+        }
     };
 
 })();

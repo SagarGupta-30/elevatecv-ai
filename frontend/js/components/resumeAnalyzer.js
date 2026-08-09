@@ -720,9 +720,12 @@ const ResumeAnalyzer = (() => {
         open,
         close,
         analyze,
-        toggleCard
+        toggleCard,
+        renderWorkspace: function(targetEl, resumeData) {
+            _bodyEl = targetEl;
+            analyze(resumeData);
+        }
     };
-
 })();
 
 /* ── Expose to global scope so inline onclick handlers always resolve ─────── */

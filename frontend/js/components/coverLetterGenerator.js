@@ -190,7 +190,22 @@ const CoverLetterGenerator = (() => {
                     </div>
                 </div>
             </div>
+            ${!footerEl ? `
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
+                <button type="button" class="btn--cl-primary" id="cl-btn-generate-inline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                    </svg>
+                    Generate Cover Letter
+                </button>
+            </div>
+            ` : ''}
         `;
+
+        if (!footerEl) {
+            const inlineBtn = document.getElementById('cl-btn-generate-inline');
+            if (inlineBtn) inlineBtn.addEventListener('click', _handleGenerate);
+        }
 
         // Tone & Length chip select event listeners
         document.querySelectorAll('#cl-tone-chips .cl-chip').forEach(btn => {
@@ -557,7 +572,13 @@ const CoverLetterGenerator = (() => {
     return {
         open,
         close,
-        retry: () => _fetchCoverLetter(true)
+        retry: () => _fetchCoverLetter(true),
+        renderWorkspace: function(targetEl, resumeData) {
+            _bodyEl = targetEl;
+            if (resumeData) _resumeData = resumeData;
+            else if (typeof BuilderState !== 'undefined') _resumeData = BuilderState.get();
+            _renderForm();
+        }
     };
 
 })();

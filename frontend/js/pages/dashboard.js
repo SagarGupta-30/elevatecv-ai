@@ -182,6 +182,9 @@ const Dashboard = (() => {
             resumesCache = Array.isArray(data) ? data : [];
             updateOverviewMetrics();
             renderGrid();
+            if (typeof SpaRouter !== 'undefined') {
+                SpaRouter.dispatch(resumesCache[0]);
+            }
         } catch (error) {
             console.error('[ElevateCV Dashboard] Error fetching resumes:', error);
             renderErrorState(error.message || 'Failed to load your resumes.');
@@ -898,23 +901,15 @@ const Dashboard = (() => {
      * Bind AI feature sidebar navigation links
      */
     function initSidebarAiNav() {
-        const getResumeData = () => {
-            if (!resumesCache || resumesCache.length === 0) {
-                showToast('Please create a resume first to use AI tools.', 'warning');
-                return null;
-            }
-            return resumesCache[0];
-        };
-
         const navAts = Helpers.$('#sidebar-nav-ats');
         if (navAts) {
             navAts.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
-                const resumeData = getResumeData();
-                if (!resumeData) return;
-                if (typeof ResumeAnalyzer !== 'undefined') {
-                    ResumeAnalyzer.open(resumeData);
+                if (typeof SpaRouter !== 'undefined') {
+                    SpaRouter.navigate('ats-analysis');
+                } else {
+                    window.location.href = 'dashboard.html#ats-analysis';
                 }
             });
         }
@@ -924,10 +919,10 @@ const Dashboard = (() => {
             navJobMatch.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
-                const resumeData = getResumeData();
-                if (!resumeData) return;
-                if (typeof JobMatchAnalyzer !== 'undefined') {
-                    JobMatchAnalyzer.open(resumeData);
+                if (typeof SpaRouter !== 'undefined') {
+                    SpaRouter.navigate('job-match');
+                } else {
+                    window.location.href = 'dashboard.html#job-match';
                 }
             });
         }
@@ -937,10 +932,10 @@ const Dashboard = (() => {
             navSkillGap.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
-                const resumeData = getResumeData();
-                if (!resumeData) return;
-                if (typeof SkillGapAnalyzer !== 'undefined') {
-                    SkillGapAnalyzer.open(resumeData);
+                if (typeof SpaRouter !== 'undefined') {
+                    SpaRouter.navigate('skill-gap');
+                } else {
+                    window.location.href = 'dashboard.html#skill-gap';
                 }
             });
         }
@@ -950,10 +945,10 @@ const Dashboard = (() => {
             navInterview.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
-                const resumeData = getResumeData();
-                if (!resumeData) return;
-                if (typeof InterviewPrep !== 'undefined') {
-                    InterviewPrep.open(resumeData);
+                if (typeof SpaRouter !== 'undefined') {
+                    SpaRouter.navigate('interview-prep');
+                } else {
+                    window.location.href = 'dashboard.html#interview-prep';
                 }
             });
         }
@@ -963,10 +958,10 @@ const Dashboard = (() => {
             navCoverLetter.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
-                const resumeData = getResumeData();
-                if (!resumeData) return;
-                if (typeof CoverLetterGenerator !== 'undefined') {
-                    CoverLetterGenerator.open(resumeData);
+                if (typeof SpaRouter !== 'undefined') {
+                    SpaRouter.navigate('cover-letter');
+                } else {
+                    window.location.href = 'dashboard.html#cover-letter';
                 }
             });
         }
@@ -1028,6 +1023,17 @@ const Dashboard = (() => {
         if (btnLogout) btnLogout.addEventListener('click', handleLogout);
         if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
         if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+
+        // Register SpaRouter routes
+        if (typeof SpaRouter !== 'undefined') {
+            if (typeof AtsWorkspace !== 'undefined') SpaRouter.register('ats-analysis', AtsWorkspace.render);
+            if (typeof JobMatchWorkspace !== 'undefined') SpaRouter.register('job-match', JobMatchWorkspace.render);
+            if (typeof SkillGapWorkspace !== 'undefined') SpaRouter.register('skill-gap', SkillGapWorkspace.render);
+            if (typeof InterviewWorkspace !== 'undefined') SpaRouter.register('interview-prep', InterviewWorkspace.render);
+            if (typeof CoverLetterWorkspace !== 'undefined') SpaRouter.register('cover-letter', CoverLetterWorkspace.render);
+
+            SpaRouter.init('.dashboard-content', () => resumesCache[0]);
+        }
 
         // Initialize Controls & Resumes & AI Sidebar Navigation
         initControls();

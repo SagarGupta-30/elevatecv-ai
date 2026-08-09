@@ -188,7 +188,22 @@ const InterviewPrep = (() => {
                     <textarea id="ip-textarea-desc" class="cl-textarea" placeholder="Paste target job description to tailor technical questions…" rows="4">${_esc(_jobDesc)}</textarea>
                 </div>
             </div>
+            ${!footerEl ? `
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
+                <button type="button" class="btn--ip-primary" id="ip-btn-generate-inline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    Generate Interview Prep Kit
+                </button>
+            </div>
+            ` : ''}
         `;
+
+        if (!footerEl) {
+            const inlineBtn = document.getElementById('ip-btn-generate-inline');
+            if (inlineBtn) inlineBtn.addEventListener('click', _handleGenerate);
+        }
     }
 
     /* ──────────────────────────────────────────────────────────────────
@@ -645,7 +660,13 @@ const InterviewPrep = (() => {
     return {
         open,
         close,
-        retry: () => _fetchInterviewPrep(true)
+        retry: () => _fetchInterviewPrep(true),
+        renderWorkspace: function(targetEl, resumeData) {
+            _bodyEl = targetEl;
+            if (resumeData) _resumeData = resumeData;
+            else if (typeof BuilderState !== 'undefined') _resumeData = BuilderState.get();
+            _renderForm();
+        }
     };
 
 })();

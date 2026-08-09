@@ -498,10 +498,7 @@ const ResumeBuilderV2 = (() => {
         if (navAts) {
             navAts.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const data = BuilderState.get();
-                if (typeof ResumeAnalyzer !== 'undefined') {
-                    ResumeAnalyzer.open(data);
-                }
+                window.location.href = 'dashboard.html#ats-analysis';
             });
         }
 
@@ -509,10 +506,7 @@ const ResumeBuilderV2 = (() => {
         if (navJobMatch) {
             navJobMatch.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const data = BuilderState.get();
-                if (typeof JobMatchAnalyzer !== 'undefined') {
-                    JobMatchAnalyzer.open(data);
-                }
+                window.location.href = 'dashboard.html#job-match';
             });
         }
 
@@ -520,10 +514,7 @@ const ResumeBuilderV2 = (() => {
         if (navSkillGap) {
             navSkillGap.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const data = BuilderState.get();
-                if (typeof SkillGapAnalyzer !== 'undefined') {
-                    SkillGapAnalyzer.open(data);
-                }
+                window.location.href = 'dashboard.html#skill-gap';
             });
         }
 
@@ -531,10 +522,7 @@ const ResumeBuilderV2 = (() => {
         if (navInterview) {
             navInterview.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const data = BuilderState.get();
-                if (typeof InterviewPrep !== 'undefined') {
-                    InterviewPrep.open(data);
-                }
+                window.location.href = 'dashboard.html#interview-prep';
             });
         }
 
@@ -542,10 +530,7 @@ const ResumeBuilderV2 = (() => {
         if (navCoverLetter) {
             navCoverLetter.addEventListener('click', (e) => {
                 if (e) { e.preventDefault(); e.stopPropagation(); }
-                const data = BuilderState.get();
-                if (typeof CoverLetterGenerator !== 'undefined') {
-                    CoverLetterGenerator.open(data);
-                }
+                window.location.href = 'dashboard.html#cover-letter';
             });
         }
 
