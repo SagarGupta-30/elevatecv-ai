@@ -119,7 +119,11 @@ const Dashboard = (() => {
     /**
      * Handle Logout
      */
-    function handleLogout() {
+    function handleLogout(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = 'login.html';
@@ -129,8 +133,13 @@ const Dashboard = (() => {
      * Toggle Profile Dropdown
      */
     function toggleDropdown(e) {
-        e.stopPropagation();
-        profileDropdown.classList.toggle('is-active');
+        if (e) {
+            e.stopPropagation();
+            if (profileDropdown && profileDropdown.contains(e.target)) {
+                return; // Do not toggle dropdown if click was inside menu items
+            }
+        }
+        if (profileDropdown) profileDropdown.classList.toggle('is-active');
     }
 
     /**
@@ -442,6 +451,13 @@ const Dashboard = (() => {
                         </svg>
                     </a>
 
+                    <button type="button" class="btn-card-action btn-card-action--icon-only" data-action="export-docx" title="Export DOCX" aria-label="Export resume as DOCX">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </button>
+
                     <button type="button" class="btn-card-action btn-card-action--icon-only" data-action="duplicate" title="Duplicate Resume" aria-label="Duplicate resume">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -468,6 +484,7 @@ const Dashboard = (() => {
         resumesGrid.querySelectorAll('.resume-card').forEach(card => {
             const id = card.dataset.id;
             const titleEl = card.querySelector('[data-action="rename"]');
+            const docxBtn = card.querySelector('[data-action="export-docx"]');
             const dupBtn = card.querySelector('[data-action="duplicate"]');
             const delBtn = card.querySelector('[data-action="delete"]');
 
@@ -476,6 +493,41 @@ const Dashboard = (() => {
                 titleEl.addEventListener('click', (e) => {
                     e.preventDefault();
                     startInlineRename(id, titleEl);
+                });
+            }
+
+            // Export DOCX Action
+            if (docxBtn) {
+                docxBtn.addEventListener('click', async () => {
+                    const resumeObj = resumesCache.find(r => r._id === id);
+                    if (!resumeObj) return;
+                    const token = localStorage.getItem('token');
+                    try {
+                        showToast('Generating DOCX...', 'info');
+                        const apiBase = (typeof Config !== 'undefined' && Config.API_BASE) ? Config.API_BASE : 'http://localhost:5001/api';
+                        const response = await fetch(`${apiBase}/resumes/${id}/export-docx`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify(resumeObj)
+                        });
+                        if (!response.ok) throw new Error('Failed to generate DOCX');
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${(resumeObj.title || 'Resume').replace(/[^a-z0-9_-]/gi, '_')}.docx`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                        showToast('DOCX downloaded successfully!', 'success');
+                    } catch (err) {
+                        console.error('Export DOCX error:', err);
+                        showToast(err.message || 'Failed to export DOCX', 'error');
+                    }
                 });
             }
 

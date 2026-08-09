@@ -767,30 +767,38 @@ const ResumePreview = (() => {
         if (btnReset) btnReset.addEventListener('click', () => setZoom(1.0));
 
         // Topbar Actions
+        const btnPreviewImport = Helpers.$('#btn-preview-import-resume');
+        if (btnPreviewImport) {
+            btnPreviewImport.addEventListener('click', () => {
+                if (typeof ImportModal !== 'undefined') {
+                    ImportModal.open();
+                }
+            });
+        }
         const btnExportDocx = Helpers.$('#btn-export-docx');
         if (btnExportDocx) btnExportDocx.addEventListener('click', handleExportDocx);
         if (btnExportPdf) btnExportPdf.addEventListener('click', handleExportPdf);
         if (btnPrint)     btnPrint.addEventListener('click', handlePrint);
         if (btnShare)     btnShare.addEventListener('click', handleShare);
 
-        // AI Workspace Section Triggers
+        // AI Workspace Section Triggers (Navigate to dedicated workspaces)
         const btnAts = Helpers.$('#btn-run-ats');
         const btnAtsEmpty = Helpers.$('#btn-run-ats-empty');
-        const openAtsModal = () => { if (typeof ResumeAnalyzer !== 'undefined') ResumeAnalyzer.open(currentResume || {}); };
-        if (btnAts) btnAts.addEventListener('click', openAtsModal);
-        if (btnAtsEmpty) btnAtsEmpty.addEventListener('click', openAtsModal);
+        const openAtsWorkspace = () => { window.location.href = 'dashboard.html#ats-analysis'; };
+        if (btnAts) btnAts.addEventListener('click', openAtsWorkspace);
+        if (btnAtsEmpty) btnAtsEmpty.addEventListener('click', openAtsWorkspace);
 
         const btnJobMatch = Helpers.$('#btn-run-jobmatch');
-        if (btnJobMatch) btnJobMatch.addEventListener('click', () => { if (typeof JobMatchAnalyzer !== 'undefined') JobMatchAnalyzer.open(currentResume || {}); });
+        if (btnJobMatch) btnJobMatch.addEventListener('click', () => { window.location.href = 'dashboard.html#job-match'; });
 
         const btnSkillGap = Helpers.$('#btn-run-skillgap');
-        if (btnSkillGap) btnSkillGap.addEventListener('click', () => { if (typeof SkillGapAnalyzer !== 'undefined') SkillGapAnalyzer.open(currentResume || {}); });
+        if (btnSkillGap) btnSkillGap.addEventListener('click', () => { window.location.href = 'dashboard.html#skill-gap'; });
 
         const btnInterview = Helpers.$('#btn-run-interview');
-        if (btnInterview) btnInterview.addEventListener('click', () => { if (typeof InterviewPrep !== 'undefined') InterviewPrep.open(currentResume || {}); });
+        if (btnInterview) btnInterview.addEventListener('click', () => { window.location.href = 'dashboard.html#interview-prep'; });
 
         const btnCoverLetter = Helpers.$('#btn-run-coverletter');
-        if (btnCoverLetter) btnCoverLetter.addEventListener('click', () => { if (typeof CoverLetterGenerator !== 'undefined') CoverLetterGenerator.open(currentResume || {}); });
+        if (btnCoverLetter) btnCoverLetter.addEventListener('click', () => { window.location.href = 'dashboard.html#cover-letter'; });
 
         // Bottom Action Bar Triggers
         const btnBtmImprove  = Helpers.$('#btn-bottom-improve');
@@ -805,7 +813,7 @@ const ResumePreview = (() => {
                 if (improver) improver.open(currentResume);
             });
         }
-        if (btnBtmReanalyze) btnBtmReanalyze.addEventListener('click', openAtsModal);
+        if (btnBtmReanalyze) btnBtmReanalyze.addEventListener('click', openAtsWorkspace);
         if (btnBtmExportDocx) btnBtmExportDocx.addEventListener('click', handleExportDocx);
         if (btnBtmExport)    btnBtmExport.addEventListener('click', handleExportPdf);
         if (btnBtmApply)     btnBtmApply.addEventListener('click', handleApplyToJob);

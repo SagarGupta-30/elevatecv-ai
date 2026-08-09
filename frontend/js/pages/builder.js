@@ -441,6 +441,15 @@ const ResumeBuilderV2 = (() => {
             });
         }
 
+        const btnImportResume = document.getElementById('btn-builder-import-resume');
+        if (btnImportResume) {
+            btnImportResume.addEventListener('click', () => {
+                if (typeof ImportModal !== 'undefined') {
+                    ImportModal.open();
+                }
+            });
+        }
+
         const btnBuilderExportDocx = document.getElementById('btn-builder-export-docx');
         if (btnBuilderExportDocx) {
             btnBuilderExportDocx.addEventListener('click', async () => {
