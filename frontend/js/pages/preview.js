@@ -764,6 +764,56 @@ const ResumePreview = (() => {
         if (btnBtmExport)    btnBtmExport.addEventListener('click', handleExportPdf);
         if (btnBtmApply)     btnBtmApply.addEventListener('click', handleApplyToJob);
 
+        // Sidebar AI Workspace Navigation (Scroll to section & trigger AI)
+        const navAts = Helpers.$('#sidebar-nav-ats');
+        if (navAts) {
+            navAts.addEventListener('click', (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                const sec = Helpers.$('#sec-ats-score');
+                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+                if (!atsData) runAtsAnalysis();
+            });
+        }
+
+        const navJobMatch = Helpers.$('#sidebar-nav-jobmatch');
+        if (navJobMatch) {
+            navJobMatch.addEventListener('click', (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                const sec = Helpers.$('#sec-job-match');
+                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+
+        const navSkillGap = Helpers.$('#sidebar-nav-skillgap');
+        if (navSkillGap) {
+            navSkillGap.addEventListener('click', (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                const sec = Helpers.$('#sec-skill-gap');
+                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+                if (!skillGapData) runSkillGap();
+            });
+        }
+
+        const navInterview = Helpers.$('#sidebar-nav-interview');
+        if (navInterview) {
+            navInterview.addEventListener('click', (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                const sec = Helpers.$('#sec-interview-prep');
+                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+                if (!interviewData) runInterviewPrep();
+            });
+        }
+
+        const navCoverLetter = Helpers.$('#sidebar-nav-coverletter');
+        if (navCoverLetter) {
+            navCoverLetter.addEventListener('click', (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                const sec = Helpers.$('#sec-cover-letter');
+                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+                if (!coverLetterText) runCoverLetter();
+            });
+        }
+
         // Fetch candidate resumes
         fetchResumes();
     }

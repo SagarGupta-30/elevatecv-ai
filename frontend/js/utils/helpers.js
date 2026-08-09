@@ -95,3 +95,16 @@ const Helpers = (() => {
 
     return { debounce, throttle, $, $$, animateCount, showToast };
 })();
+
+/* Global Hash Navigation Guard — Prevents browser # hash URL mutations project-wide */
+document.addEventListener('click', (e) => {
+    const anchor = e.target.closest && e.target.closest('a');
+    if (!anchor) return;
+
+    const href = anchor.getAttribute('href');
+    if (href === '#' || href === '' || href === 'javascript:void(0);' || (href && href.startsWith('#'))) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+}, true);
+

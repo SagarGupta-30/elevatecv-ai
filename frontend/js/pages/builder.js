@@ -497,7 +497,7 @@ const ResumeBuilderV2 = (() => {
         const navAts = document.getElementById('sidebar-nav-ats');
         if (navAts) {
             navAts.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 const data = BuilderState.get();
                 if (typeof ResumeAnalyzer !== 'undefined') {
                     ResumeAnalyzer.open(data);
@@ -508,7 +508,7 @@ const ResumeBuilderV2 = (() => {
         const navJobMatch = document.getElementById('sidebar-nav-jobmatch');
         if (navJobMatch) {
             navJobMatch.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 const data = BuilderState.get();
                 if (typeof JobMatchAnalyzer !== 'undefined') {
                     JobMatchAnalyzer.open(data);
@@ -519,7 +519,7 @@ const ResumeBuilderV2 = (() => {
         const navSkillGap = document.getElementById('sidebar-nav-skillgap');
         if (navSkillGap) {
             navSkillGap.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 const data = BuilderState.get();
                 if (typeof SkillGapAnalyzer !== 'undefined') {
                     SkillGapAnalyzer.open(data);
@@ -530,7 +530,7 @@ const ResumeBuilderV2 = (() => {
         const navInterview = document.getElementById('sidebar-nav-interview');
         if (navInterview) {
             navInterview.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 const data = BuilderState.get();
                 if (typeof InterviewPrep !== 'undefined') {
                     InterviewPrep.open(data);
@@ -541,7 +541,7 @@ const ResumeBuilderV2 = (() => {
         const navCoverLetter = document.getElementById('sidebar-nav-coverletter');
         if (navCoverLetter) {
             navCoverLetter.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 const data = BuilderState.get();
                 if (typeof CoverLetterGenerator !== 'undefined') {
                     CoverLetterGenerator.open(data);
@@ -552,7 +552,7 @@ const ResumeBuilderV2 = (() => {
         const navSettings = document.getElementById('sidebar-nav-settings');
         const dropSettings = document.getElementById('dropdown-nav-settings');
         const openSettings = (e) => {
-            if (e) e.preventDefault();
+            if (e) { e.preventDefault(); e.stopPropagation(); }
             if (typeof SettingsModal !== 'undefined') {
                 SettingsModal.open();
             }
@@ -564,7 +564,7 @@ const ResumeBuilderV2 = (() => {
         const navProfile = document.getElementById('sidebar-nav-profile');
         const dropProfile = document.getElementById('dropdown-nav-profile');
         const openProfile = (e) => {
-            if (e) e.preventDefault();
+            if (e) { e.preventDefault(); e.stopPropagation(); }
             if (typeof ProfileModal !== 'undefined') {
                 ProfileModal.open();
             }

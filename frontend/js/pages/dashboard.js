@@ -892,7 +892,7 @@ const Dashboard = (() => {
         const navAts = Helpers.$('#sidebar-nav-ats');
         if (navAts) {
             navAts.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
                 if (typeof ResumeAnalyzer !== 'undefined') {
                     ResumeAnalyzer.open(getResumeData());
@@ -903,7 +903,7 @@ const Dashboard = (() => {
         const navJobMatch = Helpers.$('#sidebar-nav-jobmatch');
         if (navJobMatch) {
             navJobMatch.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
                 if (typeof JobMatchAnalyzer !== 'undefined') {
                     JobMatchAnalyzer.open(getResumeData());
@@ -914,7 +914,7 @@ const Dashboard = (() => {
         const navSkillGap = Helpers.$('#sidebar-nav-skillgap');
         if (navSkillGap) {
             navSkillGap.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
                 if (typeof SkillGapAnalyzer !== 'undefined') {
                     SkillGapAnalyzer.open(getResumeData());
@@ -925,7 +925,7 @@ const Dashboard = (() => {
         const navInterview = Helpers.$('#sidebar-nav-interview');
         if (navInterview) {
             navInterview.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
                 if (typeof InterviewPrep !== 'undefined') {
                     InterviewPrep.open(getResumeData());
@@ -936,7 +936,7 @@ const Dashboard = (() => {
         const navCoverLetter = Helpers.$('#sidebar-nav-coverletter');
         if (navCoverLetter) {
             navCoverLetter.addEventListener('click', (e) => {
-                e.preventDefault();
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 closeSidebar();
                 if (typeof CoverLetterGenerator !== 'undefined') {
                     CoverLetterGenerator.open(getResumeData());
@@ -953,7 +953,7 @@ const Dashboard = (() => {
         const dropProfile = Helpers.$('#dropdown-nav-profile');
 
         const openProfile = (e) => {
-            if (e) e.preventDefault();
+            if (e) { e.preventDefault(); e.stopPropagation(); }
             closeSidebar();
             closeDropdown();
             if (typeof ProfileModal !== 'undefined') {
@@ -973,7 +973,7 @@ const Dashboard = (() => {
         const dropSettings = Helpers.$('#dropdown-nav-settings');
 
         const openSettings = (e) => {
-            if (e) e.preventDefault();
+            if (e) { e.preventDefault(); e.stopPropagation(); }
             closeSidebar();
             closeDropdown();
             if (typeof SettingsModal !== 'undefined') {
