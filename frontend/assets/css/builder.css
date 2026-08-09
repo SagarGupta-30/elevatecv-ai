@@ -398,20 +398,20 @@
 }
 
 .form-select option {
-    background-color: #0F172A;
+    background-color: var(--bg-surface);
     color: var(--text-primary);
 }
 
 .form-input::placeholder,
-.form-textarea::placeholder { color: var(--text-faint); }
+.form-textarea::placeholder { color: var(--text-muted); }
 
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
     outline: none;
     border-color: var(--color-primary-500);
-    background: rgba(124, 58, 237, 0.05);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    background: rgba(31, 41, 55, 0.9);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.35);
 }
 
 .form-textarea {

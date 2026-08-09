@@ -13,10 +13,10 @@
 /* --- Sidebar --- */
 .sidebar {
     width: 260px;
-    background-color: rgba(15, 23, 42, 0.7);
+    background-color: var(--bg-surface);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid var(--border-base);
+    border-right: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base);
@@ -28,7 +28,7 @@
     display: flex;
     align-items: center;
     padding: 0 var(--space-6);
-    border-bottom: 1px solid var(--border-base);
+    border-bottom: 1px solid var(--border-subtle);
     justify-content: space-between;
 }
 
@@ -79,7 +79,7 @@
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     padding: 0;
     margin: 0;
 }
@@ -88,24 +88,26 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    color: var(--text-muted);
+    padding: 10px 14px;
+    color: var(--text-secondary);
     text-decoration: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-xl);
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
     transition: all var(--transition-fast);
 }
 
 .sidebar__link:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.04);
     color: var(--text-primary);
+    transform: translateX(2px);
 }
 
 .sidebar__link--active {
-    background: var(--gradient-primary-soft);
-    color: var(--text-primary);
-    border: 1px solid rgba(124, 58, 237, 0.25);
+    background: var(--gradient-primary);
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+    font-weight: var(--font-weight-semibold);
 }
 
 .sidebar__icon {
@@ -116,14 +118,17 @@
     transition: color var(--transition-fast);
 }
 
-.sidebar__link:hover .sidebar__icon,
+.sidebar__link:hover .sidebar__icon {
+    color: var(--text-primary);
+}
+
 .sidebar__link--active .sidebar__icon {
-    color: var(--color-primary-400);
+    color: #FFFFFF !important;
 }
 
 .sidebar__divider {
     height: 1px;
-    background-color: var(--border-base);
+    background-color: var(--border-subtle);
     margin: var(--space-2) 0;
 }
 
