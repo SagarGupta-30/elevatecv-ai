@@ -66,11 +66,34 @@ You MUST respond strictly in valid JSON format matching this exact schema:
 
     const parsed = await generateJSON({ systemPrompt });
 
-    // Schema hardening
-    parsed.technicalQuestions = Array.isArray(parsed.technicalQuestions) ? parsed.technicalQuestions : [];
-    parsed.hrQuestions        = Array.isArray(parsed.hrQuestions) ? parsed.hrQuestions : [];
-    parsed.projectQuestions   = Array.isArray(parsed.projectQuestions) ? parsed.projectQuestions : [];
-    parsed.overallPreparationTips = Array.isArray(parsed.overallPreparationTips) ? parsed.overallPreparationTips : [];
+    // Schema hardening & normalization
+    const techRaw = Array.isArray(parsed.technicalQuestions) ? parsed.technicalQuestions : [];
+    const hrRaw   = Array.isArray(parsed.hrQuestions) ? parsed.hrQuestions : [];
+    const projRaw = Array.isArray(parsed.projectQuestions) ? parsed.projectQuestions : [];
+    const tipsRaw = Array.isArray(parsed.overallPreparationTips) ? parsed.overallPreparationTips : [];
+
+    parsed.technicalQuestions = techRaw.map(q => ({
+        question: String(q.question || q.questionText || q.title || q.q || '').trim(),
+        modelAnswer: String(q.modelAnswer || q.answer || q.model_answer || q.response || '').trim(),
+        tips: String(q.tips || q.tip || q.strategicTip || '').trim(),
+        difficulty: (q.difficulty && ['Easy', 'Medium', 'Hard'].includes(q.difficulty)) ? q.difficulty : 'Medium'
+    })).filter(q => q.question.length > 0 && q.modelAnswer.length > 0);
+
+    parsed.hrQuestions = hrRaw.map(q => ({
+        question: String(q.question || q.questionText || q.title || q.q || '').trim(),
+        modelAnswer: String(q.modelAnswer || q.answer || q.model_answer || q.response || '').trim(),
+        tips: String(q.tips || q.tip || q.strategicTip || '').trim()
+    })).filter(q => q.question.length > 0 && q.modelAnswer.length > 0);
+
+    parsed.projectQuestions = projRaw.map(q => ({
+        question: String(q.question || q.questionText || q.title || q.q || '').trim(),
+        modelAnswer: String(q.modelAnswer || q.answer || q.model_answer || q.response || '').trim(),
+        project: String(q.project || q.projectName || q.project_name || '').trim()
+    })).filter(q => q.question.length > 0 && q.modelAnswer.length > 0);
+
+    parsed.overallPreparationTips = tipsRaw
+        .map(t => (typeof t === 'string' ? t.trim() : (t?.tip || t?.advice || '')))
+        .filter(t => t.length > 0);
 
     return parsed;
 }

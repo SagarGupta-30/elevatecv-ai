@@ -191,7 +191,7 @@ const ResumeAnalyzer = (() => {
         const fmtScore    = typeof analysis.formattingScore === 'number' ? analysis.formattingScore : 88;
         const recScore    = typeof analysis.recruiterScore === 'number' ? analysis.recruiterScore : 82;
         const grade       = analysis.grade || 'A';
-        const modelName   = analysis.model || 'gemini-2.5-flash';
+        const modelName   = analysis.model || 'gemini-2.0-flash';
 
         // Determine score ring color
         let scoreColor = '#4ade80'; // green

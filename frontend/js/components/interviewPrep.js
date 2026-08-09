@@ -304,13 +304,18 @@ const InterviewPrep = (() => {
         // Technical Questions
         if (_activeTab === 'all' || _activeTab === 'technical') {
             techList.forEach((q, idx) => {
-                if (_matchesSearch(q.question, q.modelAnswer, q.tips)) {
+                const question = q.question || q.questionText || q.title || '';
+                const modelAnswer = q.modelAnswer || q.answer || q.model_answer || '';
+                const tips = q.tips || q.tip || '';
+                const difficulty = q.difficulty || 'Medium';
+
+                if (question && modelAnswer && _matchesSearch(question, modelAnswer, tips)) {
                     cardsHtml += _buildQuestionCard({
                         category: 'Technical',
-                        question: q.question,
-                        modelAnswer: q.modelAnswer,
-                        tips: q.tips,
-                        difficulty: q.difficulty || 'Medium',
+                        question,
+                        modelAnswer,
+                        tips,
+                        difficulty,
                         id: `tech-${idx}`
                     });
                 }
@@ -320,12 +325,16 @@ const InterviewPrep = (() => {
         // HR / Behavioral Questions
         if (_activeTab === 'all' || _activeTab === 'hr') {
             hrList.forEach((q, idx) => {
-                if (_matchesSearch(q.question, q.modelAnswer, q.tips)) {
+                const question = q.question || q.questionText || q.title || '';
+                const modelAnswer = q.modelAnswer || q.answer || q.model_answer || '';
+                const tips = q.tips || q.tip || '';
+
+                if (question && modelAnswer && _matchesSearch(question, modelAnswer, tips)) {
                     cardsHtml += _buildQuestionCard({
                         category: 'HR & Behavioral',
-                        question: q.question,
-                        modelAnswer: q.modelAnswer,
-                        tips: q.tips,
+                        question,
+                        modelAnswer,
+                        tips,
                         id: `hr-${idx}`
                     });
                 }
@@ -335,12 +344,16 @@ const InterviewPrep = (() => {
         // Project Questions
         if (_activeTab === 'all' || _activeTab === 'project') {
             projList.forEach((q, idx) => {
-                if (_matchesSearch(q.question, q.modelAnswer, q.project)) {
+                const question = q.question || q.questionText || q.title || '';
+                const modelAnswer = q.modelAnswer || q.answer || q.model_answer || '';
+                const project = q.project || q.projectName || '';
+
+                if (question && modelAnswer && _matchesSearch(question, modelAnswer, project)) {
                     cardsHtml += _buildQuestionCard({
                         category: 'Project Deep Dive',
-                        question: q.question,
-                        modelAnswer: q.modelAnswer,
-                        tips: q.project ? `Focuses on project: ${q.project}` : '',
+                        question,
+                        modelAnswer,
+                        tips: project ? `Focuses on project: ${project}` : '',
                         id: `proj-${idx}`
                     });
                 }
@@ -362,7 +375,7 @@ const InterviewPrep = (() => {
                         </div>
                         <div class="ip-card__body">
                             <ul style="margin:0;padding-left:18px;color:#cbd5e1;font-size:13px;line-height:1.6;">
-                                ${tipsList.map(t => `<li style="margin-bottom:8px;">${_esc(t)}</li>`).join('')}
+                                ${tipsList.map(t => `<li style="margin-bottom:8px;">${_esc(typeof t === 'string' ? t : (t?.tip || ''))}</li>`).join('')}
                             </ul>
                         </div>
                     </div>
@@ -446,7 +459,7 @@ const InterviewPrep = (() => {
         if ((difficulty || '').toLowerCase() === 'hard') diffBadgeClass = 'ip-badge--hard';
 
         return `
-            <div class="ip-card" id="card-${id}">
+            <div class="ip-card is-open" id="card-${id}">
                 <div class="ip-card__header">
                     <div class="ip-card__question">
                         <span class="ip-q-text">${_esc(question)}</span>
@@ -464,9 +477,9 @@ const InterviewPrep = (() => {
                         </button>
                         <button type="button" class="btn-toggle-answer">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M6 9l6 6 6-6"/>
+                                <path d="M18 15l-6-6-6 6"/>
                             </svg>
-                            Reveal Answer
+                            Hide Answer
                         </button>
                     </div>
                 </div>

@@ -75,7 +75,7 @@ async function generateJSON({ systemPrompt, userPrompt = '', timeoutMs = DEFAULT
             const ai = new GoogleGenAI({ apiKey });
             const fullContent = userPrompt ? `${systemPrompt}\n\n${userPrompt}` : systemPrompt;
             const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: 'gemini-2.0-flash',
                 contents: fullContent,
                 config: { responseMimeType: 'application/json' }
             });
