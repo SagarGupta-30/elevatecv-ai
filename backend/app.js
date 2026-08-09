@@ -10,6 +10,7 @@ const morgan  = require('morgan');
 const healthRoute  = require('./routes/health.route');
 const authRoutes   = require('./routes/auth.routes');
 const resumeRoutes = require('./routes/resume.routes');
+const aiRoutes     = require('./routes/aiRoutes');
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use(morgan('dev'));
 app.use('/', healthRoute);
 app.use('/api/auth', authRoutes);
 app.use('/api/resumes', resumeRoutes);
+app.use('/api/ai', aiRoutes);
 
 /* ── 404 Handler ──────────────────────────────────────────────────────── */
 app.use((req, res) => {

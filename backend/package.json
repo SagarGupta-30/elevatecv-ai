@@ -17,6 +17,7 @@
   "author": "Sagar Gupta",
   "license": "MIT",
   "dependencies": {
+    "@google/genai": "^2.16.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -24,7 +25,7 @@
     "express-rate-limit": "^8.6.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb-memory-server": "^11.2.0",
-    "mongoose": "^9.8.0",
+    "mongoose": "^8.24.2",
     "morgan": "^1.10.0",
     "validator": "^13.15.35"
   },

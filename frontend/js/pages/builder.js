@@ -63,6 +63,12 @@ const ResumeBuilderV2 = (() => {
                         <span class="wizard-status-badge wizard-status-badge--draft" id="wiz-status-badge">Draft</span>
                     </div>
                     <div class="wizard-actions">
+                        <button id="btn-ai-analyze" class="btn btn--ai-analyze" type="button" aria-label="Analyze Resume with AI">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                            </svg>
+                            <span>AI Analyze</span>
+                        </button>
                         <div class="completion-ring-wrap" id="completion-ring-wrap">
                             <div class="completion-ring" id="completion-ring">
                                 <svg width="48" height="48" viewBox="0 0 48 48">
@@ -412,6 +418,19 @@ const ResumeBuilderV2 = (() => {
                     await PdfExport.exportToPdf(data, activeSlug, btnBuilderExport);
                 } else {
                     showToast('PDF Export module is loading. Please try again.', 'error');
+                }
+            });
+        }
+
+        // ── Sprint 3.5: Wire AI Analyze button ───────────────────────────
+        const btnAiAnalyze = document.getElementById('btn-ai-analyze');
+        if (btnAiAnalyze) {
+            btnAiAnalyze.addEventListener('click', () => {
+                const data = BuilderState.get();
+                if (typeof ResumeAnalyzer !== 'undefined') {
+                    ResumeAnalyzer.analyze(data, btnAiAnalyze);
+                } else {
+                    showToast('AI Resume Analyzer module is loading...', 'info');
                 }
             });
         }
