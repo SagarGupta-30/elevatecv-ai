@@ -769,11 +769,10 @@ const Dashboard = (() => {
 
         // Quick Action Buttons — use canonical IDs (btn-import-resume, btn-upload-jd)
         const btnImport = Helpers.$('#btn-import-resume');
-        if (btnImport) {
-            // Clone to avoid duplicate listeners on SPA restore
-            const freshImport = btnImport.cloneNode(true);
-            btnImport.parentNode.replaceChild(freshImport, btnImport);
-            freshImport.addEventListener('click', () => {
+        if (btnImport && !btnImport.dataset.bound) {
+            btnImport.dataset.bound = 'true';
+            btnImport.addEventListener('click', (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 if (typeof ImportModal !== 'undefined') {
                     ImportModal.open();
                 } else {
@@ -783,11 +782,10 @@ const Dashboard = (() => {
         }
 
         const btnUploadJd = Helpers.$('#btn-upload-jd');
-        if (btnUploadJd) {
-            // Clone to avoid duplicate listeners on SPA restore
-            const freshUploadJd = btnUploadJd.cloneNode(true);
-            btnUploadJd.parentNode.replaceChild(freshUploadJd, btnUploadJd);
-            freshUploadJd.addEventListener('click', () => {
+        if (btnUploadJd && !btnUploadJd.dataset.bound) {
+            btnUploadJd.dataset.bound = 'true';
+            btnUploadJd.addEventListener('click', (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
                 // Inline hidden file input for JD upload
                 let jdInput = document.getElementById('_dashboard-jd-file-input');
                 if (!jdInput) {
@@ -797,8 +795,8 @@ const Dashboard = (() => {
                     jdInput.accept = '.pdf,.docx,.txt';
                     jdInput.style.display = 'none';
                     document.body.appendChild(jdInput);
-                    jdInput.addEventListener('change', async (e) => {
-                        const file = e.target.files?.[0];
+                    jdInput.addEventListener('change', async (evt) => {
+                        const file = evt.target.files?.[0];
                         if (!file) return;
                         jdInput.value = ''; // reset for re-use
                         const token = localStorage.getItem('token');

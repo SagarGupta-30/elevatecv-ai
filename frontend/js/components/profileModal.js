@@ -238,9 +238,13 @@ const ProfileModal = (() => {
     ════════════════════════════════════════════════════════ */
     function getToken() {
         try {
-            const u = JSON.parse(localStorage.getItem('elevatecv_user') || '{}');
-            return u.token || localStorage.getItem('elevatecv_token') || '';
-        } catch { return ''; }
+            const token = localStorage.getItem('token');
+            if (token) return token;
+            const u = JSON.parse(localStorage.getItem('user') || '{}');
+            return u.token || '';
+        } catch {
+            return localStorage.getItem('token') || '';
+        }
     }
 
     async function apiFetch(path, opts = {}) {
@@ -518,9 +522,11 @@ const ProfileModal = (() => {
 
                 // Persist in localStorage for topbar across pages
                 try {
-                    const u = JSON.parse(localStorage.getItem('elevatecv_user') || '{}');
-                    if (u.user) u.user.avatarUrl = dataUrl;
-                    localStorage.setItem('elevatecv_user', JSON.stringify(u));
+                    const u = JSON.parse(localStorage.getItem('user') || '{}');
+                    if (u) {
+                        u.avatarUrl = dataUrl;
+                        localStorage.setItem('user', JSON.stringify(u));
+                    }
                 } catch (_) {}
 
                 showToast('Photo updated!', 'success');
@@ -800,10 +806,11 @@ const ProfileModal = (() => {
 
                 // Update localStorage with new name
                 try {
-                    const stored = JSON.parse(localStorage.getItem('elevatecv_user') || '{}');
-                    if (stored.user) { stored.user.name = payload.name; }
-                    else if (stored.name) { stored.name = payload.name; }
-                    localStorage.setItem('elevatecv_user', JSON.stringify(stored));
+                    const stored = JSON.parse(localStorage.getItem('user') || '{}');
+                    if (stored) {
+                        stored.name = payload.name;
+                        localStorage.setItem('user', JSON.stringify(stored));
+                    }
                 } catch (_) {}
 
                 // Update topbar name
