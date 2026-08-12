@@ -1,12 +1,12 @@
 # ElevateCV AI
 
-> **Elevate Your Career with AI****
+> **Elevate Your Career with AI**
 
 ElevateCV AI is a production-ready, AI-powered Resume Builder & Career Copilot designed to help job seekers craft professional, ATS-optimized resumes and accelerate their career growth.
 
 ---
 
-## 🚀 Vision.....
+## 🚀 Vision
 
 To democratize career advancement by providing everyone access to intelligent, AI-driven resume building and career coaching tools — making professional-grade career documents accessible to all.
 
@@ -14,15 +14,15 @@ To democratize career advancement by providing everyone access to intelligent, A
 
 ## 🛠️ Tech Stack
 
-| Layer          | Technology              |
-|----------------|-------------------------|
-| Frontend       | HTML5, CSS3, Vanilla JS |
-| Backend        | Node.js, Express.js     |
-| Database       | MongoDB Atlas           |
-| Authentication | JWT + bcrypt            |
+| Layer          | Technology                    |
+|----------------|--------------------------------|
+| Frontend       | HTML5, CSS3, Vanilla JS       |
+| Backend        | Node.js, Express.js           |
+| Database       | MongoDB Atlas                 |
+| Authentication | JWT + bcrypt                  |
 | AI Engine      | Google Gemini API *(planned)* |
-| Frontend Host  | Netlify                 |
-| Backend Host   | Render                  |
+| Frontend Host  | Netlify                       |
+| Backend Host   | Render                        |
 
 ---
 
@@ -149,11 +149,11 @@ Or open `frontend/index.html` directly in your browser.
 
 ## 🔐 Authentication API
 
-| Method | Endpoint            | Description            | Auth     |
-|--------|---------------------|------------------------|----------|
-| POST   | `/api/auth/register`| Create new account     | Public   |
-| POST   | `/api/auth/login`   | Login & get JWT        | Public   |
-| GET    | `/api/auth/me`      | Get current user       | Required |
+| Method | Endpoint             | Description         | Auth     |
+|--------|-----------------------|----------------------|----------|
+| POST   | `/api/auth/register`  | Create new account  | Public   |
+| POST   | `/api/auth/login`     | Login & get JWT     | Public   |
+| GET    | `/api/auth/me`        | Get current user    | Required |
 
 ---
 
@@ -170,9 +170,10 @@ Or open `frontend/index.html` directly in your browser.
 
 ## 👥 Contributors
 
-| Name | Role |
-|------|------|
-| Sagar Gupta | Full Stack Developer & Creator |
+| Name         | Role                              |
+|--------------|------------------------------------|
+| Sagar Gupta  | Full Stack Developer & Creator    |
+| Vikash       | Full Stack Developer               |
 
 ---
 
@@ -183,5 +184,5 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 <p align="center">
-🀄️Team Alpha🀄️
+🀄️ Team Alpha 🀄️
 </p>
