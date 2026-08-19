@@ -1,8 +1,8 @@
 /**
  * ElevateCV AI — Resume Analyzer Component (Sprint 3 AI Resume Analysis Engine)
  *
- * Provides an accessibility-compliant, responsive slide-over side drawer UI
- * for running AI analysis on the BuilderState JSON using Google Gemini via POST /api/ai/analyze.
+ * Provides an accessibility-compliant, responsive fullscreen landscape workspace & modal UI
+ * for running AI analysis on BuilderState JSON using Google Gemini / Groq via POST /api/ai/analyze.
  *
  * Guaranteed Backend Response Schema:
  * {
@@ -33,11 +33,6 @@
  *
  * AI is READ-ONLY: Never modifies BuilderState.
  *
- * Production improvements (post-audit):
- *   - Analysis cache: reuses last successful result if resume content is unchanged.
- *     Cache is invalidated automatically when the serialised content hash changes.
- *   - Friendly, status-code-aware error messages for 401/429/503/504/400/500.
- *
  * Depends on: Config.API_BASE, Helpers
  */
 
@@ -52,17 +47,11 @@ const ResumeAnalyzer = (() => {
     let _lastFocused       = null;
 
     /* ── Analysis Cache ──────────────────────────────────────────────── */
-    /**
-     * _cachedAnalysis      — the most recent successful analysis object.
-     * _cachedContentHash   — cheap string hash of the serialised resume that
-     *                        produced _cachedAnalysis.  A mismatch means the
-     *                        resume has changed and the cache must be ignored.
-     */
     let _cachedAnalysis     = null;
     let _cachedContentHash  = null;
 
     /* ──────────────────────────────────────────────────────────────────
-       Inject Drawer DOM elements into document.body
+       Inject Drawer / Modal DOM elements into document.body
     ────────────────────────────────────────────────────────────────── */
     function _injectDOM() {
         if (document.getElementById('analysis-drawer-root')) return;
@@ -74,30 +63,30 @@ const ResumeAnalyzer = (() => {
         const drawer = document.createElement('aside');
         drawer.className = 'analysis-drawer';
         drawer.id = 'analysis-drawer-root';
-        drawer.setAttribute('aria-label', 'AI Resume Analysis Panel');
+        drawer.setAttribute('aria-label', 'AI Resume Analysis Fullscreen Workspace');
         drawer.setAttribute('role', 'dialog');
         drawer.setAttribute('aria-modal', 'true');
 
         drawer.innerHTML = `
             <header class="analysis-drawer__header">
                 <div class="analysis-drawer__header-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#a78bfa;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#a78bfa;flex-shrink:0;">
                         <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
                     </svg>
                     <div>
                         <h2>AI Resume Analysis</h2>
-                        <p>Powered by Google Gemini AI</p>
+                        <p>Powered by Groq &amp; Google Gemini AI</p>
                     </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;">
+                <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
                     <span class="analysis-drawer__badge-ai">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                         </svg>
                         Read Only
                     </span>
-                    <button class="analysis-drawer__close" id="analysis-drawer-close" aria-label="Close analysis drawer" type="button">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button class="analysis-drawer__close" id="analysis-drawer-close" aria-label="Close ATS Analysis" type="button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18"/>
                             <line x1="6" y1="6" x2="18" y2="18"/>
                         </svg>
@@ -122,14 +111,14 @@ const ResumeAnalyzer = (() => {
 
         // Accessibility: ESC key listener
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && _drawerEl.classList.contains('is-open')) {
+            if (e.key === 'Escape' && _drawerEl && _drawerEl.classList.contains('is-open')) {
                 close();
             }
         });
     }
 
     /* ──────────────────────────────────────────────────────────────────
-       Open & Close Drawer Handlers
+       Open & Close Handlers
     ────────────────────────────────────────────────────────────────── */
     function open() {
         _injectDOM();
@@ -160,27 +149,32 @@ const ResumeAnalyzer = (() => {
         if (!_bodyEl) return;
 
         _bodyEl.innerHTML = `
-            <div style="text-align:center;padding:12px 0 6px;">
-                <div style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#a78bfa;font-weight:600;">
-                    <svg class="pdf-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div style="text-align:center;padding:20px 0 10px;">
+                <div style="display:inline-flex;align-items:center;gap:10px;font-size:14px;color:#a78bfa;font-weight:600;">
+                    <svg class="pdf-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
                         <path d="M12 2 a 10 10 0 0 1 10 10" stroke-linecap="round"/>
                     </svg>
-                    Evaluating content, grammar, ATS parseability & keyword density…
+                    Evaluating content, grammar, ATS parseability &amp; keyword density…
                 </div>
             </div>
-            <div class="analyzer-skeleton-wrap">
-                <div class="analyzer-skeleton analyzer-skeleton--hero"></div>
-                <div class="analyzer-skeleton analyzer-skeleton--card"></div>
-                <div class="analyzer-skeleton analyzer-skeleton--card"></div>
-                <div class="analyzer-skeleton analyzer-skeleton--card"></div>
-                <div class="analyzer-skeleton analyzer-skeleton--card"></div>
+            <div class="analyzer-workspace-grid">
+                <div class="analyzer-main-col">
+                    <div class="analyzer-skeleton analyzer-skeleton--hero" style="height: 140px;"></div>
+                    <div class="analyzer-skeleton analyzer-skeleton--card" style="height: 72px;"></div>
+                    <div class="analyzer-skeleton analyzer-skeleton--card" style="height: 72px;"></div>
+                    <div class="analyzer-skeleton analyzer-skeleton--card" style="height: 72px;"></div>
+                </div>
+                <div class="analyzer-side-col">
+                    <div class="analyzer-skeleton analyzer-skeleton--hero" style="height: 220px;"></div>
+                    <div class="analyzer-skeleton analyzer-skeleton--card" style="height: 100px;"></div>
+                </div>
             </div>
         `;
     }
 
     /* ──────────────────────────────────────────────────────────────────
-       Render Analysis Results into Drawer Body
+       Render Analysis Results into Drawer / Workspace Body
     ────────────────────────────────────────────────────────────────── */
     function _renderResults(analysis) {
         if (!_bodyEl) return;
@@ -191,15 +185,15 @@ const ResumeAnalyzer = (() => {
         const fmtScore    = typeof analysis.formattingScore === 'number' ? analysis.formattingScore : 88;
         const recScore    = typeof analysis.recruiterScore === 'number' ? analysis.recruiterScore : 82;
         const grade       = analysis.grade || 'A';
-        const modelName   = analysis.model || 'gemini-2.0-flash';
+        const modelName   = analysis.model || 'Groq / Gemini AI';
 
-        // Determine score ring color
+        // Score ring stroke color
         let scoreColor = '#4ade80'; // green
         if (score < 60)      scoreColor = '#f87171'; // red
         else if (score < 80) scoreColor = '#fbbf24'; // amber
 
-        // Stroke dashoffset calculation for 88px ring (r=38, circumference ≈ 238)
-        const offset = Math.round(238 - (238 * (score / 100)));
+        // Stroke dashoffset calculation for 90px ring (r=39, circumference ≈ 245)
+        const offset = Math.round(245 - (245 * (score / 100)));
 
         const strengths       = Array.isArray(analysis.strengths) ? analysis.strengths : [];
         const weaknesses      = Array.isArray(analysis.weaknesses) ? analysis.weaknesses : [];
@@ -209,229 +203,247 @@ const ResumeAnalyzer = (() => {
         const sectionScores   = analysis.sectionScores || {};
 
         _bodyEl.innerHTML = `
-            <!-- 1. Hero Score Card -->
-            <div class="analyzer-hero-card">
-                <div class="analyzer-hero-row">
-                    <div class="analyzer-hero-score">
-                        <div class="analyzer-score-ring">
-                            <svg width="88" height="88" viewBox="0 0 88 88">
-                                <circle class="analyzer-score-ring__bg" cx="44" cy="44" r="38"/>
-                                <circle class="analyzer-score-ring__fill" id="score-ring-fill" cx="44" cy="44" r="38" style="stroke: ${scoreColor}; stroke-dashoffset: 238;"/>
+            <div class="analyzer-workspace-grid">
+                <!-- LEFT / MAIN ANALYSIS COLUMN -->
+                <div class="analyzer-main-col">
+                    <!-- 1. Strengths Accordion -->
+                    <div class="analyzer-card is-expanded" id="card-strengths">
+                        <button class="analyzer-card__header" type="button" aria-expanded="true" aria-controls="body-strengths" onclick="ResumeAnalyzer.toggleCard('card-strengths')">
+                            <div class="analyzer-card__title">
+                                <div class="analyzer-card__icon analyzer-card__icon--strengths">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </div>
+                                Strengths (${strengths.length})
+                            </div>
+                            <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
                             </svg>
-                            <div class="analyzer-score-ring__value">
-                                <span>${score}</span>
-                                <span class="analyzer-score-ring__label">Overall</span>
+                        </button>
+                        <div class="analyzer-card__body" id="body-strengths">
+                            <ul class="analyzer-list">
+                                ${strengths.map(s => `
+                                    <li class="analyzer-list__item">
+                                        <svg class="analyzer-list__bullet-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                        <span>${_esc(s)}</span>
+                                    </li>
+                                `).join('') || '<li class="analyzer-list__item">No specific strengths highlighted.</li>'}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 2. Areas for Improvement Accordion -->
+                    <div class="analyzer-card is-expanded" id="card-weaknesses">
+                        <button class="analyzer-card__header" type="button" aria-expanded="true" aria-controls="body-weaknesses" onclick="ResumeAnalyzer.toggleCard('card-weaknesses')">
+                            <div class="analyzer-card__title">
+                                <div class="analyzer-card__icon analyzer-card__icon--weaknesses">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                        <line x1="12" y1="9" x2="12" y2="13"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                </div>
+                                Areas for Improvement (${weaknesses.length})
+                            </div>
+                            <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="analyzer-card__body" id="body-weaknesses">
+                            <ul class="analyzer-list">
+                                ${weaknesses.map(w => `
+                                    <li class="analyzer-list__item">
+                                        <svg class="analyzer-list__bullet-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <line x1="12" y1="8" x2="12" y2="12"/>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                        </svg>
+                                        <span>${_esc(w)}</span>
+                                    </li>
+                                `).join('') || '<li class="analyzer-list__item">No major areas for improvement detected.</li>'}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 3. Section Breakdown Accordion -->
+                    <div class="analyzer-card is-expanded" id="card-sections">
+                        <button class="analyzer-card__header" type="button" aria-expanded="true" aria-controls="body-sections" onclick="ResumeAnalyzer.toggleCard('card-sections')">
+                            <div class="analyzer-card__title">
+                                <div class="analyzer-card__icon analyzer-card__icon--sections">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <path d="M3 9h18M9 21V9"/>
+                                    </svg>
+                                </div>
+                                Section-by-Section Scores
+                            </div>
+                            <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="analyzer-card__body" id="body-sections">
+                            ${_renderSectionBreakdown(sectionScores)}
+                        </div>
+                    </div>
+
+                    <!-- 4. Recommended Industry Keywords Accordion -->
+                    <div class="analyzer-card is-expanded" id="card-keywords">
+                        <button class="analyzer-card__header" type="button" aria-expanded="true" aria-controls="body-keywords" onclick="ResumeAnalyzer.toggleCard('card-keywords')">
+                            <div class="analyzer-card__title">
+                                <div class="analyzer-card__icon analyzer-card__icon--keywords">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                                    </svg>
+                                </div>
+                                Recommended Industry Keywords (${missingKeywords.length})
+                            </div>
+                            <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="analyzer-card__body" id="body-keywords">
+                            <div class="analyzer-chips">
+                                ${missingKeywords.map(k => `
+                                    <span class="analyzer-chip">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        ${_esc(k)}
+                                    </span>
+                                `).join('') || '<span style="font-size:12px;color:#94a3b8;">No missing keywords identified.</span>'}
                             </div>
                         </div>
-                        <div class="analyzer-hero-meta">
-                            <div class="analyzer-hero-meta__title">
-                                Overall Quality
-                                <span class="analyzer-grade-badge">Grade ${grade}</span>
+                    </div>
+
+                    <!-- 5. Grammar & Tone Accordion -->
+                    <div class="analyzer-card" id="card-grammar">
+                        <button class="analyzer-card__header" type="button" aria-expanded="false" aria-controls="body-grammar" onclick="ResumeAnalyzer.toggleCard('card-grammar')">
+                            <div class="analyzer-card__title">
+                                <div class="analyzer-card__icon analyzer-card__icon--grammar">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                </div>
+                                Grammar &amp; Formatting (${grammarIssues.length})
                             </div>
-                            <div class="analyzer-hero-meta__desc">
-                                ${score >= 85 ? 'Exceptional resume! High ATS match and strong action phrasing.' :
-                                  score >= 70 ? 'Solid draft. Recommended improvements below will boost recruiter impact.' :
-                                  'Needs enhancement. Follow recommendations below to improve ATS & recruiter match.'}
+                            <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="analyzer-card__body" id="body-grammar">
+                            <ul class="analyzer-list">
+                                ${grammarIssues.map(g => `
+                                    <li class="analyzer-list__item">
+                                        <svg class="analyzer-list__bullet-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                                            <polyline points="9 11 12 14 22 4"/>
+                                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                        </svg>
+                                        <span>${_esc(g)}</span>
+                                    </li>
+                                `).join('') || '<li class="analyzer-list__item">Grammar and punctuation look great!</li>'}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 6. Strategic Recommendations Accordion -->
+                    <div class="analyzer-card is-expanded" id="card-recs">
+                        <button class="analyzer-card__header" type="button" aria-expanded="true" aria-controls="body-recs" onclick="ResumeAnalyzer.toggleCard('card-recs')">
+                            <div class="analyzer-card__title">
+                                <div class="analyzer-card__icon analyzer-card__icon--recs">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                </div>
+                                Strategic Recommendations (${recommendations.length})
+                            </div>
+                            <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="analyzer-card__body" id="body-recs">
+                            <ul class="analyzer-list">
+                                ${recommendations.map((r, idx) => `
+                                    <li class="analyzer-list__item">
+                                        <span class="analyzer-list__num-badge">${idx + 1}</span>
+                                        <span>${_esc(r)}</span>
+                                    </li>
+                                `).join('') || '<li class="analyzer-list__item">No additional recommendations.</li>'}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT / SCORE SUMMARY SIDEBAR COLUMN -->
+                <div class="analyzer-side-col">
+                    <!-- Hero Score Card -->
+                    <div class="analyzer-hero-card">
+                        <div class="analyzer-hero-row">
+                            <div class="analyzer-hero-score">
+                                <div class="analyzer-score-ring">
+                                    <svg width="90" height="90" viewBox="0 0 90 90">
+                                        <circle class="analyzer-score-ring__bg" cx="45" cy="45" r="39"/>
+                                        <circle class="analyzer-score-ring__fill" id="score-ring-fill" cx="45" cy="45" r="39" style="stroke: ${scoreColor}; stroke-dashoffset: 245;"/>
+                                    </svg>
+                                    <div class="analyzer-score-ring__value">
+                                        <span>${score}</span>
+                                        <span class="analyzer-score-ring__label">Overall</span>
+                                    </div>
+                                </div>
+                                <div class="analyzer-hero-meta">
+                                    <div class="analyzer-hero-meta__title">
+                                        Overall ATS Quality
+                                        <span class="analyzer-grade-badge">Grade ${grade}</span>
+                                    </div>
+                                    <div class="analyzer-hero-meta__desc">
+                                        ${score >= 85 ? 'Exceptional resume! High ATS match and strong action phrasing.' :
+                                          score >= 70 ? 'Solid draft. Recommended improvements will boost recruiter impact.' :
+                                          'Needs enhancement. Follow recommendations to improve ATS &amp; recruiter match.'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4 Metrics Grid -->
+                        <div class="analyzer-metrics-grid">
+                            <div class="analyzer-metric-item">
+                                <div class="analyzer-metric-item__val">${atsScore}%</div>
+                                <div class="analyzer-metric-item__lbl">ATS Match</div>
+                            </div>
+                            <div class="analyzer-metric-item">
+                                <div class="analyzer-metric-item__val">${gramScore}%</div>
+                                <div class="analyzer-metric-item__lbl">Grammar</div>
+                            </div>
+                            <div class="analyzer-metric-item">
+                                <div class="analyzer-metric-item__val">${fmtScore}%</div>
+                                <div class="analyzer-metric-item__lbl">Format</div>
+                            </div>
+                            <div class="analyzer-metric-item">
+                                <div class="analyzer-metric-item__val">${recScore}%</div>
+                                <div class="analyzer-metric-item__lbl">Recruiter</div>
+                            </div>
+                        </div>
+
+                        <div class="analyzer-side-info">
+                            <div class="analyzer-side-info__row">
+                                <span>Evaluated Engine</span>
+                                <strong>${modelName}</strong>
+                            </div>
+                            <div class="analyzer-side-info__row">
+                                <span>Analysis Mode</span>
+                                <strong>Read-Only Feedback</strong>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Metrics Grid -->
-                <div class="analyzer-metrics-grid">
-                    <div class="analyzer-metric-item">
-                        <div class="analyzer-metric-item__val">${atsScore}%</div>
-                        <div class="analyzer-metric-item__lbl">ATS Match</div>
-                    </div>
-                    <div class="analyzer-metric-item">
-                        <div class="analyzer-metric-item__val">${gramScore}%</div>
-                        <div class="analyzer-metric-item__lbl">Grammar</div>
-                    </div>
-                    <div class="analyzer-metric-item">
-                        <div class="analyzer-metric-item__val">${fmtScore}%</div>
-                        <div class="analyzer-metric-item__lbl">Format</div>
-                    </div>
-                    <div class="analyzer-metric-item">
-                        <div class="analyzer-metric-item__val">${recScore}%</div>
-                        <div class="analyzer-metric-item__lbl">Recruiter</div>
-                    </div>
-                </div>
             </div>
-
-            <!-- 2. Strengths Accordion -->
-            <div class="analyzer-card is-expanded" id="card-strengths">
-                <button class="analyzer-card__header" type="button" onclick="ResumeAnalyzer.toggleCard('card-strengths')">
-                    <div class="analyzer-card__title">
-                        <div class="analyzer-card__icon analyzer-card__icon--strengths">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                        </div>
-                        Strengths (${strengths.length})
-                    </div>
-                    <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                </button>
-                <div class="analyzer-card__body">
-                    <ul class="analyzer-list">
-                        ${strengths.map(s => `
-                            <li class="analyzer-list__item">
-                                <svg class="analyzer-list__bullet-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                </svg>
-                                <span>${_esc(s)}</span>
-                            </li>
-                        `).join('') || '<li class="analyzer-list__item">No specific strengths highlighted.</li>'}
-                    </ul>
-                </div>
-            </div>
-
-            <!-- 3. Weaknesses Accordion -->
-            <div class="analyzer-card is-expanded" id="card-weaknesses">
-                <button class="analyzer-card__header" type="button" onclick="ResumeAnalyzer.toggleCard('card-weaknesses')">
-                    <div class="analyzer-card__title">
-                        <div class="analyzer-card__icon analyzer-card__icon--weaknesses">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                                <line x1="12" y1="9" x2="12" y2="13"/>
-                                <line x1="12" y1="17" x2="12.01" y2="17"/>
-                            </svg>
-                        </div>
-                        Areas for Improvement (${weaknesses.length})
-                    </div>
-                    <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                </button>
-                <div class="analyzer-card__body">
-                    <ul class="analyzer-list">
-                        ${weaknesses.map(w => `
-                            <li class="analyzer-list__item">
-                                <svg class="analyzer-list__bullet-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <line x1="12" y1="8" x2="12" y2="12"/>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                                </svg>
-                                <span>${_esc(w)}</span>
-                            </li>
-                        `).join('') || '<li class="analyzer-list__item">No major areas for improvement detected.</li>'}
-                    </ul>
-                </div>
-            </div>
-
-            <!-- 4. Missing Keywords Accordion -->
-            <div class="analyzer-card is-expanded" id="card-keywords">
-                <button class="analyzer-card__header" type="button" onclick="ResumeAnalyzer.toggleCard('card-keywords')">
-                    <div class="analyzer-card__title">
-                        <div class="analyzer-card__icon analyzer-card__icon--keywords">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                                <line x1="7" y1="7" x2="7.01" y2="7"/>
-                            </svg>
-                        </div>
-                        Recommended Industry Keywords (${missingKeywords.length})
-                    </div>
-                    <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                </button>
-                <div class="analyzer-card__body">
-                    <div class="analyzer-chips">
-                        ${missingKeywords.map(k => `
-                            <span class="analyzer-chip">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="12" y1="5" x2="12" y2="19"/>
-                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                </svg>
-                                ${_esc(k)}
-                            </span>
-                        `).join('') || '<span style="font-size:12px;color:#94a3b8;">No missing keywords identified.</span>'}
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. Grammar & Tone Accordion -->
-            <div class="analyzer-card" id="card-grammar">
-                <button class="analyzer-card__header" type="button" onclick="ResumeAnalyzer.toggleCard('card-grammar')">
-                    <div class="analyzer-card__title">
-                        <div class="analyzer-card__icon analyzer-card__icon--grammar">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                            </svg>
-                        </div>
-                        Grammar & Formatting (${grammarIssues.length})
-                    </div>
-                    <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                </button>
-                <div class="analyzer-card__body">
-                    <ul class="analyzer-list">
-                        ${grammarIssues.map(g => `
-                            <li class="analyzer-list__item">
-                                <svg class="analyzer-list__bullet-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
-                                    <polyline points="9 11 12 14 22 4"/>
-                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                                </svg>
-                                <span>${_esc(g)}</span>
-                            </li>
-                        `).join('') || '<li class="analyzer-list__item">Grammar and punctuation look great!</li>'}
-                    </ul>
-                </div>
-            </div>
-
-            <!-- 6. Section Breakdown Accordion -->
-            <div class="analyzer-card is-expanded" id="card-sections">
-                <button class="analyzer-card__header" type="button" onclick="ResumeAnalyzer.toggleCard('card-sections')">
-                    <div class="analyzer-card__title">
-                        <div class="analyzer-card__icon analyzer-card__icon--sections">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                <path d="M3 9h18M9 21V9"/>
-                            </svg>
-                        </div>
-                        Section-by-Section Scores
-                    </div>
-                    <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                </button>
-                <div class="analyzer-card__body">
-                    ${_renderSectionBreakdown(sectionScores)}
-                </div>
-            </div>
-
-            <!-- 7. Strategic Recommendations Accordion -->
-            <div class="analyzer-card is-expanded" id="card-recs">
-                <button class="analyzer-card__header" type="button" onclick="ResumeAnalyzer.toggleCard('card-recs')">
-                    <div class="analyzer-card__title">
-                        <div class="analyzer-card__icon analyzer-card__icon--recs">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                            </svg>
-                        </div>
-                        Strategic Recommendations (${recommendations.length})
-                    </div>
-                    <svg class="analyzer-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                </button>
-                <div class="analyzer-card__body">
-                    <ul class="analyzer-list">
-                        ${recommendations.map((r, idx) => `
-                            <li class="analyzer-list__item">
-                                <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(52,211,153,0.2);color:#34d399;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px;">${idx + 1}</span>
-                                <span>${_esc(r)}</span>
-                            </li>
-                        `).join('') || '<li class="analyzer-list__item">No additional recommendations.</li>'}
-                    </ul>
-                </div>
-            </div>
-
-            <div style="text-align:center;padding-top:6px;font-size:10px;color:#64748b;">
-                Evaluated by ${modelName} · Read-only feedback
+            <div style="text-align:center;padding:16px 0 6px;font-size:11px;color:#64748b;">
+                Evaluated by ElevateCV AI (${modelName}) · Read-only feedback
             </div>
         `;
 
@@ -455,18 +467,27 @@ const ResumeAnalyzer = (() => {
 
             const secScore = typeof sec.score === 'number' ? sec.score : 75;
             let badgeClass = 'score-badge--high';
-            if (secScore < 60)      badgeClass = 'score-badge--low';
-            else if (secScore < 80) badgeClass = 'score-badge--mid';
+            let barColorClass = 'bar-fill--high';
+            if (secScore < 60) {
+                badgeClass = 'score-badge--low';
+                barColorClass = 'bar-fill--low';
+            } else if (secScore < 80) {
+                badgeClass = 'score-badge--mid';
+                barColorClass = 'bar-fill--mid';
+            }
 
             return `
                 <div class="analyzer-section-item">
                     <div class="analyzer-section-item__header">
                         <span class="analyzer-section-item__name">${k}</span>
+                        <div class="analyzer-section-item__bar-wrap">
+                            <div class="analyzer-section-item__bar-fill ${barColorClass}" style="width: ${secScore}%;"></div>
+                        </div>
                         <span class="analyzer-section-item__score ${badgeClass}">${secScore}%</span>
                     </div>
                     ${sec.feedback ? `<div class="analyzer-section-item__feedback">${_esc(sec.feedback)}</div>` : ''}
                     ${Array.isArray(sec.suggestions) && sec.suggestions.length ? `
-                        <ul style="margin:4px 0 0;padding-left:14px;font-size:11px;color:#94a3b8;line-height:1.4;">
+                        <ul style="margin:6px 0 0;padding-left:16px;font-size:12px;color:#94a3b8;line-height:1.4;">
                             ${sec.suggestions.map(s => `<li>${_esc(s)}</li>`).join('')}
                         </ul>
                     ` : ''}
@@ -488,26 +509,19 @@ const ResumeAnalyzer = (() => {
     function toggleCard(cardId) {
         const card = document.getElementById(cardId);
         if (card) {
-            card.classList.toggle('is-expanded');
+            const isExpanded = card.classList.toggle('is-expanded');
+            const btn = card.querySelector('.analyzer-card__header');
+            if (btn) {
+                btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+            }
         }
     }
 
     /* ──────────────────────────────────────────────────────────────────
        Cache helper: lightweight content hash for invalidation
     ────────────────────────────────────────────────────────────────── */
-
-    /**
-     * Returns a cheap, stable hash string of the resume payload.
-     * Uses djb2 over the JSON string — fast enough for in-browser use.
-     * We only hash the fields that affect the analysis result.
-     * @param {Object} resumeData
-     * @returns {string}
-     */
     function _hashContent(resumeData) {
         if (!resumeData) return '';
-        // Omit runtime-only fields (title, status, template) that don't
-        // affect the AI analysis output, so renaming a draft never
-        // invalidates a perfectly good cached result.
         const payload = {
             personalInformation: resumeData.personalInformation,
             professionalSummary: resumeData.professionalSummary,
@@ -523,22 +537,14 @@ const ResumeAnalyzer = (() => {
         let hash = 5381;
         for (let i = 0; i < str.length; i++) {
             hash = ((hash << 5) + hash) ^ str.charCodeAt(i);
-            hash |= 0; // keep as 32-bit signed int
+            hash |= 0;
         }
-        return String(hash >>> 0); // unsigned
+        return String(hash >>> 0);
     }
 
     /* ──────────────────────────────────────────────────────────────────
        Error helper: maps HTTP status code → user-friendly message
     ────────────────────────────────────────────────────────────────── */
-
-    /**
-     * Returns a human-friendly error string for a given HTTP status
-     * and optional server message.
-     * @param {number}  status
-     * @param {string}  serverMessage
-     * @returns {string}
-     */
     function _friendlyErrorMessage(status, serverMessage) {
         switch (status) {
             case 401:
@@ -589,7 +595,7 @@ const ResumeAnalyzer = (() => {
             return;
         }
 
-        // ── Cache hit: resume content unchanged since last successful analysis ──
+        // ── Cache hit check ──
         const contentHash = _hashContent(resumeData);
         if (_cachedAnalysis && _cachedContentHash === contentHash) {
             open();
@@ -617,12 +623,12 @@ const ResumeAnalyzer = (() => {
             `;
         }
 
-        // Open drawer & show skeleton loading
+        // Open modal & show skeleton loading
         open();
         _renderSkeleton();
 
         if (typeof Helpers !== 'undefined' && Helpers.showToast) {
-            Helpers.showToast('Analyzing resume with Gemini AI...', 'info', 2500);
+            Helpers.showToast('Analyzing resume with AI...', 'info', 2500);
         }
 
         try {
@@ -639,13 +645,12 @@ const ResumeAnalyzer = (() => {
                 body: JSON.stringify(resumeData)
             });
 
-            // ── Friendly, status-code-aware error handling ──
             if (!response.ok) {
                 let serverMessage = '';
                 try {
                     const errData = await response.json();
                     serverMessage = errData.message || '';
-                } catch { /* ignore parse errors on error bodies */ }
+                } catch { /* ignore parse errors */ }
 
                 if (response.status === 401) {
                     localStorage.removeItem('token');
@@ -668,7 +673,6 @@ const ResumeAnalyzer = (() => {
                 throw new Error(data.message || 'AI analysis request failed.');
             }
 
-            // ── Store to cache ──
             _lastAnalysis       = data.analysis;
             _cachedAnalysis     = data.analysis;
             _cachedContentHash  = contentHash;
@@ -682,21 +686,20 @@ const ResumeAnalyzer = (() => {
         } catch (err) {
             console.error('[ResumeAnalyzer] Analysis failed:', err);
 
-            // Invalidate cache on any failure so the next attempt is always fresh
             _cachedAnalysis    = null;
             _cachedContentHash = null;
 
             if (_bodyEl) {
                 _bodyEl.innerHTML = `
-                    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:20px;text-align:center;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" style="margin-bottom:10px;">
+                    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:24px;text-align:center;max-width:540px;margin:40px auto;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" style="margin-bottom:12px;">
                             <circle cx="12" cy="12" r="10"/>
                             <line x1="12" y1="8" x2="12" y2="12"/>
                             <line x1="12" y1="16" x2="12.01" y2="16"/>
                         </svg>
-                        <h3 style="font-size:15px;font-weight:700;color:#ffffff;margin:0 0 6px;">Analysis Failed</h3>
-                        <p style="font-size:12px;color:#cbd5e1;line-height:1.4;margin:0 0 14px;">${_esc(err.message)}</p>
-                        <button class="btn btn--primary" type="button" style="font-size:12px;padding:6px 14px;" onclick="window.ResumeAnalyzer.analyze(typeof BuilderState !== 'undefined' ? BuilderState.get() : null)">
+                        <h3 style="font-size:16px;font-weight:700;color:#ffffff;margin:0 0 8px;">Analysis Failed</h3>
+                        <p style="font-size:13px;color:#cbd5e1;line-height:1.5;margin:0 0 16px;">${_esc(err.message)}</p>
+                        <button class="btn btn--primary" type="button" style="font-size:13px;padding:8px 18px;" onclick="window.ResumeAnalyzer.analyze(typeof BuilderState !== 'undefined' ? BuilderState.get() : null)">
                             Try Again
                         </button>
                     </div>
@@ -728,5 +731,5 @@ const ResumeAnalyzer = (() => {
     };
 })();
 
-/* ── Expose to global scope so inline onclick handlers always resolve ─────── */
+/* Expose to global scope for inline onclick handlers */
 window.ResumeAnalyzer = ResumeAnalyzer;
