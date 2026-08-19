@@ -18,13 +18,16 @@ const { GeminiServiceError } = require('../services/geminiService');
 
 /* ── Status code map ─────────────────────────────────────────────────────── */
 const ERROR_CODE_TO_HTTP = {
-    MISSING_API_KEY: 503,
-    INVALID_API_KEY: 503,
-    QUOTA_EXCEEDED:  429,
-    REQUEST_TIMEOUT: 504,
-    EMPTY_RESPONSE:  500,
-    INVALID_JSON:    500,
-    GEMINI_ERROR:    500
+    MISSING_API_KEY:     503,
+    INVALID_API_KEY:     401,
+    QUOTA_EXCEEDED:      429,
+    MODEL_NOT_FOUND:     502,
+    SERVICE_UNAVAILABLE: 503,
+    REQUEST_TIMEOUT:     504,
+    EMPTY_RESPONSE:      500,
+    INVALID_JSON:        500,
+    AI_PROVIDER_ERROR:   500,
+    GEMINI_ERROR:        500
 };
 
 /**

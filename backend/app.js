@@ -62,6 +62,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 /* ── Routes ───────────────────────────────────────────────────────────── */
+app.use('/api/health', healthRoute);
 app.use('/', healthRoute);
 
 /* ── Production Diagnostic Route ────────────────────────────────────────── */
@@ -73,6 +74,7 @@ app.get('/api/debug/routes', (req, res) => {
         timestamp: new Date().toISOString(),
         mountedRoutes: [
             'GET /',
+            'GET /api/health/ai',
             'GET /api/debug/routes',
             'POST /api/auth/register',
             'POST /api/auth/login',

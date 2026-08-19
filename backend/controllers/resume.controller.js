@@ -167,6 +167,25 @@ class ResumeController {
             });
         } catch (error) {
             console.error('[ResumeController] Import error:', error);
+            const { GeminiServiceError } = require('../services/aiProvider');
+            if (error instanceof GeminiServiceError) {
+                const statusMap = {
+                    MISSING_API_KEY:     503,
+                    INVALID_API_KEY:     401,
+                    QUOTA_EXCEEDED:      429,
+                    MODEL_NOT_FOUND:     502,
+                    SERVICE_UNAVAILABLE: 503,
+                    REQUEST_TIMEOUT:     504
+                };
+                const statusCode = statusMap[error.code] || 500;
+                return res.status(statusCode).json({
+                    success: false,
+                    message: error.message,
+                    data: null,
+                    error: error.code
+                });
+            }
+
             return res.status(500).json({
                 success: false,
                 message: error.message || 'Failed to import and parse resume file.',

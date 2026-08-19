@@ -6,6 +6,7 @@
 require('dotenv').config();
 const app = require('./app');
 const connectDB = require('./config/db');
+const { logAIConfig } = require('./services/aiProvider');
 
 const PORT = process.env.PORT || 5000;
 
@@ -20,8 +21,10 @@ const startServer = async () => {
             console.log('ElevateCV AI Backend Started');
             console.log(`Environment: ${env}`);
             console.log(`Commit: ${commit}`);
+            logAIConfig();
             console.log('\nMounted Routes:\n');
             console.log('✓ GET  /');
+            console.log('✓ GET  /api/health/ai');
             console.log('✓ GET  /api/debug/routes');
             console.log('✓ POST /api/ai/analyze');
             console.log('✓ POST /api/ai/improve');
