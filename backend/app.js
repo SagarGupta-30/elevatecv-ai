@@ -39,25 +39,15 @@ const allowedOrigins = [
     'https://elevatecv-ai-rose.vercel.app'
 ];
 
-const corsOriginChecker = (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, cURL, or server-to-server)
-    if (!origin) return callback(null, true);
-
-    if (
-        allowedOrigins.includes(origin) ||
-        process.env.CLIENT_URL === origin ||
-        process.env.FRONTEND_URL === origin ||
-        /^https:\/\/.*\.vercel\.app$/.test(origin) ||
-        /^https:\/\/.*\.netlify\.app$/.test(origin)
-    ) {
-        return callback(null, true);
-    }
-
-    return callback(null, false);
-};
+if (process.env.CLIENT_URL && !allowedOrigins.includes(process.env.CLIENT_URL)) {
+    allowedOrigins.push(process.env.CLIENT_URL);
+}
+if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+}
 
 const corsOptions = {
-    origin: corsOriginChecker,
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
