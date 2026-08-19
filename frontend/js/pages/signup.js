@@ -127,7 +127,8 @@ const SignupPage = (() => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE}/register`, {
+            const requestUrl = `${API_BASE}/register`;
+            const response = await fetch(requestUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -140,6 +141,12 @@ const SignupPage = (() => {
             const data = await response.json();
 
             if (!response.ok) {
+                console.error('[Signup API Error]', {
+                    url: requestUrl,
+                    status: response.status,
+                    statusText: response.statusText,
+                    data
+                });
                 throw new Error(data.message || 'Registration failed');
             }
 
@@ -152,6 +159,11 @@ const SignupPage = (() => {
                 window.location.href = 'dashboard.html';
             }, 1500);
         } catch (error) {
+            console.error('[Signup Network Error]', {
+                url: `${API_BASE}/register`,
+                errorType: error.name || 'Error',
+                message: error.message
+            });
             let errorMsg = error.message;
             if (errorMsg === 'Failed to fetch') {
                 errorMsg = 'Unable to connect to the server. Please check your connection or if the backend is running.';

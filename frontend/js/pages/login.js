@@ -99,7 +99,8 @@ const LoginPage = (() => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE}/login`, {
+            const requestUrl = `${API_BASE}/login`;
+            const response = await fetch(requestUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -111,6 +112,12 @@ const LoginPage = (() => {
             const data = await response.json();
 
             if (!response.ok) {
+                console.error('[Login API Error]', {
+                    url: requestUrl,
+                    status: response.status,
+                    statusText: response.statusText,
+                    data
+                });
                 throw new Error(data.message || 'Login failed');
             }
 
@@ -123,6 +130,11 @@ const LoginPage = (() => {
                 window.location.href = 'dashboard.html';
             }, 1500);
         } catch (error) {
+            console.error('[Login Network Error]', {
+                url: `${API_BASE}/login`,
+                errorType: error.name || 'Error',
+                message: error.message
+            });
             let errorMsg = error.message;
             if (errorMsg === 'Failed to fetch') {
                 errorMsg = 'Unable to connect to the server. Please check your connection or if the backend is running.';

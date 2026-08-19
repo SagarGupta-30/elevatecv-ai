@@ -21,33 +21,47 @@ const userRoutes         = require('./routes/user.routes');
 const app = express();
 
 /* ── CORS ─────────────────────────────────────────────────────────────── */
-/*
- * Pass a plain array to cors().  The cors package natively handles arrays:
- * it compares req.headers.origin against each entry and sets
- * Access-Control-Allow-Origin to the matched value (or omits it).
- * Using a custom function callback risks calling next(err) silently, which
- * causes the 204 preflight to arrive with no Access-Control-Allow-Origin
- * header — exactly the bug that was observed in production.
- */
 const allowedOrigins = [
     // Local development
     'http://localhost:5500',
     'http://127.0.0.1:5500',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
+    'http://localhost:5001',
+    'http://127.0.0.1:5001',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 
-    // Production — Netlify frontend
-    'https://elevatecv-ai.netlify.app'
+    // Production Frontends
+    'https://elevatecv-ai.netlify.app',
+    'https://elevatecv-ai-rose.vercel.app'
 ];
 
+const corsOriginChecker = (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, cURL, or server-to-server)
+    if (!origin) return callback(null, true);
+
+    if (
+        allowedOrigins.includes(origin) ||
+        process.env.CLIENT_URL === origin ||
+        process.env.FRONTEND_URL === origin ||
+        /^https:\/\/.*\.vercel\.app$/.test(origin) ||
+        /^https:\/\/.*\.netlify\.app$/.test(origin)
+    ) {
+        return callback(null, true);
+    }
+
+    return callback(null, false);
+};
+
 const corsOptions = {
-    origin: allowedOrigins,         // plain array — safe and correct
+    origin: corsOriginChecker,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    optionsSuccessStatus: 200       // IE 11 compat; also ensures body is sent
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    optionsSuccessStatus: 200
 };
 
 /* Handle pre-flight OPTIONS across ALL routes FIRST, before any other middleware */
