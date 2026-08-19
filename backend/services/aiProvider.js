@@ -19,6 +19,15 @@ class GeminiServiceError extends Error {
 
 const DEFAULT_TIMEOUT_MS = 28_000; // 28s timeout
 
+// Groq supported candidate models in fallback precedence order
+const GROQ_CANDIDATE_MODELS = [
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'groq/compound'
+];
+
 /**
  * Returns current AI provider configuration status safely (NO API keys or secrets exposed).
  * @returns {{ configured: boolean, provider: string, keyFormatValid: boolean }}
@@ -122,32 +131,54 @@ async function generateJSON({ systemPrompt, userPrompt = '', timeoutMs = DEFAULT
             const messages = [
                 { role: 'system', content: finalSystemPrompt }
             ];
-            if (userPrompt) {
-                messages.push({ role: 'user', content: userPrompt });
+            if (userPrompt && userPrompt.trim()) {
+                messages.push({ role: 'user', content: userPrompt.trim() });
+            } else {
+                messages.push({ role: 'user', content: 'Generate JSON output according to the system instructions.' });
             }
 
-            let response;
-            try {
-                response = await groq.chat.completions.create({
-                    model: 'llama-3.3-70b-versatile',
-                    messages,
-                    temperature: 0.2,
-                    response_format: { type: 'json_object' }
-                });
-            } catch (groqErr) {
-                const groqMsg = (groqErr.message || '').toLowerCase();
-                if (groqErr.status === 404 || groqMsg.includes('model_not_found') || groqMsg.includes('decommissioned')) {
-                    console.warn('[AIProvider] Groq model llama-3.3-70b-versatile failed, attempting fallback to llama-3.1-8b-instant...');
+            let response = null;
+            let lastGroqErr = null;
+
+            for (const modelCandidate of GROQ_CANDIDATE_MODELS) {
+                try {
                     response = await groq.chat.completions.create({
-                        model: 'llama-3.1-8b-instant',
+                        model: modelCandidate,
                         messages,
                         temperature: 0.2,
                         response_format: { type: 'json_object' }
                     });
-                } else {
-                    throw groqErr;
+                    if (response?.choices?.[0]?.message?.content) {
+                        break; // Success!
+                    }
+                } catch (groqErr) {
+                    lastGroqErr = groqErr;
+                    const status = groqErr.status || groqErr.statusCode;
+                    const groqMsg = (groqErr.message || '').toLowerCase();
+
+                    // Safe diagnostic logging — NEVER prints credentials, headers, or tokens
+                    console.warn(`[AI] Groq request failed\nprovider=groq\nmodel=${modelCandidate}\nstatus=${status || 'N/A'}\nmessage=${groqErr.message || 'Unknown error'}`);
+
+                    // Fallback only if model is unavailable / not found / decommissioned
+                    const isModelUnavailable = status === 404 ||
+                        groqMsg.includes('model_not_found') ||
+                        groqMsg.includes('does not exist') ||
+                        groqMsg.includes('do not have access') ||
+                        groqMsg.includes('decommissioned');
+
+                    if (isModelUnavailable) {
+                        continue; // try next candidate model
+                    } else {
+                        // Do NOT fall back for 401/403 auth errors or 429 quota errors
+                        throw groqErr;
+                    }
                 }
             }
+
+            if (!response && lastGroqErr) {
+                throw lastGroqErr;
+            }
+
             rawText = response?.choices?.[0]?.message?.content || '';
         } else {
             const ai = new GoogleGenAI({ apiKey });
@@ -275,4 +306,5 @@ module.exports = {
     logAIConfig,
     GeminiServiceError
 };
+
 
