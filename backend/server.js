@@ -1,5 +1,5 @@
 /**
- * ElevateCV AI — Server Entry Point
+ * ElevateCV AI — Server Entry Point (v1.0.5)
  * Connects to MongoDB and starts the Express server.
  */
 
