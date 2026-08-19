@@ -1,6 +1,6 @@
 {
   "name": "elevatecv-ai-backend",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "ElevateCV AI — Backend API server",
   "main": "server.js",
   "scripts": {
