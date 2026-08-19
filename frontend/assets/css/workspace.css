@@ -155,3 +155,38 @@
     line-height: 1.5;
     margin: 0 0 24px 0;
 }
+
+/* ── Responsive Workspaces ─────────────────── */
+@media (max-width: 768px) {
+    .workspace-page {
+        gap: var(--space-4, 16px);
+        padding-bottom: 24px;
+    }
+
+    .workspace-header {
+        padding: 16px;
+    }
+
+    .workspace-body {
+        padding: 16px;
+    }
+
+    .workspace-header__title {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .workspace-header {
+        padding: 12px;
+    }
+
+    .workspace-body {
+        padding: 12px;
+    }
+
+    .workspace-header__title {
+        font-size: 16px;
+    }
+}
+
