@@ -1,4 +1,4 @@
-# ElevateCV AI.
+# ElevateCV AI...
 
 > **Elevate Your Career with AI**
 
